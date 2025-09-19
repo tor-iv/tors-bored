@@ -1,15 +1,15 @@
 import { create } from 'zustand';
-import { Auction, PotteryPiece, Bid } from '@/types';
+import { Auction, Item, Bid } from '@/types';
 
 interface AuctionState {
   currentAuction: Auction | null;
-  auctionPieces: PotteryPiece[];
+  auctionPieces: Item[];
   activeBids: Bid[];
-  selectedPiece: PotteryPiece | null;
+  selectedPiece: Item | null;
   setCurrentAuction: (auction: Auction | null) => void;
-  setAuctionPieces: (pieces: PotteryPiece[]) => void;
+  setAuctionPieces: (pieces: Item[]) => void;
   setActiveBids: (bids: Bid[]) => void;
-  setSelectedPiece: (piece: PotteryPiece | null) => void;
+  setSelectedPiece: (piece: Item | null) => void;
   updatePieceBid: (pieceId: string, newBid: number, bidderId: string) => void;
 }
 

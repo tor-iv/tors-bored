@@ -1,0 +1,16 @@
+{
+  "name": "tors-bored",
+  "private": true,
+  "workspaces": [
+    "pottery-auction"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=pottery-auction",
+    "build": "npm run build --workspace=pottery-auction",
+    "start": "npm run start --workspace=pottery-auction",
+    "lint": "npm run lint --workspace=pottery-auction",
+    "test": "npm run test --workspace=pottery-auction"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

@@ -8,7 +8,7 @@ export interface User {
   createdAt: Date;
 }
 
-export interface PotteryPiece {
+export interface Item {
   id: string;
   title: string;
   description: string;
