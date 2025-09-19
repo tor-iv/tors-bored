@@ -20,12 +20,12 @@ export default function Footer() {
               <motion.div
                 whileHover={{ rotate: 180 }}
                 transition={{ duration: 0.3 }}
-                className="w-8 h-8 bg-pottery-terracotta rounded-full"
+                className="w-8 h-8 bg-medium-green rounded-full"
               />
-              <span className="text-xl font-bold">Clay Auctions</span>
+              <span className="text-xl font-bold">Marketplace</span>
             </div>
             <p className="text-white/80 mb-6">
-              Bringing unique handcrafted pottery to collectors through monthly auctions and custom commissions.
+              Discover unique items and special collections. Custom requests and curated selections available.
             </p>
             <div className="flex space-x-4">
               {[Instagram, Facebook, Twitter].map((Icon, index) => (
@@ -34,7 +34,7 @@ export default function Footer() {
                   href="#"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 bg-pottery-terracotta/20 rounded-full flex items-center justify-center hover:bg-pottery-terracotta transition-colors"
+                  className="w-10 h-10 bg-medium-green/20 rounded-full flex items-center justify-center hover:bg-medium-green transition-colors"
                 >
                   <Icon size={18} />
                 </motion.a>
@@ -51,14 +51,14 @@ export default function Footer() {
             <nav className="space-y-2">
               {[
                 { href: '/', label: 'Home' },
-                { href: '/auctions', label: 'Current Auction' },
+                { href: '/auctions', label: 'Current Items' },
                 { href: '/gallery', label: 'Gallery' },
-                { href: '/commissions', label: 'Commissions' },
+                { href: '/commissions', label: 'Custom Requests' },
               ].map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block text-white/80 hover:text-pottery-terracotta transition-colors"
+                  className="block text-white/80 hover:text-medium-green transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -71,11 +71,11 @@ export default function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h3 className="text-lg font-semibold mb-4">Auction Info</h3>
+            <h3 className="text-lg font-semibold mb-4">Service Info</h3>
             <div className="space-y-3 text-white/80">
-              <p>Monthly auctions on the 15th</p>
-              <p>24-48 hour bidding windows</p>
-              <p>Secure payment via Stripe</p>
+              <p>Regular content updates</p>
+              <p>Secure payment options</p>
+              <p>Quality guaranteed items</p>
               <p>Worldwide shipping available</p>
             </div>
           </motion.div>
@@ -89,7 +89,7 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-white/80">
                 <Mail size={16} />
-                <span>hello@clayauctions.com</span>
+                <span>hello@marketplace.com</span>
               </div>
               <div className="flex items-center space-x-3 text-white/80">
                 <Phone size={16} />
@@ -104,15 +104,15 @@ export default function Footer() {
             <div className="mt-6">
               <h4 className="font-medium mb-2">Newsletter</h4>
               <p className="text-white/80 text-sm mb-3">
-                Get notified about upcoming auctions
+                Get notified about new items and updates
               </p>
               <div className="flex">
                 <input
                   type="email"
                   placeholder="Your email"
-                  className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-l-lg focus:outline-none focus:border-pottery-terracotta text-white placeholder-white/60"
+                  className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-l-lg focus:outline-none focus:border-medium-green text-white placeholder-white/60"
                 />
-                <button className="px-4 py-2 bg-pottery-terracotta rounded-r-lg hover:bg-pottery-clay transition-colors">
+                <button className="px-4 py-2 bg-medium-green rounded-r-lg hover:bg-medium-green/80 transition-colors">
                   Subscribe
                 </button>
               </div>
@@ -127,7 +127,7 @@ export default function Footer() {
           className="border-t border-white/20 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center"
         >
           <p className="text-white/60 text-sm">
-            © {currentYear} Clay Auctions. All rights reserved.
+            © {currentYear} Marketplace. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 sm:mt-0">
             <Link href="/privacy" className="text-white/60 hover:text-white text-sm transition-colors">

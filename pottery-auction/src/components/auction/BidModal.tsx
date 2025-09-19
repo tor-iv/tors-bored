@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, DollarSign, TrendingUp } from 'lucide-react';
-import { PotteryPiece } from '@/types';
+import { Item } from '@/types';
 import Button from '../ui/Button';
 
 interface BidModalProps {
   isOpen: boolean;
   onClose: () => void;
-  piece: PotteryPiece | null;
+  piece: Item | null;
   onSubmitBid: (amount: number) => Promise<void>;
 }
 
@@ -72,25 +72,25 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
               </button>
               
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-pottery-charcoal mb-2">
+                <h2 className="text-2xl font-bold text-medium-dark mb-2">
                   Place Your Bid
                 </h2>
-                <h3 className="text-lg text-pottery-charcoal/80">
+                <h3 className="text-lg text-medium-dark/80">
                   {piece.title}
                 </h3>
               </div>
               
-              <div className="mb-6 p-4 bg-pottery-cream rounded-lg">
+              <div className="mb-6 p-4 bg-medium-cream rounded-lg">
                 <div className="flex items-center justify-between">
-                  <span className="text-pottery-charcoal/70">Current Bid:</span>
-                  <span className="text-xl font-bold text-pottery-terracotta flex items-center">
+                  <span className="text-medium-dark/70">Current Bid:</span>
+                  <span className="text-xl font-bold text-medium-green flex items-center">
                     <DollarSign size={18} />
                     {piece.currentBid}
                   </span>
                 </div>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-pottery-charcoal/70">Minimum Bid:</span>
-                  <span className="font-semibold text-pottery-charcoal flex items-center">
+                  <span className="text-medium-dark/70">Minimum Bid:</span>
+                  <span className="font-semibold text-medium-dark flex items-center">
                     <DollarSign size={16} />
                     {minBid}
                   </span>
@@ -99,7 +99,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
               
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-pottery-charcoal mb-2">
+                  <label className="block text-sm font-medium text-medium-dark mb-2">
                     Your Bid Amount
                   </label>
                   <div className="relative">
@@ -108,7 +108,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
                       type="number"
                       value={bidAmount}
                       onChange={(e) => setBidAmount(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pottery-terracotta"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-medium-green"
                       placeholder={minBid.toString()}
                       min={minBid}
                       step="1"
@@ -118,7 +118,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
                 </div>
                 
                 <div>
-                  <p className="text-sm text-pottery-charcoal/70 mb-3 flex items-center gap-1">
+                  <p className="text-sm text-medium-dark/70 mb-3 flex items-center gap-1">
                     <TrendingUp size={14} />
                     Quick bid amounts:
                   </p>
@@ -128,7 +128,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
                         key={amount}
                         type="button"
                         onClick={() => setBidAmount(amount.toString())}
-                        className="p-2 border border-pottery-terracotta text-pottery-terracotta rounded-lg hover:bg-pottery-terracotta hover:text-white transition-colors"
+                        className="p-2 border border-medium-green text-medium-green rounded-lg hover:bg-medium-green hover:text-white transition-colors"
                       >
                         ${amount}
                       </button>
@@ -141,7 +141,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
                 )}
                 
                 <div className="pt-4 border-t">
-                  <p className="text-xs text-pottery-charcoal/60 mb-4">
+                  <p className="text-xs text-medium-dark/60 mb-4">
                     By placing a bid, you agree to our terms and authorize payment if you win.
                   </p>
                   <Button

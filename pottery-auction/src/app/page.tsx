@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function Home() {
-  const { getTextColorForBackground } = useColorToggle();
+  const { getTextColorClass, getPrimaryColorClass } = useColorToggle();
   
   return (
     <>
@@ -16,7 +16,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className={`text-5xl md:text-7xl font-serif font-bold mb-6 ${getTextColorForBackground('light')}`}
+            className={`text-5xl md:text-7xl font-serif font-bold mb-6 ${getTextColorClass()}`}
           >
             Beat Boredom
             <br />
@@ -27,7 +27,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className={`text-lg md:text-xl font-serif mb-12 max-w-2xl mx-auto opacity-80 ${getTextColorForBackground('light')}`}
+            className={`text-lg md:text-xl mb-12 max-w-2xl mx-auto opacity-80 ${getTextColorClass()}`}
           >
             Discover unique gadgets, collectibles, and cool finds in our monthly auctions.
             Every 15th, new exciting items to cure your boredom!
@@ -39,10 +39,10 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-6 justify-center"
           >
-            <Link href="/auctions" className={`font-serif hover:opacity-70 transition-opacity underline ${getTextColorForBackground('light')}`}>
+            <Link href="/auctions" className={`hover:opacity-70 transition-opacity underline ${getPrimaryColorClass()}`}>
               View Current Finds
             </Link>
-            <Link href="/gallery" className={`font-serif hover:opacity-70 transition-opacity underline ${getTextColorForBackground('light')}`}>
+            <Link href="/gallery" className={`hover:opacity-70 transition-opacity underline ${getPrimaryColorClass()}`}>
               Browse Past Finds
             </Link>
           </motion.div>
@@ -63,10 +63,10 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <h2 className={`text-4xl font-serif font-bold mb-4 ${getTextColorForBackground('medium')}`}>
+            <h2 className={`text-4xl font-serif font-bold mb-4 ${getTextColorClass()}`}>
               How It Works
             </h2>
-            <p className={`text-lg font-serif opacity-80 max-w-2xl mx-auto ${getTextColorForBackground('medium')}`}>
+            <p className={`text-lg opacity-80 max-w-2xl mx-auto ${getTextColorClass()}`}>
               Join our monthly auctions and discover unique items to beat your boredom
             </p>
           </motion.div>
@@ -91,18 +91,21 @@ export default function Home() {
             ].map((step, index) => (
               <motion.div
                 key={index}
+       
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
+   
                 transition={{ duration: 0.6, delay: index * 0.2 }}
+       
                 className="text-center bg-medium-light p-8 rounded-lg shadow-sm"
               >
-                <div className="w-16 h-16 bg-medium-green bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <step.icon size={32} className={getTextColorForBackground('light')} />
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <step.icon size={32} className={getTextColorClass()} />
                 </div>
-                <h3 className={`text-xl font-serif font-semibold mb-4 ${getTextColorForBackground('light')}`}>
+                <h3 className={`text-xl font-serif font-semibold mb-4 ${getTextColorClass()}`}>
                   {step.title}
                 </h3>
-                <p className={`font-serif opacity-80 ${getTextColorForBackground('light')}`}>
+                <p className={`opacity-80 ${getTextColorClass()}`}>
                   {step.description}
                 </p>
               </motion.div>
@@ -119,15 +122,15 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className={`text-4xl font-serif font-bold mb-6 ${getTextColorForBackground('light')}`}>
+              <h2 className={`text-4xl font-serif font-bold mb-6 ${getTextColorClass()}`}>
                 Custom Requests
               </h2>
-              <p className={`text-lg font-serif opacity-80 mb-8 ${getTextColorForBackground('light')}`}>
+              <p className={`text-lg opacity-80 mb-8 ${getTextColorClass()}`}>
                 Have something specific in mind? Submit your ideas and reference photos 
                 for custom finds. We'll source or create unique items to match your interests 
                 and help cure your boredom in style.
               </p>
-              <Link href="/commissions" className={`font-serif hover:opacity-70 transition-opacity underline ${getTextColorForBackground('light')}`}>
+              <Link href="/commissions" className={`hover:opacity-70 transition-opacity underline ${getTextColorClass()}`}>
                 Start Your Request
               </Link>
             </motion.div>
@@ -139,11 +142,11 @@ export default function Home() {
               className="relative"
             >
               <div className="aspect-square bg-medium-cream rounded-lg flex items-center justify-center border">
-                <div className={`text-center opacity-60 ${getTextColorForBackground('medium')}`}>
-                  <div className="w-32 h-32 bg-medium-green bg-opacity-10 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-medium-green bg-opacity-20 rounded-full animate-gentle-bounce" />
+                <div className={`text-center opacity-60 ${getTextColorClass()}`}>
+                  <div className="w-32 h-32 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-green-200 rounded-full animate-gentle-bounce" />
                   </div>
-                  <p className="text-lg font-serif font-medium">Your Custom Find</p>
+                  <p className="text-lg font-medium">Your Custom Find</p>
                 </div>
               </div>
             </motion.div>
@@ -161,14 +164,14 @@ export default function Home() {
             <h2 className="text-3xl font-serif font-bold mb-6">
               Ready to Beat Boredom?
             </h2>
-            <p className="text-lg font-serif mb-8 text-white/80">
+            <p className="text-lg mb-8 text-white/80">
               Join our community of cool find hunters and never miss an exciting auction
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link href="/auctions" className="font-serif text-white hover:opacity-70 transition-opacity underline">
+              <Link href="/auctions" className="text-white hover:opacity-70 transition-opacity underline">
                 View Current Finds
               </Link>
-              <Link href="/gallery" className="font-serif text-white hover:opacity-70 transition-opacity underline">
+              <Link href="/gallery" className="text-white hover:opacity-70 transition-opacity underline">
                 Browse Past Finds
               </Link>
             </div>

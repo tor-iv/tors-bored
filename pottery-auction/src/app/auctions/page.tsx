@@ -3,62 +3,62 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, Trophy, Filter } from 'lucide-react';
-import PotteryCard from '@/components/auction/PotteryCard';
+import ItemCard from '@/components/auction/ItemCard';
 import BidModal from '@/components/auction/BidModal';
-import { PotteryPiece } from '@/types';
+import { Item } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function AuctionsPage() {
   const { isAuthenticated } = useAuth();
-  const [selectedPiece, setSelectedPiece] = useState<PotteryPiece | null>(null);
+  const [selectedPiece, setSelectedPiece] = useState<Item | null>(null);
   const [showBidModal, setShowBidModal] = useState(false);
   const [sortBy, setSortBy] = useState('ending-soon');
 
-  const mockPieces: PotteryPiece[] = [
+  const mockPieces: Item[] = [
     {
       id: '1',
-      title: 'Retro Gaming Controller Collection',
-      description: 'A rare collection of vintage gaming controllers from the 80s and 90s. Includes original Nintendo, Sega, and Atari controllers in pristine condition.',
+      title: 'Midnight Blue Vase',
+      description: 'A stunning handcrafted vase with deep midnight blue finish and subtle metallic accents. Crafted with traditional techniques.',
       images: [],
       startingBid: 45,
       currentBid: 85,
-      highestBidder: 'retro_gamer_42',
+      highestBidder: 'collector_42',
       auctionId: 'auction-dec-2024',
-      dimensions: { height: 3, width: 12, depth: 8 },
-      techniques: ['Authenticated', 'Original packaging'],
+      dimensions: { height: 12, width: 6, depth: 6 },
+      techniques: ['Handcrafted', 'Finished'],
       featured: true,
       createdAt: new Date(),
     },
     {
       id: '2',
-      title: 'Mystery Tech Gadget Box',
-      description: 'A curated box of unique tech gadgets and electronic accessories. Contains 5-7 items including quirky USB devices, LED accessories, and mini electronics.',
+      title: 'Rustic Bowl Set',
+      description: 'A collection of three handcrafted bowls in warm earth tones. Each piece is unique with natural variations, perfect for serving or display.',
       images: [],
       startingBid: 65,
       currentBid: 120,
       auctionId: 'auction-dec-2024',
-      dimensions: { height: 6, width: 10, depth: 10 },
-      techniques: ['Curated', 'Tech verified'],
+      dimensions: { height: 4, width: 8, depth: 8 },
+      techniques: ['Handcrafted', 'Natural materials'],
       featured: false,
       createdAt: new Date(),
     },
     {
       id: '3',
-      title: 'Custom Mechanical Keyboard',
-      description: 'A hand-built mechanical keyboard with custom keycaps, RGB lighting, and tactile switches. Perfect for gaming or professional work.',
+      title: 'Sculptural Teapot',
+      description: 'A functional art piece combining form and function. This unique teapot features an organic, flowing design with a custom sage green finish.',
       images: [],
       startingBid: 80,
       currentBid: 155,
-      highestBidder: 'keyboard_enthusiast',
+      highestBidder: 'tea_enthusiast',
       auctionId: 'auction-dec-2024',
-      dimensions: { height: 2, width: 14, depth: 6 },
-      techniques: ['Hand-assembled', 'Custom programmed'],
+      dimensions: { height: 8, width: 10, depth: 6 },
+      techniques: ['Sculpted', 'Custom finished'],
       featured: false,
       createdAt: new Date(),
     },
   ];
 
-  const handleBid = (piece: PotteryPiece) => {
+  const handleBid = (piece: Item) => {
     if (!isAuthenticated) {
       alert('Please sign in to place a bid');
       return;
@@ -85,8 +85,8 @@ export default function AuctionsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-bored-cream/30">
-      <div className="bored-gradient text-white py-16">
+    <div className="min-h-screen bg-medium-cream/30">
+      <div className="medium-gradient text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -94,10 +94,10 @@ export default function AuctionsPage() {
             className="text-center"
           >
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              December 2024 Drop
+              December 2024 Collection
             </h1>
             <p className="text-xl mb-6">
-              Featuring 3 exceptional finds to cure your boredom
+              Featuring 3 exceptional items - limited collection this month
             </p>
             <div className="flex items-center justify-center gap-6 text-lg">
               <div className="flex items-center gap-2">
@@ -106,7 +106,7 @@ export default function AuctionsPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Trophy size={20} />
-                <span>3 Active Items</span>
+                <span>3 Items</span>
               </div>
             </div>
           </motion.div>
@@ -116,20 +116,20 @@ export default function AuctionsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-bored-dark mb-2">
-              Current Auction Items
+            <h2 className="text-2xl font-bold text-medium-dark mb-2">
+              Current Collection
             </h2>
-            <p className="text-bored-dark/70">
-              Place your bids before the auction ends
+            <p className="text-medium-dark/70">
+              Only 3 unique items available this month - place your bids before the auction ends
             </p>
           </div>
           
           <div className="flex items-center gap-2 mt-4 sm:mt-0">
-            <Filter size={16} className="text-bored-dark" />
+            <Filter size={16} className="text-medium-dark" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 border border-bored-neon/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-bored-electric"
+              className="px-3 py-2 border border-medium-green/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-medium-green"
             >
               <option value="ending-soon">Ending Soon</option>
               <option value="price-low">Price: Low to High</option>
@@ -146,7 +146,7 @@ export default function AuctionsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <PotteryCard
+              <ItemCard
                 piece={piece}
                 onBid={handleBid}
                 timeRemaining="2h 30m"
@@ -162,11 +162,11 @@ export default function AuctionsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-12 p-6 bg-white rounded-lg shadow-lg text-center"
           >
-            <h3 className="text-xl font-semibold text-bored-dark mb-2">
-              Ready to Start Bidding?
+            <h3 className="text-xl font-semibold text-medium-dark mb-2">
+              Ready to Own a Unique Piece?
             </h3>
-            <p className="text-bored-dark/70 mb-4">
-              Sign in to place bids and track your auction activity
+            <p className="text-medium-dark/70 mb-4">
+              Sign in to place bids on these exclusive items
             </p>
           </motion.div>
         )}

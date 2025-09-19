@@ -17,9 +17,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Tors Bored - Beat Boredom with Amazing Finds",
-  description: "Discover unique gadgets, collectibles, and cool finds in our monthly auctions. Custom requests available.",
-  keywords: "auctions, gadgets, collectibles, tech, gaming, custom requests, unique finds",
+  title: "Marketplace - Discover Unique Items",
+  description: "Explore our collection of unique items and special offerings. Custom requests available.",
+  keywords: "marketplace, collectibles, unique items, custom requests, special collections",
 };
 
 export default function RootLayout({

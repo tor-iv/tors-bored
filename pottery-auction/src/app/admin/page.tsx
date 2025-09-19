@@ -21,20 +21,20 @@ export default function AdminPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-pottery-cream/30 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-pottery-terracotta border-t-transparent rounded-full animate-pottery-wheel" />
+      <div className="min-h-screen bg-medium-cream/30 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-medium-green border-t-transparent rounded-full animate-pottery-wheel" />
       </div>
     );
   }
 
   if (!userProfile?.isAdmin) {
     return (
-      <div className="min-h-screen bg-pottery-cream/30 flex items-center justify-center">
+      <div className="min-h-screen bg-medium-cream/30 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-pottery-charcoal mb-4">
+          <h1 className="text-2xl font-bold text-medium-dark mb-4">
             Access Denied
           </h1>
-          <p className="text-pottery-charcoal/70">
+          <p className="text-medium-dark/70">
             You don't have permission to access the admin dashboard.
           </p>
         </div>
@@ -45,7 +45,7 @@ export default function AdminPage() {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: TrendingUp },
     { id: 'auctions', label: 'Auctions', icon: Calendar },
-    { id: 'pottery', label: 'Pottery', icon: Package },
+    { id: 'items', label: 'Items', icon: Package },
     { id: 'commissions', label: 'Commissions', icon: MessageSquare },
     { id: 'users', label: 'Users', icon: Users },
   ];
@@ -53,13 +53,13 @@ export default function AdminPage() {
   const stats = [
     { label: 'Active Auctions', value: '1', change: '+0', icon: Calendar },
     { label: 'Total Revenue', value: '$2,450', change: '+12%', icon: DollarSign },
-    { label: 'Pottery Pieces', value: '24', change: '+3', icon: Package },
+    { label: 'Items', value: '24', change: '+3', icon: Package },
     { label: 'Commission Requests', value: '7', change: '+2', icon: MessageSquare },
   ];
 
   return (
-    <div className="min-h-screen bg-pottery-cream/30">
-      <div className="pottery-gradient text-white py-8">
+    <div className="min-h-screen bg-medium-cream/30">
+      <div className="medium-gradient text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -68,11 +68,11 @@ export default function AdminPage() {
           >
             <div>
               <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-              <p className="text-pottery-cream">
-                Manage your pottery auctions and commissions
+              <p className="text-white/80">
+                Manage your auctions and commissions
               </p>
             </div>
-            <Button variant="secondary" className="bg-white text-pottery-terracotta">
+            <Button variant="secondary" className="bg-white text-medium-green">
               <Settings size={16} className="mr-2" />
               Settings
             </Button>
@@ -92,22 +92,22 @@ export default function AdminPage() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-pottery-charcoal/60 text-sm font-medium">
+                  <p className="text-medium-dark/60 text-sm font-medium">
                     {stat.label}
                   </p>
-                  <p className="text-2xl font-bold text-pottery-charcoal">
+                  <p className="text-2xl font-bold text-medium-dark">
                     {stat.value}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-pottery-terracotta/10 rounded-lg flex items-center justify-center">
-                  <stat.icon className="text-pottery-terracotta" size={24} />
+                <div className="w-12 h-12 bg-medium-green/10 rounded-lg flex items-center justify-center">
+                  <stat.icon className="text-medium-green" size={24} />
                 </div>
               </div>
               <div className="mt-2">
                 <span className={`text-sm ${stat.change.includes('+') ? 'text-green-600' : 'text-red-600'}`}>
                   {stat.change}
                 </span>
-                <span className="text-pottery-charcoal/60 text-sm ml-1">
+                <span className="text-medium-dark/60 text-sm ml-1">
                   from last month
                 </span>
               </div>
@@ -124,8 +124,8 @@ export default function AdminPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center space-x-2 py-4 border-b-2 font-medium text-sm ${
                     activeTab === tab.id
-                      ? 'border-pottery-terracotta text-pottery-terracotta'
-                      : 'border-transparent text-pottery-charcoal/60 hover:text-pottery-charcoal'
+                      ? 'border-medium-green text-medium-green'
+                      : 'border-transparent text-medium-dark/60 hover:text-medium-dark'
                   }`}
                 >
                   <tab.icon size={16} />
@@ -143,7 +143,7 @@ export default function AdminPage() {
                 className="space-y-6"
               >
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-pottery-charcoal">
+                  <h2 className="text-xl font-semibold text-medium-dark">
                     Recent Activity
                   </h2>
                 </div>
@@ -154,22 +154,22 @@ export default function AdminPage() {
                     { action: 'Commission submitted', item: 'Custom Tea Set', amount: null, time: '1 hour ago' },
                     { action: 'Auction ended', item: 'Rustic Bowl Set', amount: '$125', time: '3 hours ago' },
                   ].map((activity, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-pottery-cream/50 rounded-lg">
+                    <div key={index} className="flex items-center justify-between p-4 bg-medium-cream/50 rounded-lg">
                       <div>
-                        <p className="font-medium text-pottery-charcoal">
+                        <p className="font-medium text-medium-dark">
                           {activity.action}
                         </p>
-                        <p className="text-pottery-charcoal/60 text-sm">
+                        <p className="text-medium-dark/60 text-sm">
                           {activity.item}
                         </p>
                       </div>
                       <div className="text-right">
                         {activity.amount && (
-                          <p className="font-semibold text-pottery-terracotta">
+                          <p className="font-semibold text-medium-green">
                             {activity.amount}
                           </p>
                         )}
-                        <p className="text-pottery-charcoal/60 text-sm">
+                        <p className="text-medium-dark/60 text-sm">
                           {activity.time}
                         </p>
                       </div>
@@ -186,7 +186,7 @@ export default function AdminPage() {
                 className="space-y-6"
               >
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-pottery-charcoal">
+                  <h2 className="text-xl font-semibold text-medium-dark">
                     Manage Auctions
                   </h2>
                   <Button>
@@ -195,12 +195,12 @@ export default function AdminPage() {
                   </Button>
                 </div>
                 
-                <div className="bg-pottery-cream/50 rounded-lg p-8 text-center">
-                  <Calendar className="mx-auto text-pottery-charcoal/40 mb-4" size={48} />
-                  <h3 className="text-lg font-medium text-pottery-charcoal mb-2">
+                <div className="bg-medium-cream/50 rounded-lg p-8 text-center">
+                  <Calendar className="mx-auto text-medium-dark/40 mb-4" size={48} />
+                  <h3 className="text-lg font-medium text-medium-dark mb-2">
                     No upcoming auctions
                   </h3>
-                  <p className="text-pottery-charcoal/60 mb-4">
+                  <p className="text-medium-dark/60 mb-4">
                     Create your next monthly auction to start receiving bids
                   </p>
                   <Button>Schedule Next Auction</Button>
@@ -208,30 +208,30 @@ export default function AdminPage() {
               </motion.div>
             )}
 
-            {activeTab === 'pottery' && (
+            {activeTab === 'items' && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="space-y-6"
               >
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-pottery-charcoal">
-                    Pottery Collection
+                  <h2 className="text-xl font-semibold text-medium-dark">
+                    Item Collection
                   </h2>
                   <Button>
                     <Plus size={16} className="mr-2" />
-                    Add Pottery
+                    Add Item
                   </Button>
                 </div>
                 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[1, 2, 3].map((item) => (
-                    <div key={item} className="border border-pottery-sage/20 rounded-lg p-4">
-                      <div className="aspect-square bg-pottery-sage/20 rounded-lg mb-4" />
-                      <h3 className="font-medium text-pottery-charcoal mb-1">
-                        Pottery Piece #{item}
+                    <div key={item} className="border border-medium-green/20 rounded-lg p-4">
+                      <div className="aspect-square bg-medium-green/20 rounded-lg mb-4" />
+                      <h3 className="font-medium text-medium-dark mb-1">
+                        Item #{item}
                       </h3>
-                      <p className="text-pottery-charcoal/60 text-sm mb-3">
+                      <p className="text-medium-dark/60 text-sm mb-3">
                         Ready for auction
                       </p>
                       <div className="flex gap-2">
@@ -255,7 +255,7 @@ export default function AdminPage() {
                 className="space-y-6"
               >
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-pottery-charcoal">
+                  <h2 className="text-xl font-semibold text-medium-dark">
                     Commission Requests
                   </h2>
                 </div>
@@ -266,13 +266,13 @@ export default function AdminPage() {
                     { name: 'Mike Chen', project: 'Garden Planters', status: 'accepted', submitted: '1 week ago' },
                     { name: 'Emma Davis', project: 'Kitchen Dinnerware', status: 'in_progress', submitted: '2 weeks ago' },
                   ].map((commission, index) => (
-                    <div key={index} className="border border-pottery-sage/20 rounded-lg p-4">
+                    <div key={index} className="border border-medium-green/20 rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="font-medium text-pottery-charcoal">
+                          <h3 className="font-medium text-medium-dark">
                             {commission.project}
                           </h3>
-                          <p className="text-pottery-charcoal/60 text-sm">
+                          <p className="text-medium-dark/60 text-sm">
                             by {commission.name} • {commission.submitted}
                           </p>
                         </div>
@@ -301,16 +301,16 @@ export default function AdminPage() {
                 animate={{ opacity: 1 }}
                 className="space-y-6"
               >
-                <h2 className="text-xl font-semibold text-pottery-charcoal">
+                <h2 className="text-xl font-semibold text-medium-dark">
                   User Management
                 </h2>
                 
-                <div className="bg-pottery-cream/50 rounded-lg p-8 text-center">
-                  <Users className="mx-auto text-pottery-charcoal/40 mb-4" size={48} />
-                  <h3 className="text-lg font-medium text-pottery-charcoal mb-2">
+                <div className="bg-medium-cream/50 rounded-lg p-8 text-center">
+                  <Users className="mx-auto text-medium-dark/40 mb-4" size={48} />
+                  <h3 className="text-lg font-medium text-medium-dark mb-2">
                     User management coming soon
                   </h3>
-                  <p className="text-pottery-charcoal/60">
+                  <p className="text-medium-dark/60">
                     View and manage user accounts, bidding history, and permissions
                   </p>
                 </div>

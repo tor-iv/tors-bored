@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, Palette, Clock, DollarSign } from 'lucide-react';
+import { Send } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import FileUpload from '@/components/ui/FileUpload';
 import DrawingCanvas from '@/components/ui/DrawingCanvas';
@@ -16,15 +16,13 @@ const commissionSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email'),
   description: z.string().min(50, 'Please provide a detailed description (at least 50 characters)'),
-  budget: z.string().optional(),
-  timeline: z.string().optional(),
 });
 
 type CommissionForm = z.infer<typeof commissionSchema>;
 
 export default function CommissionsPage() {
   const { isAuthenticated, user } = useAuth();
-  const { getTextColorClass, getTextColorForBackground } = useColorToggle();
+  const { getTextColorClass } = useColorToggle();
   const [referenceImages, setReferenceImages] = useState<File[]>([]);
   const [drawing, setDrawing] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,13 +79,13 @@ export default function CommissionsPage() {
             Request Submitted!
           </h2>
           <p className={`mb-6 opacity-70 ${getTextColorClass()}`}>
-            Thank you for your custom request. I'll review your details and get back to you within 3-5 business days.
+            Thank you for sharing your idea! I'll review your request and get back to you within 3-5 business days.
           </p>
           <button
             onClick={() => setIsSubmitted(false)}
             className={`text-sm hover:opacity-70 transition-opacity underline ${getTextColorClass()}`}
           >
-            Submit Another Request
+            Share Another Idea
           </button>
         </motion.div>
       </div>
@@ -104,83 +102,24 @@ export default function CommissionsPage() {
             className="text-center"
           >
             <h1 className={`text-4xl md:text-5xl font-serif font-bold mb-4 ${getTextColorClass()}`}>
-              Custom Requests
+              Got an Idea?
             </h1>
             <p className={`text-lg mb-6 opacity-70 ${getTextColorClass()}`}>
-              Have something specific in mind? Let's bring your unique find to life
+              Have an idea you'd love to see come to life? I'd love to hear about it!
             </p>
           </motion.div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-1">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div>
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="sticky top-8"
-            >
-              <h2 className={`text-2xl font-serif font-bold mb-6 ${getTextColorClass()}`}>
-                Request Process
-              </h2>
-              
-              <div className="space-y-6">
-                {[
-                  {
-                    icon: Palette,
-                    title: 'Share Your Vision',
-                    description: 'Tell me about your ideal find and upload reference images or draw it out',
-                  },
-                  {
-                    icon: Clock,
-                    title: 'Review & Quote',
-                    description: "I'll review your request and provide a custom quote within 3-5 days",
-                  },
-                  {
-                    icon: DollarSign,
-                    title: 'Sourcing Process',
-                    description: 'Upon approval, I will source or create your unique item over 2-4 weeks',
-                  },
-                ].map((step, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="w-10 h-10 bg-medium-green bg-opacity-10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <step.icon size={20} className={getTextColorClass()} />
-                    </div>
-                    <div>
-                      <h3 className={`font-semibold mb-1 ${getTextColorClass()}`}>
-                        {step.title}
-                      </h3>
-                      <p className={`text-sm opacity-70 ${getTextColorClass()}`}>
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-8 p-4 bg-medium-cream rounded-lg border">
-                <h3 className={`font-semibold mb-2 ${getTextColorClass()}`}>
-                  Pricing Guide
-                </h3>
-                <ul className={`text-sm opacity-70 space-y-1 ${getTextColorClass()}`}>
-                  <li>• Small items (gadgets, accessories): $25-75</li>
-                  <li>• Medium items (collectibles, gear): $75-150</li>
-                  <li>• Large items (custom builds): $150-500+</li>
-                  <li>• Complex sourcing: Quote on request</li>
-                </ul>
-              </div>
-            </motion.div>
-          </div>
-
-          <div className="lg:col-span-2">
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
               className="bg-medium-light rounded-lg shadow-sm p-8"
             >
               <h2 className={`text-2xl font-serif font-bold mb-6 ${getTextColorClass()}`}>
-                Custom Request Form
+                Tell Me Your Idea!
               </h2>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -216,53 +155,18 @@ export default function CommissionsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-pottery-charcoal mb-2">
-                    Project Description *
+                  <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
+                    Tell Me About Your Idea *
                   </label>
                   <textarea
                     {...register('description')}
                     rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pottery-terracotta"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-medium-green"
                     placeholder="Describe your vision in detail. Include size, style, colors, intended use, and any specific requirements..."
                   />
                   {errors.description && (
                     <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
                   )}
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
-                      Budget Range (Optional)
-                    </label>
-                    <select
-                      {...register('budget')}
-                      className="w-full px-0 py-2 border-0 border-b border-gray-300 rounded-none focus:outline-none focus:border-current bg-transparent"
-                    >
-                      <option value="">Select budget range</option>
-                      <option value="under-50">Under $50</option>
-                      <option value="50-100">$50 - $100</option>
-                      <option value="100-200">$100 - $200</option>
-                      <option value="200-300">$200 - $300</option>
-                      <option value="over-300">Over $300</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
-                      Timeline (Optional)
-                    </label>
-                    <select
-                      {...register('timeline')}
-                      className="w-full px-0 py-2 border-0 border-b border-gray-300 rounded-none focus:outline-none focus:border-current bg-transparent"
-                    >
-                      <option value="">Select timeline</option>
-                      <option value="flexible">Flexible</option>
-                      <option value="1-month">Within 1 month</option>
-                      <option value="2-months">Within 2 months</option>
-                      <option value="3-months">Within 3 months</option>
-                    </select>
-                  </div>
                 </div>
 
                 <div>
@@ -292,7 +196,7 @@ export default function CommissionsPage() {
                   />
                   {drawing && (
                     <p className={`text-xs mt-2 ${getTextColorClass()}`}>
-                      ✓ Drawing saved! It will be included with your request.
+                      ✓ Drawing saved! It will be included with your submission.
                     </p>
                   )}
                 </div>
@@ -300,7 +204,7 @@ export default function CommissionsPage() {
                 {!isAuthenticated && (
                   <div className="p-4 bg-medium-cream rounded-lg border">
                     <p className={`text-sm opacity-70 ${getTextColorClass()}`}>
-                      Please sign in to submit your custom request. This helps us keep track of your projects and communicate updates.
+                      Please sign in to share your idea. This helps us keep track of your projects and communicate updates.
                     </p>
                   </div>
                 )}
@@ -310,11 +214,10 @@ export default function CommissionsPage() {
                   disabled={!isAuthenticated || isSubmitting}
                   className={`w-full py-3 text-sm hover:opacity-70 transition-opacity disabled:opacity-30 underline ${getTextColorClass()}`}
                 >
-                  {isSubmitting ? 'Submitting...' : 'Submit Custom Request'}
+                  {isSubmitting ? 'Sharing...' : 'Share My Idea'}
                 </button>
               </form>
             </motion.div>
-          </div>
         </div>
       </div>
     </div>

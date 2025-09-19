@@ -20,6 +20,17 @@ export default {
           green: "#0A8754", 
           blue: "#2E86AB",
         },
+        theme: {
+          primary: "var(--theme-primary)",
+          secondary: "var(--theme-secondary)",
+          background: "var(--theme-background)",
+          "background-light": "var(--theme-background-light)",
+          text: "var(--theme-text)",
+          "text-light": "var(--theme-text-light)",
+          border: "var(--theme-border)",
+          accent: "var(--theme-accent)",
+          muted: "var(--theme-muted)",
+        },
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
@@ -31,6 +42,7 @@ export default {
         "fade-in": "fadeIn 0.5s ease-in-out",
         "slide-up": "slideUp 0.5s ease-out",
         "gentle-bounce": "gentleBounce 3s ease-in-out infinite",
+        "pottery-wheel": "spin 2s linear infinite",
       },
       keyframes: {
         fadeIn: {
