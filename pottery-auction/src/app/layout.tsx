@@ -17,9 +17,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Marketplace - Discover Unique Items",
-  description: "Explore our collection of unique items and special offerings. Custom requests available.",
-  keywords: "marketplace, collectibles, unique items, custom requests, special collections",
+  title: "Tor's Pottery - Handmade Ceramics",
+  description: "Explore Tor's collection of handcrafted pottery pieces. Participate in monthly auctions and submit ideas for custom ceramic creations.",
+  keywords: "pottery, ceramics, handmade pottery, pottery auction, custom pottery, handcrafted ceramics, pottery art",
 };
 
 export default function RootLayout({

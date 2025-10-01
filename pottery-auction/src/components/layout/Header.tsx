@@ -28,9 +28,9 @@ export default function Header() {
 
   const navItems = [
     { href: '/', label: 'Home' },
-    { href: '/auctions', label: 'Current Items' },
+    { href: '/auctions', label: 'Current Pieces' },
     { href: '/gallery', label: 'Gallery' },
-    { href: '/commissions', label: 'Custom Requests' },
+    { href: '/commissions', label: 'Submit Ideas' },
   ];
 
   return (
@@ -46,7 +46,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <span className={`text-3xl font-serif font-bold ${getTextColorClass()}`}>
-                Marketplace
+                Tor&apos;s Pottery
               </span>
             </Link>
 

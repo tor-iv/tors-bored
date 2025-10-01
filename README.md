@@ -1,30 +1,30 @@
-# Pottery Auction Marketplace
+# Tor's Pottery Shop
 
-A beautifully crafted online marketplace for showcasing and selling handmade pottery through live auctions, with a built-in commission request system for custom pieces.
+An online marketplace for showcasing and selling handmade pottery by Tor through live auctions, with a built-in system for customers to submit pottery ideas.
 
 ## Purpose
 
-This platform serves as a bridge between pottery enthusiasts and handcrafted ceramic art by:
+This platform showcases Tor's handcrafted pottery work and enables submissions for ideas when he has no original thought, jkjk:
 
-- **Showcasing & Selling** - Display your pottery pieces in an elegant gallery and sell them through timed auctions, creating excitement and fair market pricing
-- **Live Auction Experience** - Run live pottery auctions where collectors can bid on unique, one-of-a-kind pieces in real-time
-- **Custom Commission Requests** - Allow customers to pitch ideas and request custom pottery pieces, with an integrated submission and review system
-- **Community Building** - Connect with pottery enthusiasts who appreciate handmade ceramics and want to support your craft
+- **Showcasing & Selling** - Display pottery pieces in an elegant gallery and sell them through timed auctions
+- **Live Auction Experience** - Run live pottery auctions where collectors can bid on unique, one-of-a-kind ceramic pieces in real-time
+- **Idea Submissions** - Allow customers to submit ideas for pottery pieces they'd like to see created, with an integrated submission and review system
+- **Community Building** - Connect with pottery enthusiasts who appreciate handmade ceramics and want to support the craft
 
 ## Key Features
 
-### For the Artist (You)
-- 📸 **Gallery Management** - Upload and showcase your pottery with multiple images, dimensions, and technique details
+### For the Artist (Tor)
+- 📸 **Gallery Management** - Upload and showcase pottery pieces with multiple images, dimensions, and technique details
 - 🎨 **Auction Control** - Create and manage timed auctions with custom start/end dates
-- 💡 **Commission Hub** - Review customer ideas, accept custom requests, and track projects
-- 👨‍💼 **Admin Dashboard** - Manage all pieces, auctions, and commission requests in one place
+- 💡 **Idea Review Hub** - Review customer pottery ideas and track potential projects
+- 👨‍💼 **Admin Dashboard** - Manage all pieces, auctions, and idea submissions in one place
 
 ### For Pottery Enthusiasts
-- 🏺 **Browse & Discover** - Explore your pottery collection in a beautiful, responsive gallery
+- 🏺 **Browse & Discover** - Explore Tor's pottery collection in a beautiful, responsive gallery
 - 💰 **Bid on Pieces** - Participate in live auctions with real-time bidding (powered by Stripe)
-- ✍️ **Request Custom Work** - Submit commission ideas with descriptions, reference images, and budget
-- 🎨 **Drawing Tool** - Sketch ideas directly in the commission form to visualize concepts
-- 🔔 **Notifications** - Get notified about auction starts, bid updates, and commission status
+- ✍️ **Submit Ideas** - Share pottery ideas with descriptions, reference images, and sketches
+- 🎨 **Drawing Tool** - Sketch pottery ideas directly in the submission form to visualize concepts
+- 🔔 **Notifications** - Get notified about auction starts, bid updates, and idea submission status
 
 ## Tech Stack
 
@@ -151,4 +151,4 @@ Private project - All rights reserved
 
 ---
 
-**Built with ❤️ for the pottery community**
+**Built with ❤️ for pottery enthusiasts by Tor**

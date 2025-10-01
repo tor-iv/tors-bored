@@ -18,19 +18,19 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className={`text-5xl md:text-7xl font-serif font-bold mb-6 ${getTextColorClass()}`}
           >
-            Beat Boredom
+            Tor&apos;s Pottery
             <br />
-            <span className="opacity-70">Find Amazing Stuff</span>
+            <span className="opacity-70">Handmade Ceramics</span>
           </motion.h1>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className={`text-lg md:text-xl mb-12 max-w-2xl mx-auto opacity-80 ${getTextColorClass()}`}
           >
-            Discover unique gadgets, collectibles, and cool finds in our monthly auctions.
-            Every 15th, new exciting items to cure your boredom!
+            Discover unique handcrafted pottery pieces in monthly auctions.
+            Every 15th, new ceramic creations ready to find their home!
           </motion.p>
           
           <motion.div
@@ -40,10 +40,10 @@ export default function Home() {
             className="flex flex-col sm:flex-row gap-6 justify-center"
           >
             <Link href="/auctions" className={`hover:opacity-70 transition-opacity underline ${getPrimaryColorClass()}`}>
-              View Current Finds
+              View Current Pieces
             </Link>
             <Link href="/gallery" className={`hover:opacity-70 transition-opacity underline ${getPrimaryColorClass()}`}>
-              Browse Past Finds
+              Browse Gallery
             </Link>
           </motion.div>
         </div>
@@ -67,7 +67,7 @@ export default function Home() {
               How It Works
             </h2>
             <p className={`text-lg opacity-80 max-w-2xl mx-auto ${getTextColorClass()}`}>
-              Join our monthly auctions and discover unique items to beat your boredom
+              Join monthly auctions and discover unique handcrafted pottery pieces
             </p>
           </motion.div>
           
@@ -75,18 +75,18 @@ export default function Home() {
             {[
               {
                 icon: Calendar,
-                title: "Monthly Drops",
-                description: "Every 15th of the month, we release 1-4 unique gadgets, collectibles, or cool finds for auction",
+                title: "Monthly Releases",
+                description: "Every 15th of the month, I release 1-4 unique handcrafted pottery pieces for auction",
               },
               {
                 icon: Award,
                 title: "Place Your Bid",
-                description: "Secure payment through Stripe. Bid with confidence on authentic and verified items",
+                description: "Secure payment through Stripe. Bid with confidence on authentic handmade ceramics",
               },
               {
                 icon: Users,
                 title: "Win & Enjoy",
-                description: "Successful bidders receive their awesome find, carefully packaged and shipped",
+                description: "Successful bidders receive their pottery piece, carefully packaged and shipped",
               },
             ].map((step, index) => (
               <motion.div
@@ -123,15 +123,15 @@ export default function Home() {
               transition={{ duration: 0.8 }}
             >
               <h2 className={`text-4xl font-serif font-bold mb-6 ${getTextColorClass()}`}>
-                Custom Requests
+                Commission Ideas
               </h2>
               <p className={`text-lg opacity-80 mb-8 ${getTextColorClass()}`}>
-                Have something specific in mind? Submit your ideas and reference photos 
-                for custom finds. We'll source or create unique items to match your interests 
-                and help cure your boredom in style.
+                Have an idea for a pottery piece? Submit your vision and reference photos,
+                and I&apos;ll consider creating it. Whether it&apos;s a functional piece or
+                decorative art, I&apos;d love to hear your ideas!
               </p>
               <Link href="/commissions" className={`hover:opacity-70 transition-opacity underline ${getTextColorClass()}`}>
-                Start Your Request
+                Share Your Idea
               </Link>
             </motion.div>
             
@@ -146,7 +146,7 @@ export default function Home() {
                   <div className="w-32 h-32 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
                     <div className="w-16 h-16 bg-green-200 rounded-full animate-gentle-bounce" />
                   </div>
-                  <p className="text-lg font-medium">Your Custom Find</p>
+                  <p className="text-lg font-medium">Your Custom Piece</p>
                 </div>
               </div>
             </motion.div>
@@ -162,17 +162,17 @@ export default function Home() {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-3xl font-serif font-bold mb-6">
-              Ready to Beat Boredom?
+              Ready to Start Collecting?
             </h2>
             <p className="text-lg mb-8 text-white/80">
-              Join our community of cool find hunters and never miss an exciting auction
+              Join the community of pottery enthusiasts and never miss an auction
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Link href="/auctions" className="text-white hover:opacity-70 transition-opacity underline">
-                View Current Finds
+                View Current Pieces
               </Link>
               <Link href="/gallery" className="text-white hover:opacity-70 transition-opacity underline">
-                Browse Past Finds
+                Browse Gallery
               </Link>
             </div>
           </motion.div>

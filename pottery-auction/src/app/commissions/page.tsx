@@ -43,7 +43,7 @@ export default function CommissionsPage() {
 
   const onSubmit = async (data: CommissionForm) => {
     if (!isAuthenticated) {
-      alert('Please sign in to submit a commission request');
+      alert('Please sign in to submit a pottery idea');
       return;
     }
 
@@ -76,16 +76,16 @@ export default function CommissionsPage() {
             <Send size={32} className={getTextColorClass()} />
           </div>
           <h2 className={`text-2xl font-serif font-bold mb-4 ${getTextColorClass()}`}>
-            Request Submitted!
+            Pottery Idea Submitted!
           </h2>
           <p className={`mb-6 opacity-70 ${getTextColorClass()}`}>
-            Thank you for sharing your idea! I'll review your request and get back to you within 3-5 business days.
+            Thank you for sharing your pottery idea! I&apos;ll review it and get back to you within 3-5 business days to discuss feasibility and next steps.
           </p>
           <button
             onClick={() => setIsSubmitted(false)}
             className={`text-sm hover:opacity-70 transition-opacity underline ${getTextColorClass()}`}
           >
-            Share Another Idea
+            Submit Another Idea
           </button>
         </motion.div>
       </div>
@@ -102,10 +102,10 @@ export default function CommissionsPage() {
             className="text-center"
           >
             <h1 className={`text-4xl md:text-5xl font-serif font-bold mb-4 ${getTextColorClass()}`}>
-              Got an Idea?
+              Got a Pottery Idea?
             </h1>
             <p className={`text-lg mb-6 opacity-70 ${getTextColorClass()}`}>
-              Have an idea you'd love to see come to life? I'd love to hear about it!
+              Have an idea for a pottery piece you&apos;d love to see? I&apos;d love to hear about it!
             </p>
           </motion.div>
         </div>
@@ -119,7 +119,7 @@ export default function CommissionsPage() {
               className="bg-medium-light rounded-lg shadow-sm p-8"
             >
               <h2 className={`text-2xl font-serif font-bold mb-6 ${getTextColorClass()}`}>
-                Tell Me Your Idea!
+                Share Your Pottery Idea
               </h2>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -156,13 +156,13 @@ export default function CommissionsPage() {
 
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
-                    Tell Me About Your Idea *
+                    Describe Your Pottery Idea *
                   </label>
                   <textarea
                     {...register('description')}
                     rows={6}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-medium-green"
-                    placeholder="Describe your vision in detail. Include size, style, colors, intended use, and any specific requirements..."
+                    placeholder="Describe your pottery vision in detail. Include size, style, colors, intended use (functional/decorative), glaze preferences, and any specific requirements..."
                   />
                   {errors.description && (
                     <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
@@ -179,20 +179,20 @@ export default function CommissionsPage() {
                     maxSize={5}
                   />
                   <p className={`text-xs opacity-60 mt-2 ${getTextColorClass()}`}>
-                    Upload images that inspire your vision or show similar styles you like
+                    Upload images of pottery styles, colors, or designs that inspire your idea
                   </p>
                 </div>
 
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
-                    Can't find a reference image? Draw it out!
+                    Sketch Your Idea (Optional)
                   </label>
                   <p className={`text-xs opacity-60 mb-4 ${getTextColorClass()}`}>
-                    If you can't find the perfect reference image, use our drawing tool to sketch your idea
+                    Can&apos;t find a reference? Sketch your pottery idea here - even simple drawings help!
                   </p>
                   <DrawingCanvas
                     onSave={(imageData) => setDrawing(imageData)}
-                    placeholder="Draw your idea here - even simple sketches help!"
+                    placeholder="Draw your pottery idea here - shapes, handles, decorative elements, etc."
                   />
                   {drawing && (
                     <p className={`text-xs mt-2 ${getTextColorClass()}`}>
@@ -204,7 +204,7 @@ export default function CommissionsPage() {
                 {!isAuthenticated && (
                   <div className="p-4 bg-medium-cream rounded-lg border">
                     <p className={`text-sm opacity-70 ${getTextColorClass()}`}>
-                      Please sign in to share your idea. This helps us keep track of your projects and communicate updates.
+                      Please sign in to share your pottery idea. This helps me keep track of submissions and communicate updates.
                     </p>
                   </div>
                 )}
@@ -214,7 +214,7 @@ export default function CommissionsPage() {
                   disabled={!isAuthenticated || isSubmitting}
                   className={`w-full py-3 text-sm hover:opacity-70 transition-opacity disabled:opacity-30 underline ${getTextColorClass()}`}
                 >
-                  {isSubmitting ? 'Sharing...' : 'Share My Idea'}
+                  {isSubmitting ? 'Submitting...' : 'Submit Pottery Idea'}
                 </button>
               </form>
             </motion.div>

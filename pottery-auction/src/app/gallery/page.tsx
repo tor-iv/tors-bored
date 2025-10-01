@@ -88,7 +88,7 @@ export default function GalleryPage() {
               Gallery
             </h1>
             <p className="text-xl mb-6">
-              Explore our collection of sold and past items
+              Explore past pottery pieces and completed works
             </p>
           </motion.div>
         </div>
@@ -101,7 +101,7 @@ export default function GalleryPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-medium-dark/40" size={20} />
               <input
                 type="text"
-                placeholder="Search items..."
+                placeholder="Search pottery..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-medium-green/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-medium-green bg-white"
@@ -217,7 +217,7 @@ export default function GalleryPage() {
               <Search className="text-medium-green" size={24} />
             </div>
             <h3 className="text-xl font-semibold text-medium-dark mb-2">
-              No items found
+              No pottery found
             </h3>
             <p className="text-medium-dark/70">
               Try adjusting your search terms or filters
