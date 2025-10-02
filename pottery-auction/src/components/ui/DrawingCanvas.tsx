@@ -120,6 +120,14 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
     if (isDrawing) {
       setIsDrawing(false);
       saveState();
+      // Auto-save drawing when user stops drawing
+      if (onSave) {
+        const canvas = canvasRef.current;
+        if (canvas) {
+          const dataURL = canvas.toDataURL();
+          onSave(dataURL);
+        }
+      }
     }
   };
 
@@ -163,15 +171,6 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
     img.src = newHistory[newHistory.length - 1];
   };
 
-  const saveDrawing = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const dataURL = canvas.toDataURL();
-    if (onSave) {
-      onSave(dataURL);
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -202,10 +201,11 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
           {colors.map((color) => (
             <button
               key={color.name}
+              type="button"
               onClick={() => setCurrentColor(color.value)}
               className={`w-8 h-8 rounded-full border-2 transition-all ${
-                currentColor === color.value 
-                  ? 'border-medium-dark scale-110' 
+                currentColor === color.value
+                  ? 'border-medium-dark scale-110'
                   : 'border-gray-300 hover:scale-105'
               }`}
               style={{ backgroundColor: color.value }}
@@ -230,6 +230,7 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
         {/* Actions */}
         <div className="flex items-center space-x-3">
           <button
+            type="button"
             onClick={undo}
             disabled={history.length <= 1}
             className={`text-xs hover:opacity-70 transition-opacity disabled:opacity-30 ${getTextColorClass()}`}
@@ -237,19 +238,12 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
             Undo
           </button>
           <button
+            type="button"
             onClick={clearCanvas}
             className={`text-xs hover:opacity-70 transition-opacity ${getTextColorClass()}`}
           >
             Clear
           </button>
-          {onSave && (
-            <button
-              onClick={saveDrawing}
-              className={`text-xs hover:opacity-70 transition-opacity ${getTextColorClass()}`}
-            >
-              Submit Drawing
-            </button>
-          )}
         </div>
       </div>
     </div>

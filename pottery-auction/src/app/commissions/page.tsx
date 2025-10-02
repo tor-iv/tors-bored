@@ -13,15 +13,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 const commissionSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email'),
-  description: z.string().min(50, 'Please provide a detailed description (at least 50 characters)'),
+  name: z.string().optional(),
+  email: z.string().email('Please enter a valid email').optional().or(z.literal('')),
+  description: z.string().optional(),
 });
 
 type CommissionForm = z.infer<typeof commissionSchema>;
 
 export default function CommissionsPage() {
-  const { isAuthenticated, user } = useAuth();
+  const { user } = useAuth();
   const { getTextColorClass } = useColorToggle();
   const [referenceImages, setReferenceImages] = useState<File[]>([]);
   const [drawing, setDrawing] = useState<string | null>(null);
@@ -42,8 +42,13 @@ export default function CommissionsPage() {
   });
 
   const onSubmit = async (data: CommissionForm) => {
-    if (!isAuthenticated) {
-      alert('Please sign in to submit a pottery idea');
+    // Check if there's any content
+    const hasText = data.name || data.email || data.description;
+    const hasImages = referenceImages.length > 0;
+    const hasDrawing = drawing !== null;
+
+    if (!hasText && !hasImages && !hasDrawing) {
+      alert('Please provide at least some content - add text, upload images, or draw something!');
       return;
     }
 
@@ -52,7 +57,7 @@ export default function CommissionsPage() {
     try {
       console.log('Commission data:', { ...data, referenceImages, drawing });
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       setIsSubmitted(true);
       reset();
       setReferenceImages([]);
@@ -126,7 +131,7 @@ export default function CommissionsPage() {
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
-                      Your Name *
+                      Your Name
                     </label>
                     <input
                       {...register('name')}
@@ -140,7 +145,7 @@ export default function CommissionsPage() {
 
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
-                      Email Address *
+                      Email Address
                     </label>
                     <input
                       {...register('email')}
@@ -156,7 +161,7 @@ export default function CommissionsPage() {
 
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
-                    Describe Your Pottery Idea *
+                    Describe Your Pottery Idea
                   </label>
                   <textarea
                     {...register('description')}
@@ -194,24 +199,11 @@ export default function CommissionsPage() {
                     onSave={(imageData) => setDrawing(imageData)}
                     placeholder="Draw your pottery idea here - shapes, handles, decorative elements, etc."
                   />
-                  {drawing && (
-                    <p className={`text-xs mt-2 ${getTextColorClass()}`}>
-                      ✓ Drawing saved! It will be included with your submission.
-                    </p>
-                  )}
                 </div>
-
-                {!isAuthenticated && (
-                  <div className="p-4 bg-medium-cream rounded-lg border">
-                    <p className={`text-sm opacity-70 ${getTextColorClass()}`}>
-                      Please sign in to share your pottery idea. This helps me keep track of submissions and communicate updates.
-                    </p>
-                  </div>
-                )}
 
                 <button
                   type="submit"
-                  disabled={!isAuthenticated || isSubmitting}
+                  disabled={isSubmitting}
                   className={`w-full py-3 text-sm hover:opacity-70 transition-opacity disabled:opacity-30 underline ${getTextColorClass()}`}
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit Pottery Idea'}
