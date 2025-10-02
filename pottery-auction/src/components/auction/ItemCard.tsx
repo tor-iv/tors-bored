@@ -5,6 +5,7 @@ import { Clock, DollarSign, User } from 'lucide-react';
 import Image from 'next/image';
 import { Item } from '@/types';
 import Button from '../ui/Button';
+import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 interface ItemCardProps {
   piece: Item;
@@ -13,12 +14,13 @@ interface ItemCardProps {
   canBid?: boolean;
 }
 
-export default function ItemCard({ 
-  piece, 
-  onBid, 
-  timeRemaining = '2h 30m', 
-  canBid = true 
+export default function ItemCard({
+  piece,
+  onBid,
+  timeRemaining = '2h 30m',
+  canBid = true
 }: ItemCardProps) {
+  const { getBgColorClass, getPrimaryColorClass } = useColorToggle();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -35,7 +37,7 @@ export default function ItemCard({
           className="object-cover"
         />
         {piece.featured && (
-          <div className="absolute top-3 left-3 bg-medium-green text-white px-2 py-1 rounded-full text-xs font-medium">
+          <div className={`absolute top-3 left-3 ${getBgColorClass()} text-white px-2 py-1 rounded-full text-xs font-medium`}>
             Featured
           </div>
         )}
@@ -52,7 +54,7 @@ export default function ItemCard({
         
         <div className="flex items-center gap-4 mb-4 text-sm text-medium-dark/60">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-medium-green rounded-full" />
+            <span className={`w-2 h-2 ${getBgColorClass()} rounded-full`} />
             {piece.dimensions.height}"H x {piece.dimensions.width}"W
           </span>
           <span>
@@ -63,7 +65,7 @@ export default function ItemCard({
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-sm text-medium-dark/60">Current Bid</p>
-            <p className="text-2xl font-bold text-medium-green flex items-center">
+            <p className={`text-2xl font-bold ${getPrimaryColorClass()} flex items-center`}>
               <DollarSign size={20} />
               {piece.currentBid}
             </p>

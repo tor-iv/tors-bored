@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function Home() {
-  const { getTextColorClass, getPrimaryColorClass } = useColorToggle();
+  const { getTextColorClass, getPrimaryColorClass, getBgLightColorClass } = useColorToggle();
   
   return (
     <>
@@ -99,7 +99,7 @@ export default function Home() {
        
                 className="text-center bg-medium-light p-8 rounded-lg shadow-sm"
               >
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className={`w-16 h-16 ${getBgLightColorClass()} rounded-full flex items-center justify-center mx-auto mb-6`}>
                   <step.icon size={32} className={getTextColorClass()} />
                 </div>
                 <h3 className={`text-xl font-serif font-semibold mb-4 ${getTextColorClass()}`}>
@@ -143,8 +143,8 @@ export default function Home() {
             >
               <div className="aspect-square bg-medium-cream rounded-lg flex items-center justify-center border">
                 <div className={`text-center opacity-60 ${getTextColorClass()}`}>
-                  <div className="w-32 h-32 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-green-200 rounded-full animate-gentle-bounce" />
+                  <div className={`w-32 h-32 ${getBgLightColorClass()} rounded-full mx-auto mb-4 flex items-center justify-center`}>
+                    <div className={`w-16 h-16 ${getBgLightColorClass()} opacity-60 rounded-full animate-gentle-bounce`} />
                   </div>
                   <p className="text-lg font-medium">Your Custom Piece</p>
                 </div>

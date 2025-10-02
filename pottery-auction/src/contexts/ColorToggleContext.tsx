@@ -10,6 +10,11 @@ interface ColorToggleContextType {
   getTextColorClass: () => string;
   getPrimaryColorClass: () => string;
   getThemeColor: () => string;
+  getBgColorClass: () => string;
+  getBgLightColorClass: () => string;
+  getBorderColorClass: () => string;
+  getHoverBgColorClass: () => string;
+  getRingColorClass: () => string;
 }
 
 const ColorToggleContext = createContext<ColorToggleContextType | undefined>(undefined);
@@ -65,6 +70,71 @@ export function ColorToggleProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const getBgColorClass = () => {
+    switch (currentTheme) {
+      case 'red':
+        return 'bg-red-500';
+      case 'green':
+        return 'bg-green-600';
+      case 'blue':
+        return 'bg-blue-500';
+      default:
+        return 'bg-green-600';
+    }
+  };
+
+  const getBgLightColorClass = () => {
+    switch (currentTheme) {
+      case 'red':
+        return 'bg-red-100';
+      case 'green':
+        return 'bg-green-100';
+      case 'blue':
+        return 'bg-blue-100';
+      default:
+        return 'bg-green-100';
+    }
+  };
+
+  const getBorderColorClass = () => {
+    switch (currentTheme) {
+      case 'red':
+        return 'border-red-500';
+      case 'green':
+        return 'border-green-600';
+      case 'blue':
+        return 'border-blue-500';
+      default:
+        return 'border-green-600';
+    }
+  };
+
+  const getHoverBgColorClass = () => {
+    switch (currentTheme) {
+      case 'red':
+        return 'hover:bg-red-500';
+      case 'green':
+        return 'hover:bg-green-600';
+      case 'blue':
+        return 'hover:bg-blue-500';
+      default:
+        return 'hover:bg-green-600';
+    }
+  };
+
+  const getRingColorClass = () => {
+    switch (currentTheme) {
+      case 'red':
+        return 'ring-red-500';
+      case 'green':
+        return 'ring-green-600';
+      case 'blue':
+        return 'ring-blue-500';
+      default:
+        return 'ring-green-600';
+    }
+  };
+
   // Load theme from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -76,12 +146,17 @@ export function ColorToggleProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ColorToggleContext.Provider value={{ 
-      currentTheme, 
-      setTheme, 
-      getTextColorClass, 
+    <ColorToggleContext.Provider value={{
+      currentTheme,
+      setTheme,
+      getTextColorClass,
       getPrimaryColorClass,
-      getThemeColor
+      getThemeColor,
+      getBgColorClass,
+      getBgLightColorClass,
+      getBorderColorClass,
+      getHoverBgColorClass,
+      getRingColorClass
     }}>
       {children}
     </ColorToggleContext.Provider>

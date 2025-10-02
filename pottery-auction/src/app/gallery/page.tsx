@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Search, Grid, List } from 'lucide-react';
+import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function GalleryPage() {
+  const { getPrimaryColorClass, getBgColorClass, getBorderColorClass, getRingColorClass, getBgLightColorClass } = useColorToggle();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filterCategory, setFilterCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -77,7 +79,7 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen bg-medium-cream/30">
-      <div className="medium-gradient text-white py-16">
+      <div className={`${getBgColorClass()} text-white py-16`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -104,7 +106,7 @@ export default function GalleryPage() {
                 placeholder="Search pottery..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-medium-green/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-medium-green bg-white"
+                className={`w-full pl-10 pr-4 py-3 border ${getBorderColorClass()}/30 rounded-lg focus:outline-none focus:ring-2 focus:${getRingColorClass()} bg-white`}
               />
             </div>
           </div>
@@ -115,7 +117,7 @@ export default function GalleryPage() {
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="px-3 py-2 border border-medium-green/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-medium-green bg-white"
+                className={`px-3 py-2 border ${getBorderColorClass()}/30 rounded-lg focus:outline-none focus:ring-2 focus:${getRingColorClass()} bg-white`}
               >
                 {categories.map(category => (
                   <option key={category} value={category}>
@@ -125,16 +127,16 @@ export default function GalleryPage() {
               </select>
             </div>
 
-            <div className="flex border border-medium-green/30 rounded-lg overflow-hidden bg-white">
+            <div className={`flex border ${getBorderColorClass()}/30 rounded-lg overflow-hidden bg-white`}>
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 ${viewMode === 'grid' ? 'bg-medium-green text-white' : 'text-medium-dark hover:bg-medium-cream'}`}
+                className={`p-2 ${viewMode === 'grid' ? `${getBgColorClass()} text-white` : 'text-medium-dark hover:bg-medium-cream'}`}
               >
                 <Grid size={16} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 ${viewMode === 'list' ? 'bg-medium-green text-white' : 'text-medium-dark hover:bg-medium-cream'}`}
+                className={`p-2 ${viewMode === 'list' ? `${getBgColorClass()} text-white` : 'text-medium-dark hover:bg-medium-cream'}`}
               >
                 <List size={16} />
               </button>
@@ -164,10 +166,10 @@ export default function GalleryPage() {
               }
             >
               <div className={viewMode === 'grid' ? 'relative aspect-square' : 'w-48 aspect-square relative flex-shrink-0'}>
-                <div className="w-full h-full bg-medium-green/20 rounded-lg flex items-center justify-center">
+                <div className={`w-full h-full ${getBgLightColorClass()}/20 rounded-lg flex items-center justify-center`}>
                   <div className="text-medium-dark/60 text-center">
-                    <div className="w-16 h-16 bg-medium-green/20 rounded-full mx-auto mb-2 flex items-center justify-center">
-                      <div className="w-8 h-8 bg-medium-green/40 rounded-full" />
+                    <div className={`w-16 h-16 ${getBgLightColorClass()}/20 rounded-full mx-auto mb-2 flex items-center justify-center`}>
+                      <div className={`w-8 h-8 ${getBgLightColorClass()}/40 rounded-full`} />
                     </div>
                     <p className="text-sm">{piece.title}</p>
                   </div>
@@ -181,10 +183,10 @@ export default function GalleryPage() {
                 <h3 className="text-xl font-semibold text-medium-dark mb-2">
                   {piece.title}
                 </h3>
-                
+
                 <div className="flex items-center gap-4 mb-3 text-sm text-medium-dark/60">
                   <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 bg-medium-green rounded-full" />
+                    <span className={`w-2 h-2 ${getBgColorClass()} rounded-full`} />
                     {piece.technique}
                   </span>
                   <span>{piece.auctionDate}</span>
@@ -193,12 +195,12 @@ export default function GalleryPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-medium-dark/60">Final Sale Price</p>
-                    <p className="text-xl font-bold text-medium-green">
+                    <p className={`text-xl font-bold ${getPrimaryColorClass()}`}>
                       ${piece.finalPrice}
                     </p>
                   </div>
-                  
-                  <span className="px-3 py-1 bg-medium-green/20 text-medium-dark rounded-full text-sm font-medium">
+
+                  <span className={`px-3 py-1 ${getBgLightColorClass()}/20 text-medium-dark rounded-full text-sm font-medium`}>
                     Sold
                   </span>
                 </div>
@@ -213,8 +215,8 @@ export default function GalleryPage() {
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <div className="w-16 h-16 bg-medium-green/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Search className="text-medium-green" size={24} />
+            <div className={`w-16 h-16 ${getBgLightColorClass()}/20 rounded-full mx-auto mb-4 flex items-center justify-center`}>
+              <Search className={getPrimaryColorClass()} size={24} />
             </div>
             <h3 className="text-xl font-semibold text-medium-dark mb-2">
               No pottery found

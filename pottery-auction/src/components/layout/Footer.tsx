@@ -3,9 +3,11 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Mail, Phone, MapPin, Instagram, Facebook, Twitter } from 'lucide-react';
+import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const { getBgColorClass, getHoverBgColorClass, getPrimaryColorClass } = useColorToggle();
 
   return (
     <footer className="bg-pottery-charcoal text-white">
@@ -20,7 +22,7 @@ export default function Footer() {
               <motion.div
                 whileHover={{ rotate: 180 }}
                 transition={{ duration: 0.3 }}
-                className="w-8 h-8 bg-medium-green rounded-full"
+                className={`w-8 h-8 ${getBgColorClass()} rounded-full`}
               />
               <span className="text-xl font-bold">Marketplace</span>
             </div>
@@ -34,7 +36,7 @@ export default function Footer() {
                   href="#"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 bg-medium-green/20 rounded-full flex items-center justify-center hover:bg-medium-green transition-colors"
+                  className={`w-10 h-10 ${getBgColorClass()}/20 rounded-full flex items-center justify-center ${getHoverBgColorClass()} transition-colors`}
                 >
                   <Icon size={18} />
                 </motion.a>
@@ -58,7 +60,10 @@ export default function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block text-white/80 hover:text-medium-green transition-colors"
+                  className={`block text-white/80 ${getPrimaryColorClass()} hover:opacity-80 transition-opacity`}
+                  style={{ color: 'inherit' }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                 >
                   {link.label}
                 </Link>
@@ -110,9 +115,10 @@ export default function Footer() {
                 <input
                   type="email"
                   placeholder="Your email"
-                  className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-l-lg focus:outline-none focus:border-medium-green text-white placeholder-white/60"
+                  className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-l-lg focus:outline-none text-white placeholder-white/60"
+                  style={{ borderColor: 'rgba(255,255,255,0.2)' }}
                 />
-                <button className="px-4 py-2 bg-medium-green rounded-r-lg hover:bg-medium-green/80 transition-colors">
+                <button className={`px-4 py-2 ${getBgColorClass()} rounded-r-lg hover:opacity-80 transition-opacity`}>
                   Subscribe
                 </button>
               </div>
