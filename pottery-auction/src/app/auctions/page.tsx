@@ -19,42 +19,29 @@ export default function AuctionsPage() {
   const mockPieces: Item[] = [
     {
       id: '1',
-      title: 'Midnight Blue Vase',
-      description: 'A stunning handcrafted vase with deep midnight blue finish and subtle metallic accents. Crafted with traditional techniques.',
-      images: [],
+      title: 'Flower Vase',
+      description: 'A beautiful handcrafted vase with intricate floral patterns. Perfect for displaying your favorite flowers.',
+      images: ['/current-pieces/flower-vase.png'],
       startingBid: 45,
       currentBid: 85,
       highestBidder: 'collector_42',
       auctionId: 'auction-dec-2024',
       dimensions: { height: 12, width: 6, depth: 6 },
-      techniques: ['Handcrafted', 'Finished'],
+      techniques: ['Handcrafted', 'Glazed'],
       featured: true,
       createdAt: new Date(),
     },
     {
       id: '2',
-      title: 'Rustic Bowl Set',
-      description: 'A collection of three handcrafted bowls in warm earth tones. Each piece is unique with natural variations, perfect for serving or display.',
-      images: [],
-      startingBid: 65,
-      currentBid: 120,
-      auctionId: 'auction-dec-2024',
-      dimensions: { height: 4, width: 8, depth: 8 },
-      techniques: ['Handcrafted', 'Natural materials'],
-      featured: false,
-      createdAt: new Date(),
-    },
-    {
-      id: '3',
-      title: 'Sculptural Teapot',
-      description: 'A functional art piece combining form and function. This unique teapot features an organic, flowing design with a custom sage green finish.',
-      images: [],
+      title: 'Green Vase',
+      description: 'An elegant vase with a stunning green glaze finish. Handcrafted with care and attention to detail.',
+      images: ['/current-pieces/green-vase.png'],
       startingBid: 80,
       currentBid: 155,
-      highestBidder: 'tea_enthusiast',
+      highestBidder: 'pottery_lover',
       auctionId: 'auction-dec-2024',
-      dimensions: { height: 8, width: 10, depth: 6 },
-      techniques: ['Sculpted', 'Custom finished'],
+      dimensions: { height: 10, width: 5, depth: 5 },
+      techniques: ['Handcrafted', 'Glazed'],
       featured: false,
       createdAt: new Date(),
     },
@@ -99,7 +86,7 @@ export default function AuctionsPage() {
               December 2024 Collection
             </h1>
             <p className="text-xl mb-6">
-              Featuring 3 exceptional items - limited collection this month
+              Featuring 2 exceptional items - limited collection this month
             </p>
             <div className="flex items-center justify-center gap-6 text-lg">
               <div className="flex items-center gap-2">
@@ -108,7 +95,7 @@ export default function AuctionsPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Trophy size={20} />
-                <span>3 Items</span>
+                <span>2 Items</span>
               </div>
             </div>
           </motion.div>
@@ -122,7 +109,7 @@ export default function AuctionsPage() {
               Current Collection
             </h2>
             <p className="text-medium-dark/70">
-              Only 3 unique items available this month - place your bids before the auction ends
+              Only 2 unique items available this month - place your bids before the auction ends
             </p>
           </div>
           

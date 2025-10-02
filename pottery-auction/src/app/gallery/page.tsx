@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Search, Grid, List } from 'lucide-react';
+import Image from 'next/image';
 import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function GalleryPage() {
@@ -16,57 +17,48 @@ export default function GalleryPage() {
   const mockPieces = [
     {
       id: '1',
-      title: 'Midnight Blue Vase',
+      title: 'Pre-Fire Vase',
       category: 'vases',
       technique: 'Handcrafted',
       finalPrice: 95,
       auctionDate: 'December 2024',
-      image: '/item-1.jpg',
+      image: '/gallery/pre-fire-vase.jpeg',
     },
     {
       id: '2',
-      title: 'Rustic Bowl Set',
-      category: 'bowls',
+      title: 'Pumpkin Collection',
+      category: 'decorative',
       technique: 'Handcrafted',
       finalPrice: 125,
       auctionDate: 'November 2024',
-      image: '/item-2.jpg',
+      image: '/gallery/pumpkins.jpeg',
     },
     {
       id: '3',
-      title: 'Sculptural Teapot',
-      category: 'functional',
+      title: 'Work in Progress',
+      category: 'sculptures',
       technique: 'Sculpted',
       finalPrice: 180,
       auctionDate: 'November 2024',
-      image: '/item-3.jpg',
+      image: '/gallery/random-in-progress.jpeg',
     },
     {
       id: '4',
-      title: 'Abstract Sculpture',
-      category: 'sculptures',
+      title: 'Studio Collection',
+      category: 'decorative',
       technique: 'Handcrafted',
       finalPrice: 220,
       auctionDate: 'October 2024',
-      image: '/item-4.jpg',
+      image: '/gallery/random-studio.jpeg',
     },
     {
       id: '5',
-      title: 'Glazed Dinner Plates',
-      category: 'functional',
+      title: 'Vase Collection',
+      category: 'vases',
       technique: 'Handcrafted',
       finalPrice: 85,
       auctionDate: 'October 2024',
-      image: '/item-5.jpg',
-    },
-    {
-      id: '6',
-      title: 'Decorative Wall Piece',
-      category: 'decorative',
-      technique: 'Sculpted',
-      finalPrice: 160,
-      auctionDate: 'September 2024',
-      image: '/item-6.jpg',
+      image: '/gallery/vases.jpeg',
     },
   ];
 
@@ -166,16 +158,15 @@ export default function GalleryPage() {
               }
             >
               <div className={viewMode === 'grid' ? 'relative aspect-square' : 'w-48 aspect-square relative flex-shrink-0'}>
-                <div className={`w-full h-full ${getBgLightColorClass()}/20 rounded-lg flex items-center justify-center`}>
-                  <div className="text-medium-dark/60 text-center">
-                    <div className={`w-16 h-16 ${getBgLightColorClass()}/20 rounded-full mx-auto mb-2 flex items-center justify-center`}>
-                      <div className={`w-8 h-8 ${getBgLightColorClass()}/40 rounded-full`} />
-                    </div>
-                    <p className="text-sm">{piece.title}</p>
-                  </div>
-                </div>
+                <Image
+                  src={piece.image}
+                  alt={piece.title}
+                  fill
+                  className="object-cover rounded-t-lg"
+                  sizes={viewMode === 'grid' ? '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw' : '192px'}
+                />
                 {viewMode === 'grid' && (
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 rounded-t-lg" />
                 )}
               </div>
 
