@@ -10,7 +10,7 @@ export default function Footer() {
   const { getBgColorClass, getHoverBgColorClass, getPrimaryColorClass } = useColorToggle();
 
   return (
-    <footer className="bg-pottery-charcoal text-white">
+    <footer className={`${getBgColorClass()} text-white`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           <motion.div
@@ -103,24 +103,6 @@ export default function Footer() {
               <div className="flex items-center space-x-3 text-white/80">
                 <MapPin size={16} />
                 <span>Portland, Oregon</span>
-              </div>
-            </div>
-            
-            <div className="mt-6">
-              <h4 className="font-medium mb-2">Newsletter</h4>
-              <p className="text-white/80 text-sm mb-3">
-                Get notified about new items and updates
-              </p>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-l-lg focus:outline-none text-white placeholder-white/60"
-                  style={{ borderColor: 'rgba(255,255,255,0.2)' }}
-                />
-                <button className={`px-4 py-2 ${getBgColorClass()} rounded-r-lg hover:opacity-80 transition-opacity`}>
-                  Subscribe
-                </button>
               </div>
             </div>
           </motion.div>

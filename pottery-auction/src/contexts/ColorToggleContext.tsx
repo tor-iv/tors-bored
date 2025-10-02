@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type ThemeOption = 'red' | 'green' | 'blue';
+type ThemeOption = 'blue' | 'green' | 'purple';
 
 interface ColorToggleContextType {
   currentTheme: ThemeOption;
@@ -33,105 +33,105 @@ export function ColorToggleProvider({ children }: { children: ReactNode }) {
 
   const getTextColorClass = () => {
     switch (currentTheme) {
-      case 'red':
-        return 'text-red-600';
-      case 'green':
-        return 'text-green-700';
       case 'blue':
-        return 'text-blue-600';
+        return 'text-sky-700';
+      case 'green':
+        return 'text-emerald-800';
+      case 'purple':
+        return 'text-purple-900';
       default:
-        return 'text-green-700';
+        return 'text-emerald-800';
     }
   };
 
   const getPrimaryColorClass = () => {
     switch (currentTheme) {
-      case 'red':
-        return 'text-red-500';
-      case 'green':
-        return 'text-green-600';
       case 'blue':
-        return 'text-blue-500';
+        return 'text-sky-600';
+      case 'green':
+        return 'text-emerald-700';
+      case 'purple':
+        return 'text-purple-800';
       default:
-        return 'text-green-600';
+        return 'text-emerald-700';
     }
   };
 
   const getThemeColor = () => {
     switch (currentTheme) {
-      case 'red':
-        return '#E74C3C';
-      case 'green':
-        return '#0A8754';
       case 'blue':
-        return '#2E86AB';
+        return '#7dd3fc'; // sky-300 (pastel blue)
+      case 'green':
+        return '#065f46'; // emerald-800
+      case 'purple':
+        return '#581c87'; // purple-900 (deep royal purple)
       default:
-        return '#0A8754';
+        return '#065f46';
     }
   };
 
   const getBgColorClass = () => {
     switch (currentTheme) {
-      case 'red':
-        return 'bg-red-500';
-      case 'green':
-        return 'bg-green-600';
       case 'blue':
-        return 'bg-blue-500';
+        return 'bg-sky-400';
+      case 'green':
+        return 'bg-emerald-700';
+      case 'purple':
+        return 'bg-purple-800';
       default:
-        return 'bg-green-600';
+        return 'bg-emerald-700';
     }
   };
 
   const getBgLightColorClass = () => {
     switch (currentTheme) {
-      case 'red':
-        return 'bg-red-100';
-      case 'green':
-        return 'bg-green-100';
       case 'blue':
-        return 'bg-blue-100';
+        return 'bg-sky-100';
+      case 'green':
+        return 'bg-emerald-100';
+      case 'purple':
+        return 'bg-purple-100';
       default:
-        return 'bg-green-100';
+        return 'bg-emerald-100';
     }
   };
 
   const getBorderColorClass = () => {
     switch (currentTheme) {
-      case 'red':
-        return 'border-red-500';
-      case 'green':
-        return 'border-green-600';
       case 'blue':
-        return 'border-blue-500';
+        return 'border-sky-400';
+      case 'green':
+        return 'border-emerald-700';
+      case 'purple':
+        return 'border-purple-800';
       default:
-        return 'border-green-600';
+        return 'border-emerald-700';
     }
   };
 
   const getHoverBgColorClass = () => {
     switch (currentTheme) {
-      case 'red':
-        return 'hover:bg-red-500';
-      case 'green':
-        return 'hover:bg-green-600';
       case 'blue':
-        return 'hover:bg-blue-500';
+        return 'hover:bg-sky-400';
+      case 'green':
+        return 'hover:bg-emerald-700';
+      case 'purple':
+        return 'hover:bg-purple-800';
       default:
-        return 'hover:bg-green-600';
+        return 'hover:bg-emerald-700';
     }
   };
 
   const getRingColorClass = () => {
     switch (currentTheme) {
-      case 'red':
-        return 'ring-red-500';
-      case 'green':
-        return 'ring-green-600';
       case 'blue':
-        return 'ring-blue-500';
+        return 'ring-sky-400';
+      case 'green':
+        return 'ring-emerald-700';
+      case 'purple':
+        return 'ring-purple-800';
       default:
-        return 'ring-green-600';
+        return 'ring-emerald-700';
     }
   };
 
@@ -139,7 +139,7 @@ export function ColorToggleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('colorTheme') as ThemeOption;
-      if (savedTheme && ['red', 'green', 'blue'].includes(savedTheme)) {
+      if (savedTheme && ['blue', 'green', 'purple'].includes(savedTheme)) {
         setCurrentTheme(savedTheme);
       }
     }

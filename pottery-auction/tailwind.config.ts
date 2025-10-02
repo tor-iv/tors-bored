@@ -9,6 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        "pottery-charcoal": "#2B2B2B",
         medium: {
           green: "#0A8754",
           cream: "#F5F1EC",
@@ -17,7 +18,7 @@ export default {
         },
         toggle: {
           red: "#E74C3C",
-          green: "#0A8754", 
+          green: "#0A8754",
           blue: "#2E86AB",
         },
         theme: {

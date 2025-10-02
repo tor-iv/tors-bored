@@ -6,9 +6,9 @@ export default function ColorToggle() {
   const { currentTheme, setTheme } = useColorToggle();
 
   const colors = [
-    { name: 'red' as const, color: '#E74C3C', label: 'Red' },
-    { name: 'green' as const, color: '#0A8754', label: 'Green' },
-    { name: 'blue' as const, color: '#2E86AB', label: 'Blue' }
+    { name: 'blue' as const, color: '#7dd3fc', label: 'Pastel Blue' },
+    { name: 'green' as const, color: '#065f46', label: 'Green' },
+    { name: 'purple' as const, color: '#581c87', label: 'Royal Purple' }
   ];
 
   return (

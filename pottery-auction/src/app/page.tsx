@@ -153,31 +153,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <section className="py-20 bg-medium-dark text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-3xl font-serif font-bold mb-6">
-              Ready to Start Collecting?
-            </h2>
-            <p className="text-lg mb-8 text-white/80">
-              Join the community of pottery enthusiasts and never miss an auction
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link href="/auctions" className="text-white hover:opacity-70 transition-opacity underline">
-                View Current Pieces
-              </Link>
-              <Link href="/gallery" className="text-white hover:opacity-70 transition-opacity underline">
-                Browse Gallery
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
     </>
   );
 }
