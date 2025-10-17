@@ -21,7 +21,7 @@ const commissionSchema = z.object({
 type CommissionForm = z.infer<typeof commissionSchema>;
 
 export default function CommissionsPage() {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const { getTextColorClass } = useColorToggle();
   const [referenceImages, setReferenceImages] = useState<File[]>([]);
   const [drawing, setDrawing] = useState<string | null>(null);
@@ -36,7 +36,7 @@ export default function CommissionsPage() {
   } = useForm<CommissionForm>({
     resolver: zodResolver(commissionSchema),
     defaultValues: {
-      name: user?.displayName || '',
+      name: userProfile?.displayName || '',
       email: user?.email || '',
     },
   });
