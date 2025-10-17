@@ -4,8 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { User, LogOut, Menu, X } from 'lucide-react';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useColorToggle } from '@/contexts/ColorToggleContext';
 import Button from '../ui/Button';
@@ -19,8 +18,9 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
+    const supabase = createClient();
     try {
-      await signOut(auth);
+      await supabase.auth.signOut();
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -46,7 +46,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <span className={`text-3xl font-serif font-bold ${getTextColorClass()}`}>
-                Tor&apos;s Pottery
+                Tor&apos;s Bored Pottery
               </span>
             </Link>
 

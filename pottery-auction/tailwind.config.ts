@@ -10,6 +10,10 @@ export default {
     extend: {
       colors: {
         "pottery-charcoal": "#2B2B2B",
+        "pottery-terracotta": "#E07856",
+        "pottery-clay": "#C96846",
+        "pottery-sage": "#8B9D83",
+        "pottery-cream": "#F5F1EC",
         medium: {
           green: "#0A8754",
           cream: "#F5F1EC",

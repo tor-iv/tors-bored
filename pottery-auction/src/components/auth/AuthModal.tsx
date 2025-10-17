@@ -3,9 +3,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Lock, User } from 'lucide-react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import Button from '../ui/Button';
+import { createClient } from '@/lib/supabase/client';
+import ButtonSimple from '../ui/ButtonSimple';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -25,18 +24,34 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     setIsLoading(true);
     setError('');
 
+    const supabase = createClient();
+
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
       } else {
-        const { user } = await createUserWithEmailAndPassword(auth, email, password);
-        if (displayName) {
-          await updateProfile(user, { displayName });
-        }
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              display_name: displayName,
+            },
+          },
+        });
+        if (error) throw error;
       }
       onClose();
+      // Clear form
+      setEmail('');
+      setPassword('');
+      setDisplayName('');
     } catch (error: any) {
-      setError(error.message);
+      setError(error.message || 'An error occurred during authentication');
     } finally {
       setIsLoading(false);
     }
@@ -130,13 +145,12 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   <p className="text-red-500 text-sm">{error}</p>
                 )}
                 
-                <Button
+                <ButtonSimple
                   type="submit"
-                  className="w-full"
                   isLoading={isLoading}
                 >
                   {isLogin ? 'Sign In' : 'Create Account'}
-                </Button>
+                </ButtonSimple>
               </form>
               
               <div className="mt-6 text-center">

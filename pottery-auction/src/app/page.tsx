@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Calendar, Award, Users, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function Home() {
@@ -10,7 +11,19 @@ export default function Home() {
   
   return (
     <>
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-medium-light organic-texture">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-medium-light">
+        {/* Background Image - positioned on right side */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/2 z-0 hidden lg:block">
+          <Image
+            src="/paintings/multicolor-vase.png"
+            alt="Pottery background"
+            fill
+            className="object-contain object-right"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-medium-light via-medium-light/50 to-transparent" />
+        </div>
+
         <div className="relative z-10 text-center px-4">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -18,7 +31,7 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className={`text-5xl md:text-7xl font-serif font-bold mb-6 ${getTextColorClass()}`}
           >
-            Tor&apos;s Pottery
+            Tor&apos;s Bored Pottery
             <br />
             <span className="opacity-70">Handmade Ceramics</span>
           </motion.h1>
@@ -32,7 +45,7 @@ export default function Home() {
             Discover unique handcrafted pottery pieces in monthly auctions.
             Every 15th, new ceramic creations ready to find their home!
           </motion.p>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -47,7 +60,7 @@ export default function Home() {
             </Link>
           </motion.div>
         </div>
-        
+
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}

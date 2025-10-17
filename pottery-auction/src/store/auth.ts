@@ -1,12 +1,12 @@
 import { create } from 'zustand';
-import { User as FirebaseUser } from 'firebase/auth';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { User } from '@/types';
 
 interface AuthState {
-  user: FirebaseUser | null;
+  user: SupabaseUser | null;
   userProfile: User | null;
   isLoading: boolean;
-  setUser: (user: FirebaseUser | null) => void;
+  setUser: (user: SupabaseUser | null) => void;
   setUserProfile: (profile: User | null) => void;
   setLoading: (loading: boolean) => void;
   logout: () => void;
