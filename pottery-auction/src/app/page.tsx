@@ -110,7 +110,7 @@ export default function Home() {
                 className="text-center bg-medium-light p-8 rounded-lg shadow-sm"
               >
                 <div className={`w-16 h-16 bg-[var(--theme-primary-light)] rounded-full flex items-center justify-center mx-auto mb-6`}>
-                  <step.icon size={32} className={getTextColorClass()} />
+                  <step.icon size={32} className="text-[var(--theme-text)]" />
                 </div>
                 <h3 className={`text-xl font-serif font-semibold mb-4 text-[var(--theme-text)]`}>
                   {step.title}
