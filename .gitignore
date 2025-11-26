@@ -1,1 +1,19 @@
+# Claude
 .claude-flow/
+.claude/
+
+# Environment variables
+.env
+.env.*
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Local notes/docs
+BUTTON_DEBUG.md
+PROGRESS.md
+SUPABASE_SETUP.md
+
+# OS files
+.DS_Store
