@@ -11,15 +11,17 @@ interface DrawingCanvasProps {
 export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }: DrawingCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [currentColor, setCurrentColor] = useState('#065f46'); // emerald green (default theme)
+  const [currentColor, setCurrentColor] = useState('#166534'); // green-800 (default theme text)
   const [brushSize, setBrushSize] = useState(3);
   const [history, setHistory] = useState<string[]>([]);
-  const { getTextColorClass } = useColorToggle();
+  const { themeHex } = useColorToggle();
 
+  // Pastel drawing colors
   const colors = [
-    { name: 'Blue', value: '#7dd3fc' },    // sky-300 (Pastel Blue theme)
-    { name: 'Green', value: '#065f46' },   // emerald-800 (default theme)
-    { name: 'Purple', value: '#581c87' }   // purple-900 (Royal Purple theme)
+    { name: 'Blue', value: '#1e40af' },    // blue-800 (readable on white)
+    { name: 'Green', value: '#166534' },   // green-800 (default theme)
+    { name: 'Purple', value: '#5b21b6' },  // violet-800
+    { name: 'Theme', value: themeHex },    // current theme color
   ];
 
   useEffect(() => {
@@ -174,7 +176,7 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
 
   return (
     <div className="space-y-4">
-      <p className={`text-sm italic ${getTextColorClass()}`}>
+      <p className={`text-sm italic text-[var(--theme-text)]`}>
         {placeholder}
       </p>
       
@@ -216,7 +218,7 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
 
         {/* Brush size */}
         <div className="flex items-center space-x-2">
-          <span className={`text-xs ${getTextColorClass()}`}>Brush Size</span>
+          <span className={`text-xs text-[var(--theme-text)]`}>Brush Size</span>
           <input
             type="range"
             min="1"
@@ -233,14 +235,14 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
             type="button"
             onClick={undo}
             disabled={history.length <= 1}
-            className={`text-xs hover:opacity-70 transition-opacity disabled:opacity-30 ${getTextColorClass()}`}
+            className={`text-xs hover:opacity-70 transition-opacity disabled:opacity-30 text-[var(--theme-text)]`}
           >
             Undo
           </button>
           <button
             type="button"
             onClick={clearCanvas}
-            className={`text-xs hover:opacity-70 transition-opacity ${getTextColorClass()}`}
+            className={`text-xs hover:opacity-70 transition-opacity text-[var(--theme-text)]`}
           >
             Clear
           </button>

@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Search, Grid, List } from 'lucide-react';
 import Image from 'next/image';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function GalleryPage() {
-  const { getPrimaryColorClass, getBgColorClass, getBorderColorClass, getRingColorClass, getBgLightColorClass } = useColorToggle();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filterCategory, setFilterCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -71,7 +69,7 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen bg-medium-cream/30">
-      <div className={`${getBgColorClass()} text-white py-16`}>
+      <div className="bg-[var(--theme-primary)] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -98,7 +96,7 @@ export default function GalleryPage() {
                 placeholder="Search pottery..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`w-full pl-10 pr-4 py-3 border ${getBorderColorClass()}/30 rounded-lg focus:outline-none focus:ring-2 focus:${getRingColorClass()} bg-white`}
+                className="w-full pl-10 pr-4 py-3 border border-[var(--theme-border)]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)] bg-white"
               />
             </div>
           </div>
@@ -109,7 +107,7 @@ export default function GalleryPage() {
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className={`px-3 py-2 border ${getBorderColorClass()}/30 rounded-lg focus:outline-none focus:ring-2 focus:${getRingColorClass()} bg-white`}
+                className="px-3 py-2 border border-[var(--theme-border)]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)] bg-white"
               >
                 {categories.map(category => (
                   <option key={category} value={category}>
@@ -119,16 +117,16 @@ export default function GalleryPage() {
               </select>
             </div>
 
-            <div className={`flex border ${getBorderColorClass()}/30 rounded-lg overflow-hidden bg-white`}>
+            <div className="flex border border-[var(--theme-border)]/30 rounded-lg overflow-hidden bg-white">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 ${viewMode === 'grid' ? `${getBgColorClass()} text-white` : 'text-medium-dark hover:bg-medium-cream'}`}
+                className={`p-2 ${viewMode === 'grid' ? 'bg-[var(--theme-primary)] text-white' : 'text-medium-dark hover:bg-medium-cream'}`}
               >
                 <Grid size={16} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 ${viewMode === 'list' ? `${getBgColorClass()} text-white` : 'text-medium-dark hover:bg-medium-cream'}`}
+                className={`p-2 ${viewMode === 'list' ? 'bg-[var(--theme-primary)] text-white' : 'text-medium-dark hover:bg-medium-cream'}`}
               >
                 <List size={16} />
               </button>
@@ -177,7 +175,7 @@ export default function GalleryPage() {
 
                 <div className="flex items-center gap-4 mb-3 text-sm text-medium-dark/60">
                   <span className="flex items-center gap-1">
-                    <span className={`w-2 h-2 ${getBgColorClass()} rounded-full`} />
+                    <span className="w-2 h-2 bg-[var(--theme-primary)] rounded-full" />
                     {piece.technique}
                   </span>
                   <span>{piece.auctionDate}</span>
@@ -186,12 +184,12 @@ export default function GalleryPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-medium-dark/60">Final Sale Price</p>
-                    <p className={`text-xl font-bold ${getPrimaryColorClass()}`}>
+                    <p className="text-xl font-bold text-[var(--theme-text-muted)]">
                       ${piece.finalPrice}
                     </p>
                   </div>
 
-                  <span className={`px-3 py-1 ${getBgLightColorClass()}/20 text-medium-dark rounded-full text-sm font-medium`}>
+                  <span className="px-3 py-1 bg-[var(--theme-primary-light)]/20 text-medium-dark rounded-full text-sm font-medium">
                     Sold
                   </span>
                 </div>
@@ -206,8 +204,8 @@ export default function GalleryPage() {
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <div className={`w-16 h-16 ${getBgLightColorClass()}/20 rounded-full mx-auto mb-4 flex items-center justify-center`}>
-              <Search className={getPrimaryColorClass()} size={24} />
+            <div className="w-16 h-16 bg-[var(--theme-primary-light)]/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <Search className="text-[var(--theme-text-muted)]" size={24} />
             </div>
             <h3 className="text-xl font-semibold text-medium-dark mb-2">
               No pottery found

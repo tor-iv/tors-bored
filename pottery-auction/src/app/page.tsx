@@ -1,14 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Calendar, Award, Users, ArrowRight } from 'lucide-react';
+import { Calendar, Award, Users } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function Home() {
-  const { getTextColorClass, getPrimaryColorClass, getBgLightColorClass } = useColorToggle();
-  
   return (
     <>
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-medium-light">
@@ -29,7 +26,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className={`text-5xl md:text-7xl font-serif font-bold mb-6 ${getTextColorClass()}`}
+            className={`text-5xl md:text-7xl font-serif font-bold mb-6 text-[var(--theme-text)]`}
           >
             Tor&apos;s Bored Pottery
             <br />
@@ -40,7 +37,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className={`text-lg md:text-xl mb-12 max-w-2xl mx-auto opacity-80 ${getTextColorClass()}`}
+            className={`text-lg md:text-xl mb-12 max-w-2xl mx-auto opacity-80 text-[var(--theme-text)]`}
           >
             Discover unique handcrafted pottery pieces in monthly auctions.
             Every 15th, new ceramic creations ready to find their home!
@@ -52,10 +49,10 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-6 justify-center"
           >
-            <Link href="/auctions" className={`hover:opacity-70 transition-opacity underline ${getPrimaryColorClass()}`}>
+            <Link href="/auctions" className={`hover:opacity-70 transition-opacity underline text-[var(--theme-text-muted)]`}>
               View Current Pieces
             </Link>
-            <Link href="/gallery" className={`hover:opacity-70 transition-opacity underline ${getPrimaryColorClass()}`}>
+            <Link href="/gallery" className={`hover:opacity-70 transition-opacity underline text-[var(--theme-text-muted)]`}>
               Browse Gallery
             </Link>
           </motion.div>
@@ -76,10 +73,10 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <h2 className={`text-4xl font-serif font-bold mb-4 ${getTextColorClass()}`}>
+            <h2 className={`text-4xl font-serif font-bold mb-4 text-[var(--theme-text)]`}>
               How It Works
             </h2>
-            <p className={`text-lg opacity-80 max-w-2xl mx-auto ${getTextColorClass()}`}>
+            <p className={`text-lg opacity-80 max-w-2xl mx-auto text-[var(--theme-text)]`}>
               Join monthly auctions and discover unique handcrafted pottery pieces
             </p>
           </motion.div>
@@ -112,13 +109,13 @@ export default function Home() {
        
                 className="text-center bg-medium-light p-8 rounded-lg shadow-sm"
               >
-                <div className={`w-16 h-16 ${getBgLightColorClass()} rounded-full flex items-center justify-center mx-auto mb-6`}>
+                <div className={`w-16 h-16 bg-[var(--theme-primary-light)] rounded-full flex items-center justify-center mx-auto mb-6`}>
                   <step.icon size={32} className={getTextColorClass()} />
                 </div>
-                <h3 className={`text-xl font-serif font-semibold mb-4 ${getTextColorClass()}`}>
+                <h3 className={`text-xl font-serif font-semibold mb-4 text-[var(--theme-text)]`}>
                   {step.title}
                 </h3>
-                <p className={`opacity-80 ${getTextColorClass()}`}>
+                <p className={`opacity-80 text-[var(--theme-text)]`}>
                   {step.description}
                 </p>
               </motion.div>
@@ -135,15 +132,15 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className={`text-4xl font-serif font-bold mb-6 ${getTextColorClass()}`}>
+              <h2 className={`text-4xl font-serif font-bold mb-6 text-[var(--theme-text)]`}>
                 Commission Ideas
               </h2>
-              <p className={`text-lg opacity-80 mb-8 ${getTextColorClass()}`}>
+              <p className={`text-lg opacity-80 mb-8 text-[var(--theme-text)]`}>
                 Have an idea for a pottery piece? Submit your vision and reference photos,
                 and I&apos;ll consider creating it. Whether it&apos;s a functional piece or
                 decorative art, I&apos;d love to hear your ideas!
               </p>
-              <Link href="/commissions" className={`hover:opacity-70 transition-opacity underline ${getTextColorClass()}`}>
+              <Link href="/commissions" className={`hover:opacity-70 transition-opacity underline text-[var(--theme-text)]`}>
                 Share Your Idea
               </Link>
             </motion.div>
@@ -155,9 +152,9 @@ export default function Home() {
               className="relative"
             >
               <div className="aspect-square bg-medium-cream rounded-lg flex items-center justify-center border">
-                <div className={`text-center opacity-60 ${getTextColorClass()}`}>
-                  <div className={`w-32 h-32 ${getBgLightColorClass()} rounded-full mx-auto mb-4 flex items-center justify-center`}>
-                    <div className={`w-16 h-16 ${getBgLightColorClass()} opacity-60 rounded-full animate-gentle-bounce`} />
+                <div className={`text-center opacity-60 text-[var(--theme-text)]`}>
+                  <div className={`w-32 h-32 bg-[var(--theme-primary-light)] rounded-full mx-auto mb-4 flex items-center justify-center`}>
+                    <div className={`w-16 h-16 bg-[var(--theme-primary-light)] opacity-60 rounded-full animate-gentle-bounce`} />
                   </div>
                   <p className="text-lg font-medium">Your Custom Piece</p>
                 </div>

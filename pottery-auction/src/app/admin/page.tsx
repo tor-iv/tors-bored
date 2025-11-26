@@ -1,23 +1,48 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { 
-  Calendar, 
-  Package, 
-  MessageSquare, 
+import {
+  Calendar,
+  Package,
+  MessageSquare,
   TrendingUp,
   Plus,
   Settings,
   Users,
-  DollarSign 
+  DollarSign,
+  Edit,
+  Eye
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import Button from '@/components/ui/Button';
+import { useDashboardStats } from '@/hooks/queries/useStats';
+import { useAuctions } from '@/hooks/queries/useAuctions';
+import { useItems } from '@/hooks/queries/useItems';
+import { useCommissions } from '@/hooks/queries/useCommissions';
 
 export default function AdminPage() {
-  const { userProfile, isLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { userProfile, isLoading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Sync tab from URL query param
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['overview', 'auctions', 'items', 'commissions', 'users'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  // Fetch data using React Query
+  const { data: statsData, isLoading: statsLoading } = useDashboardStats();
+  const { data: auctionsData, isLoading: auctionsLoading } = useAuctions();
+  const { data: itemsData, isLoading: itemsLoading } = useItems();
+  const { data: commissionsData, isLoading: commissionsLoading } = useCommissions();
+
+  const isLoading = authLoading || statsLoading;
 
   if (isLoading) {
     return (
@@ -50,12 +75,37 @@ export default function AdminPage() {
     { id: 'users', label: 'Users', icon: Users },
   ];
 
+  // Prepare stats from real data
   const stats = [
-    { label: 'Active Auctions', value: '1', change: '+0', icon: Calendar },
-    { label: 'Total Revenue', value: '$2,450', change: '+12%', icon: DollarSign },
-    { label: 'Items', value: '24', change: '+3', icon: Package },
-    { label: 'Commission Requests', value: '7', change: '+2', icon: MessageSquare },
+    {
+      label: 'Active Auctions',
+      value: statsData?.activeAuctions?.toString() || '0',
+      change: '+0',
+      icon: Calendar
+    },
+    {
+      label: 'Total Revenue',
+      value: `$${statsData?.totalRevenue?.toLocaleString() || '0'}`,
+      change: '+0%',
+      icon: DollarSign
+    },
+    {
+      label: 'Items',
+      value: statsData?.totalItems?.toString() || '0',
+      change: '+0',
+      icon: Package
+    },
+    {
+      label: 'Commission Requests',
+      value: statsData?.pendingCommissions?.toString() || '0',
+      change: '+0',
+      icon: MessageSquare
+    },
   ];
+
+  const auctions = auctionsData?.auctions || [];
+  const items = itemsData?.items || [];
+  const commissions = commissionsData?.commissions || [];
 
   return (
     <div className="min-h-screen bg-medium-cream/30">
@@ -189,22 +239,76 @@ export default function AdminPage() {
                   <h2 className="text-xl font-semibold text-medium-dark">
                     Manage Auctions
                   </h2>
-                  <Button>
+                  <Button onClick={() => router.push('/admin/auctions/new')}>
                     <Plus size={16} className="mr-2" />
                     Create Auction
                   </Button>
                 </div>
-                
-                <div className="bg-medium-cream/50 rounded-lg p-8 text-center">
-                  <Calendar className="mx-auto text-medium-dark/40 mb-4" size={48} />
-                  <h3 className="text-lg font-medium text-medium-dark mb-2">
-                    No upcoming auctions
-                  </h3>
-                  <p className="text-medium-dark/60 mb-4">
-                    Create your next monthly auction to start receiving bids
-                  </p>
-                  <Button>Schedule Next Auction</Button>
-                </div>
+
+                {auctionsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="w-8 h-8 mx-auto border-4 border-medium-green border-t-transparent rounded-full animate-pottery-wheel" />
+                  </div>
+                ) : auctions.length === 0 ? (
+                  <div className="bg-medium-cream/50 rounded-lg p-8 text-center">
+                    <Calendar className="mx-auto text-medium-dark/40 mb-4" size={48} />
+                    <h3 className="text-lg font-medium text-medium-dark mb-2">
+                      No auctions yet
+                    </h3>
+                    <p className="text-medium-dark/60 mb-4">
+                      Create your first auction to start receiving bids
+                    </p>
+                    <Button onClick={() => router.push('/admin/auctions/new')}>
+                      Schedule Auction
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {auctions.map((auction: any) => (
+                      <div key={auction.id} className="border border-medium-green/20 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-medium text-medium-dark text-lg">
+                              {auction.title}
+                            </h3>
+                            <p className="text-medium-dark/60 text-sm mt-1">
+                              {auction.description || 'No description'}
+                            </p>
+                            <div className="flex gap-4 mt-2 text-sm text-medium-dark/60">
+                              <span>
+                                Start: {new Date(auction.start_date).toLocaleDateString()}
+                              </span>
+                              <span>
+                                End: {new Date(auction.end_date).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                auction.status === 'active'
+                                  ? 'bg-green-100 text-green-800'
+                                  : auction.status === 'upcoming'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {auction.status}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => router.push(`/admin/auctions/${auction.id}/edit`)}
+                            >
+                              <Edit size={14} className="mr-1" />
+                              Edit
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -218,33 +322,70 @@ export default function AdminPage() {
                   <h2 className="text-xl font-semibold text-medium-dark">
                     Item Collection
                   </h2>
-                  <Button>
+                  <Button onClick={() => router.push('/admin/items/new')}>
                     <Plus size={16} className="mr-2" />
                     Add Item
                   </Button>
                 </div>
-                
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3].map((item) => (
-                    <div key={item} className="border border-medium-green/20 rounded-lg p-4">
-                      <div className="aspect-square bg-medium-green/20 rounded-lg mb-4" />
-                      <h3 className="font-medium text-medium-dark mb-1">
-                        Item #{item}
-                      </h3>
-                      <p className="text-medium-dark/60 text-sm mb-3">
-                        Ready for auction
-                      </p>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="flex-1">
-                          Edit
-                        </Button>
-                        <Button size="sm" className="flex-1">
-                          Add to Auction
-                        </Button>
+
+                {itemsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="w-8 h-8 mx-auto border-4 border-medium-green border-t-transparent rounded-full animate-pottery-wheel" />
+                  </div>
+                ) : items.length === 0 ? (
+                  <div className="bg-medium-cream/50 rounded-lg p-8 text-center">
+                    <Package className="mx-auto text-medium-dark/40 mb-4" size={48} />
+                    <h3 className="text-lg font-medium text-medium-dark mb-2">
+                      No items yet
+                    </h3>
+                    <p className="text-medium-dark/60 mb-4">
+                      Add your first pottery item to get started
+                    </p>
+                    <Button onClick={() => router.push('/admin/items/new')}>
+                      Add Item
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {items.map((item: any) => (
+                      <div key={item.id} className="border border-medium-green/20 rounded-lg p-4">
+                        {item.images && item.images.length > 0 ? (
+                          <div className="aspect-square rounded-lg mb-4 overflow-hidden">
+                            <img
+                              src={item.images[0]}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="aspect-square bg-medium-green/20 rounded-lg mb-4 flex items-center justify-center">
+                            <Package className="text-medium-green/40" size={48} />
+                          </div>
+                        )}
+                        <h3 className="font-medium text-medium-dark mb-1">
+                          {item.title}
+                        </h3>
+                        <p className="text-medium-dark/60 text-sm mb-1">
+                          Starting bid: ${item.starting_bid}
+                        </p>
+                        <p className="text-medium-dark/60 text-sm mb-3">
+                          Current bid: ${item.current_bid || 0}
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                            onClick={() => router.push(`/admin/items/${item.id}/edit`)}
+                          >
+                            <Edit size={14} className="mr-1" />
+                            Edit
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -259,39 +400,73 @@ export default function AdminPage() {
                     Commission Requests
                   </h2>
                 </div>
-                
-                <div className="space-y-4">
-                  {[
-                    { name: 'Sarah Johnson', project: 'Custom Wedding Set', status: 'reviewing', submitted: '2 days ago' },
-                    { name: 'Mike Chen', project: 'Garden Planters', status: 'accepted', submitted: '1 week ago' },
-                    { name: 'Emma Davis', project: 'Kitchen Dinnerware', status: 'in_progress', submitted: '2 weeks ago' },
-                  ].map((commission, index) => (
-                    <div key={index} className="border border-medium-green/20 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium text-medium-dark">
-                            {commission.project}
-                          </h3>
-                          <p className="text-medium-dark/60 text-sm">
-                            by {commission.name} • {commission.submitted}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            commission.status === 'reviewing' ? 'bg-yellow-100 text-yellow-800' :
-                            commission.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                            'bg-blue-100 text-blue-800'
-                          }`}>
-                            {commission.status.replace('_', ' ')}
-                          </span>
-                          <Button size="sm" variant="outline">
-                            View Details
-                          </Button>
+
+                {commissionsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="w-8 h-8 mx-auto border-4 border-medium-green border-t-transparent rounded-full animate-pottery-wheel" />
+                  </div>
+                ) : commissions.length === 0 ? (
+                  <div className="bg-medium-cream/50 rounded-lg p-8 text-center">
+                    <MessageSquare className="mx-auto text-medium-dark/40 mb-4" size={48} />
+                    <h3 className="text-lg font-medium text-medium-dark mb-2">
+                      No commission requests yet
+                    </h3>
+                    <p className="text-medium-dark/60">
+                      Commission requests from customers will appear here
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {commissions.map((commission: any) => (
+                      <div key={commission.id} className="border border-medium-green/20 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-medium text-medium-dark">
+                              {commission.description.slice(0, 60)}
+                              {commission.description.length > 60 ? '...' : ''}
+                            </h3>
+                            <p className="text-medium-dark/60 text-sm">
+                              by {commission.name} ({commission.email}) •{' '}
+                              {new Date(commission.submitted_at).toLocaleDateString()}
+                            </p>
+                            {commission.budget && (
+                              <p className="text-medium-dark/60 text-sm mt-1">
+                                Budget: ${commission.budget}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                commission.status === 'submitted'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : commission.status === 'reviewing'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : commission.status === 'accepted'
+                                  ? 'bg-green-100 text-green-800'
+                                  : commission.status === 'declined'
+                                  ? 'bg-red-100 text-red-800'
+                                  : commission.status === 'in_progress'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {commission.status.replace('_', ' ')}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => router.push(`/admin/commissions/${commission.id}`)}
+                            >
+                              <Eye size={14} className="mr-1" />
+                              View Details
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
 

@@ -3,17 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { User, LogOut, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
-import Button from '../ui/Button';
 import AuthModal from '../auth/AuthModal';
 import ColorToggle from '../ui/ColorToggle';
 
 export default function Header() {
   const { user, userProfile, isAuthenticated } = useAuth();
-  const { getTextColorClass } = useColorToggle();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -45,7 +42,7 @@ export default function Header() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <span className={`text-3xl font-serif font-bold ${getTextColorClass()}`}>
+              <span className={`text-3xl font-serif font-bold text-[var(--theme-text)]`}>
                 Tor&apos;s Bored Pottery
               </span>
             </Link>
@@ -56,17 +53,17 @@ export default function Header() {
               
               {isAuthenticated ? (
                 <div className="flex items-center space-x-4">
-                  <span className={`hidden sm:block text-sm font-serif ${getTextColorClass()}`}>
+                  <span className={`hidden sm:block text-sm font-serif text-[var(--theme-text)]`}>
                     {userProfile?.displayName || user?.email}
                   </span>
                   {userProfile?.isAdmin && (
-                    <Link href="/admin" className={`text-sm font-serif hover:opacity-70 transition-opacity ${getTextColorClass()}`}>
+                    <Link href="/admin" className={`text-sm font-serif hover:opacity-70 transition-opacity text-[var(--theme-text)]`}>
                       Admin
                     </Link>
                   )}
                   <button
                     onClick={handleSignOut}
-                    className={`text-sm font-serif hover:opacity-70 transition-opacity ${getTextColorClass()}`}
+                    className={`text-sm font-serif hover:opacity-70 transition-opacity text-[var(--theme-text)]`}
                     title="Sign out"
                   >
                     Logout
@@ -75,7 +72,7 @@ export default function Header() {
               ) : (
                 <button
                   onClick={() => setShowAuthModal(true)}
-                  className={`text-sm font-serif hover:opacity-70 transition-opacity ${getTextColorClass()}`}
+                  className={`text-sm font-serif hover:opacity-70 transition-opacity text-[var(--theme-text)]`}
                 >
                   Login
                 </button>
@@ -83,7 +80,7 @@ export default function Header() {
 
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className={`md:hidden ${getTextColorClass()}`}
+                className={`md:hidden text-[var(--theme-text)]`}
               >
                 {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
@@ -100,7 +97,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-serif hover:opacity-70 transition-opacity border-b-2 border-transparent hover:border-current pb-1 ${getTextColorClass()}`}
+                className={`text-sm font-serif hover:opacity-70 transition-opacity border-b-2 border-transparent hover:border-current pb-1 text-[var(--theme-text)]`}
               >
                 {item.label}
               </Link>
@@ -121,7 +118,7 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`block text-sm font-serif hover:opacity-70 transition-opacity ${getTextColorClass()}`}
+                  className={`block text-sm font-serif hover:opacity-70 transition-opacity text-[var(--theme-text)]`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.label}

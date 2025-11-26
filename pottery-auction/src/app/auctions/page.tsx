@@ -7,11 +7,9 @@ import ItemCard from '@/components/auction/ItemCard';
 import BidModal from '@/components/auction/BidModal';
 import { Item } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function AuctionsPage() {
   const { isAuthenticated } = useAuth();
-  const { getBgColorClass, getBorderColorClass, getRingColorClass } = useColorToggle();
   const [selectedPiece, setSelectedPiece] = useState<Item | null>(null);
   const [showBidModal, setShowBidModal] = useState(false);
   const [sortBy, setSortBy] = useState('ending-soon');
@@ -75,7 +73,7 @@ export default function AuctionsPage() {
 
   return (
     <div className="min-h-screen bg-medium-cream/30">
-      <div className={`${getBgColorClass()} text-white py-16`}>
+      <div className="bg-[var(--theme-primary)] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -118,7 +116,7 @@ export default function AuctionsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className={`px-3 py-2 border ${getBorderColorClass()}/30 rounded-lg focus:outline-none focus:ring-2 focus:${getRingColorClass()}`}
+              className="px-3 py-2 border border-[var(--theme-border)]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)]"
             >
               <option value="ending-soon">Ending Soon</option>
               <option value="price-low">Price: Low to High</option>

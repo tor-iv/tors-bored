@@ -6,11 +6,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Send } from 'lucide-react';
-import Button from '@/components/ui/Button';
 import FileUpload from '@/components/ui/FileUpload';
 import DrawingCanvas from '@/components/ui/DrawingCanvas';
 import { useAuth } from '@/hooks/useAuth';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 const commissionSchema = z.object({
   name: z.string().optional(),
@@ -22,7 +20,6 @@ type CommissionForm = z.infer<typeof commissionSchema>;
 
 export default function CommissionsPage() {
   const { user, userProfile } = useAuth();
-  const { getTextColorClass } = useColorToggle();
   const [referenceImages, setReferenceImages] = useState<File[]>([]);
   const [drawing, setDrawing] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,15 +77,15 @@ export default function CommissionsPage() {
           <div className="w-16 h-16 bg-medium-green bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
             <Send size={32} className={getTextColorClass()} />
           </div>
-          <h2 className={`text-2xl font-serif font-bold mb-4 ${getTextColorClass()}`}>
+          <h2 className={`text-2xl font-serif font-bold mb-4 text-[var(--theme-text)]`}>
             Pottery Idea Submitted!
           </h2>
-          <p className={`mb-6 opacity-70 ${getTextColorClass()}`}>
+          <p className={`mb-6 opacity-70 text-[var(--theme-text)]`}>
             Thank you for sharing your pottery idea! I&apos;ll review it and get back to you within 3-5 business days to discuss feasibility and next steps.
           </p>
           <button
             onClick={() => setIsSubmitted(false)}
-            className={`text-sm hover:opacity-70 transition-opacity underline ${getTextColorClass()}`}
+            className={`text-sm hover:opacity-70 transition-opacity underline text-[var(--theme-text)]`}
           >
             Submit Another Idea
           </button>
@@ -106,10 +103,10 @@ export default function CommissionsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h1 className={`text-4xl md:text-5xl font-serif font-bold mb-4 ${getTextColorClass()}`}>
+            <h1 className={`text-4xl md:text-5xl font-serif font-bold mb-4 text-[var(--theme-text)]`}>
               Got a Pottery Idea?
             </h1>
-            <p className={`text-lg mb-6 opacity-70 ${getTextColorClass()}`}>
+            <p className={`text-lg mb-6 opacity-70 text-[var(--theme-text)]`}>
               Have an idea for a pottery piece you&apos;d love to see? I&apos;d love to hear about it!
             </p>
           </motion.div>
@@ -123,14 +120,14 @@ export default function CommissionsPage() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-medium-light rounded-lg shadow-sm p-8"
             >
-              <h2 className={`text-2xl font-serif font-bold mb-6 ${getTextColorClass()}`}>
+              <h2 className={`text-2xl font-serif font-bold mb-6 text-[var(--theme-text)]`}>
                 Share Your Pottery Idea
               </h2>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
-                    <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
+                    <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
                       Your Name
                     </label>
                     <input
@@ -144,7 +141,7 @@ export default function CommissionsPage() {
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
+                    <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
                       Email Address
                     </label>
                     <input
@@ -160,7 +157,7 @@ export default function CommissionsPage() {
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
+                  <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
                     Describe Your Pottery Idea
                   </label>
                   <textarea
@@ -175,7 +172,7 @@ export default function CommissionsPage() {
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
+                  <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
                     Reference Images (Optional)
                   </label>
                   <FileUpload
@@ -183,16 +180,16 @@ export default function CommissionsPage() {
                     maxFiles={5}
                     maxSize={5}
                   />
-                  <p className={`text-xs opacity-60 mt-2 ${getTextColorClass()}`}>
+                  <p className={`text-xs opacity-60 mt-2 text-[var(--theme-text)]`}>
                     Upload images of pottery styles, colors, or designs that inspire your idea
                   </p>
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${getTextColorClass()}`}>
+                  <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
                     Sketch Your Idea (Optional)
                   </label>
-                  <p className={`text-xs opacity-60 mb-4 ${getTextColorClass()}`}>
+                  <p className={`text-xs opacity-60 mb-4 text-[var(--theme-text)]`}>
                     Can&apos;t find a reference? Sketch your pottery idea here - even simple drawings help!
                   </p>
                   <DrawingCanvas
@@ -204,7 +201,7 @@ export default function CommissionsPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full py-3 text-sm hover:opacity-70 transition-opacity disabled:opacity-30 underline ${getTextColorClass()}`}
+                  className={`w-full py-3 text-sm hover:opacity-70 transition-opacity disabled:opacity-30 underline text-[var(--theme-text)]`}
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit Pottery Idea'}
                 </button>

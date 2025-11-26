@@ -6,6 +6,18 @@
   --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
+/* Theme color CSS variables - default to pastel green */
+:root {
+  --theme-primary: #86efac;
+  --theme-primary-dark: #4ade80;
+  --theme-primary-light: #dcfce7;
+  --theme-text: #166534;
+  --theme-text-muted: #15803d;
+  --theme-border: #86efac;
+  --theme-ring: #86efac;
+  --theme-hex: #86efac;
+}
+
 /* Smooth transitions for text color changes only */
 * {
   transition: color 0.3s ease;

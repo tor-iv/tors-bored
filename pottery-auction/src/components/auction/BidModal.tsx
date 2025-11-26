@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, DollarSign, TrendingUp } from 'lucide-react';
 import { Item } from '@/types';
 import Button from '../ui/Button';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 interface BidModalProps {
   isOpen: boolean;
@@ -15,7 +14,6 @@ interface BidModalProps {
 }
 
 export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidModalProps) {
-  const { getPrimaryColorClass, getBorderColorClass, getRingColorClass, getHoverBgColorClass } = useColorToggle();
   const [bidAmount, setBidAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -85,7 +83,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
               <div className="mb-6 p-4 bg-medium-cream rounded-lg">
                 <div className="flex items-center justify-between">
                   <span className="text-medium-dark/70">Current Bid:</span>
-                  <span className={`text-xl font-bold ${getPrimaryColorClass()} flex items-center`}>
+                  <span className="text-xl font-bold text-[var(--theme-text-muted)] flex items-center">
                     <DollarSign size={18} />
                     {piece.currentBid}
                   </span>
@@ -110,7 +108,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
                       type="number"
                       value={bidAmount}
                       onChange={(e) => setBidAmount(e.target.value)}
-                      className={`w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:${getRingColorClass()}`}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)]"
                       placeholder={minBid.toString()}
                       min={minBid}
                       step="1"
@@ -130,7 +128,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
                         key={amount}
                         type="button"
                         onClick={() => setBidAmount(amount.toString())}
-                        className={`p-2 border ${getBorderColorClass()} ${getPrimaryColorClass()} rounded-lg ${getHoverBgColorClass()} hover:text-white transition-colors`}
+                        className="p-2 border border-[var(--theme-border)] text-[var(--theme-text-muted)] rounded-lg hover:bg-[var(--theme-primary)] hover:text-white transition-colors"
                       >
                         ${amount}
                       </button>

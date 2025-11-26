@@ -3,14 +3,12 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Mail, Phone, MapPin, Instagram, Facebook, Twitter } from 'lucide-react';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const { getBgColorClass, getHoverBgColorClass, getPrimaryColorClass } = useColorToggle();
 
   return (
-    <footer className={`${getBgColorClass()} text-white`}>
+    <footer className="bg-[var(--theme-primary)] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           <motion.div
@@ -22,7 +20,7 @@ export default function Footer() {
               <motion.div
                 whileHover={{ rotate: 180 }}
                 transition={{ duration: 0.3 }}
-                className={`w-8 h-8 ${getBgColorClass()} rounded-full`}
+                className="w-8 h-8 bg-[var(--theme-primary-dark)] rounded-full"
               />
               <span className="text-xl font-bold">Marketplace</span>
             </div>
@@ -36,7 +34,7 @@ export default function Footer() {
                   href="#"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className={`w-10 h-10 ${getBgColorClass()}/20 rounded-full flex items-center justify-center ${getHoverBgColorClass()} transition-colors`}
+                  className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-[var(--theme-primary-dark)] transition-colors"
                 >
                   <Icon size={18} />
                 </motion.a>
@@ -60,10 +58,7 @@ export default function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`block text-white/80 ${getPrimaryColorClass()} hover:opacity-80 transition-opacity`}
-                  style={{ color: 'inherit' }}
-                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                  className="block text-white/80 hover:text-white transition-colors"
                 >
                   {link.label}
                 </Link>

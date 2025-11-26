@@ -8,11 +8,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export default function ButtonSimple({ children, isLoading, className = '', ...props }: ButtonProps) {
-  const { getThemeColor, currentTheme } = useColorToggle();
+  const { themeHex } = useColorToggle();
   const [isHovered, setIsHovered] = useState(false);
 
   // Get theme colors
-  const baseColor = getThemeColor();
+  const baseColor = themeHex;
 
   // Create darker version for hover (reduce brightness by ~20%)
   const darkerColor = adjustBrightness(baseColor, -20);
