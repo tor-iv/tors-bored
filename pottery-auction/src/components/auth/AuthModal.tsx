@@ -128,8 +128,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               {/* Magic Link Sent Success State */}
               {magicLinkSent ? (
                 <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Mail className="text-green-600" size={32} />
+                  <div className="w-16 h-16 bg-theme-success-light rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Mail className="text-theme-success" size={32} />
                   </div>
                   <h2 className="text-2xl font-bold text-pottery-charcoal mb-2">
                     Check Your Email
@@ -213,7 +213,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     )}
 
                     {error && (
-                      <p className="text-red-500 text-sm">{error}</p>
+                      <p className="text-theme-error text-sm">{error}</p>
                     )}
 
                     <ButtonSimple

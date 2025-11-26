@@ -97,8 +97,8 @@ export default function FileUpload({
       <div
         className={`relative border-2 border-dashed rounded-lg p-6 transition-colors ${
           dragActive
-            ? 'border-pottery-terracotta bg-pottery-terracotta/5'
-            : 'border-pottery-sage/30 hover:border-pottery-terracotta/50'
+            ? 'border-theme bg-theme-primary-light'
+            : 'border-gray-300 hover:border-theme'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -136,7 +136,7 @@ export default function FileUpload({
             className="mt-3"
           >
             {errors.map((error, index) => (
-              <div key={index} className="flex items-center gap-2 text-red-600 text-sm mb-1">
+              <div key={index} className="flex items-center gap-2 text-theme-error text-sm mb-1">
                 <AlertCircle size={16} />
                 {error}
               </div>
@@ -163,7 +163,7 @@ export default function FileUpload({
               
               <button
                 onClick={() => removeFile(index)}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute -top-2 -right-2 bg-theme-primary-dark text-theme-on-primary-dark rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X size={14} />
               </button>

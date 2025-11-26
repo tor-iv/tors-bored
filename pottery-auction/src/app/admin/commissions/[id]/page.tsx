@@ -97,21 +97,8 @@ export default function CommissionDetailPage() {
   };
 
   const getStatusColor = (status: string) => {
-    const option = STATUS_OPTIONS.find((o) => o.value === status);
-    switch (option?.color) {
-      case 'blue':
-        return 'bg-blue-100 text-blue-800';
-      case 'yellow':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'green':
-        return 'bg-green-100 text-green-800';
-      case 'red':
-        return 'bg-red-100 text-red-800';
-      case 'purple':
-        return 'bg-purple-100 text-purple-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+    // Use theme-aware status colors
+    return 'bg-theme-primary-light text-theme';
   };
 
   if (isLoading) {
@@ -128,7 +115,7 @@ export default function CommissionDetailPage() {
     return (
       <AdminLayout title="Commission Details" backHref="/admin?tab=commissions">
         <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <AlertCircle className="mx-auto text-red-500 mb-4" size={48} />
+          <AlertCircle className="mx-auto text-theme-error mb-4" size={48} />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Commission Not Found</h2>
           <p className="text-gray-600 mb-4">The commission you're looking for doesn't exist.</p>
           <Button onClick={() => router.push('/admin?tab=commissions')}>
@@ -286,13 +273,13 @@ export default function CommissionDetailPage() {
             </div>
 
             {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+              <div className="p-4 bg-theme-error-light border border-theme-error rounded-lg text-theme-error">
                 {error}
               </div>
             )}
 
             {successMessage && (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+              <div className="p-4 bg-theme-success-light border border-theme-success rounded-lg text-theme-success">
                 {successMessage}
               </div>
             )}

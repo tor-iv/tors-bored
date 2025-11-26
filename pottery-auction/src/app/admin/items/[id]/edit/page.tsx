@@ -322,7 +322,7 @@ export default function EditItemPage() {
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            <div className="p-4 bg-theme-error-light border border-theme-error rounded-lg text-theme-error">
               {error}
             </div>
           )}
@@ -353,7 +353,7 @@ export default function EditItemPage() {
               variant="outline"
               onClick={handleDelete}
               disabled={isDeleting}
-              className="ml-auto text-red-600 border-red-300 hover:bg-red-50"
+              className="ml-auto text-theme-error border-theme-error hover:bg-theme-error-light"
             >
               {isDeleting ? (
                 <>

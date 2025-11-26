@@ -2,63 +2,29 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Send } from 'lucide-react';
-import FileUpload from '@/components/ui/FileUpload';
-import DrawingCanvas from '@/components/ui/DrawingCanvas';
+import { Sparkles, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { PotteryWizard, WizardData } from '@/components/commissions';
 import { useAuth } from '@/hooks/useAuth';
-
-const commissionSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().email('Please enter a valid email').optional().or(z.literal('')),
-  description: z.string().optional(),
-});
-
-type CommissionForm = z.infer<typeof commissionSchema>;
+import { HandsOnClay, ClayBlob, FloatingDecoration } from '@/components/decorations';
+import PotteryLoader from '@/components/ui/PotteryLoader';
 
 export default function CommissionsPage() {
   const { user, userProfile } = useAuth();
-  const [referenceImages, setReferenceImages] = useState<File[]>([]);
-  const [drawing, setDrawing] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedData, setSubmittedData] = useState<WizardData | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<CommissionForm>({
-    resolver: zodResolver(commissionSchema),
-    defaultValues: {
-      name: userProfile?.displayName || '',
-      email: user?.email || '',
-    },
-  });
-
-  const onSubmit = async (data: CommissionForm) => {
-    // Check if there's any content
-    const hasText = data.name || data.email || data.description;
-    const hasImages = referenceImages.length > 0;
-    const hasDrawing = drawing !== null;
-
-    if (!hasText && !hasImages && !hasDrawing) {
-      alert('Please provide at least some content - add text, upload images, or draw something!');
-      return;
-    }
-
+  const handleWizardComplete = async (data: WizardData) => {
     setIsSubmitting(true);
 
     try {
-      console.log('Commission data:', { ...data, referenceImages, drawing });
+      // TODO: Submit to API
+      console.log('Commission data:', data);
       await new Promise(resolve => setTimeout(resolve, 2000));
 
+      setSubmittedData(data);
       setIsSubmitted(true);
-      reset();
-      setReferenceImages([]);
-      setDrawing(null);
     } catch (error) {
       console.error('Error submitting commission:', error);
     } finally {
@@ -66,148 +32,216 @@ export default function CommissionsPage() {
     }
   };
 
-  if (isSubmitted) {
+  // Loading state
+  if (isSubmitting) {
     return (
-      <div className="min-h-screen bg-medium-cream flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F1EC' }}>
+        <PotteryLoader size="lg" showMessage={true} />
+      </div>
+    );
+  }
+
+  // Success state
+  if (isSubmitted && submittedData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#F5F1EC' }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-medium-light rounded-lg shadow-sm p-8 max-w-md mx-4 text-center"
+          className="max-w-lg w-full text-center"
         >
-          <div className="w-16 h-16 bg-medium-green bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Send size={32} className="text-[var(--theme-text)]" />
-          </div>
-          <h2 className={`text-2xl font-serif font-bold mb-4 text-[var(--theme-text)]`}>
-            Pottery Idea Submitted!
-          </h2>
-          <p className={`mb-6 opacity-70 text-[var(--theme-text)]`}>
-            Thank you for sharing your pottery idea! I&apos;ll review it and get back to you within 3-5 business days to discuss feasibility and next steps.
-          </p>
-          <button
-            onClick={() => setIsSubmitted(false)}
-            className={`text-sm hover:opacity-70 transition-opacity underline text-[var(--theme-text)]`}
+          {/* Success animation */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+            className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
+            style={{ backgroundColor: 'var(--theme-primary)' }}
           >
-            Submit Another Idea
-          </button>
+            <Sparkles size={40} className="text-white" />
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-4xl font-bold mb-4"
+            style={{
+              color: 'var(--theme-text)',
+              fontFamily: 'var(--font-caveat), cursive'
+            }}
+          >
+            Your Dream Pot is On Its Way!
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mb-8"
+            style={{ color: 'var(--theme-text-muted)' }}
+          >
+            Thank you for sharing your vision! I&apos;ll review your{' '}
+            <span className="font-medium" style={{ color: 'var(--theme-text)' }}>
+              {submittedData.shape}
+            </span>{' '}
+            made with{' '}
+            <span className="font-medium" style={{ color: 'var(--theme-text)' }}>
+              {submittedData.clay}
+            </span>{' '}
+            and{' '}
+            <span className="font-medium" style={{ color: 'var(--theme-text)' }}>
+              {submittedData.glaze}
+            </span>{' '}
+            glaze, and get back to you within 3-5 business days.
+          </motion.p>
+
+          {/* Summary card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="rounded-xl p-6 mb-8"
+            style={{
+              background: 'white',
+              border: '1px solid rgba(224, 120, 86, 0.2)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+            }}
+          >
+            <h3
+              className="font-semibold mb-4"
+              style={{
+                color: 'var(--theme-text)',
+                fontFamily: 'var(--font-caveat), cursive',
+                fontSize: '1.3rem'
+              }}
+            >
+              What happens next?
+            </h3>
+            <div className="text-left space-y-3">
+              {[
+                "I'll review your pottery idea and assess feasibility",
+                "You'll receive an email with my thoughts and any questions",
+                "We'll discuss pricing, timeline, and any adjustments",
+                "Once agreed, I'll start bringing your vision to life!"
+              ].map((step, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                    style={{
+                      backgroundColor: 'var(--theme-primary-light)',
+                      color: 'var(--theme-text)',
+                      fontFamily: 'var(--font-caveat), cursive',
+                      fontSize: '0.9rem'
+                    }}
+                  >
+                    {i + 1}
+                  </div>
+                  <p className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>
+                    {step}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <button
+              onClick={() => {
+                setIsSubmitted(false);
+                setSubmittedData(null);
+              }}
+              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105"
+              style={{
+                backgroundColor: 'var(--theme-primary)',
+                color: 'var(--theme-text-on-primary)',
+                boxShadow: '0 4px 0 var(--theme-primary-dark)'
+              }}
+            >
+              Submit Another Idea
+            </button>
+            <Link
+              href="/gallery"
+              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 border-2"
+              style={{
+                borderColor: 'var(--theme-primary)',
+                color: 'var(--theme-text)'
+              }}
+            >
+              Browse Gallery
+            </Link>
+          </motion.div>
         </motion.div>
       </div>
     );
   }
 
+  // Main wizard view
   return (
-    <div className="min-h-screen bg-medium-cream">
-      <div className="bg-medium-light py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#F5F1EC' }}>
+      {/* Background decorations */}
+      <FloatingDecoration className="absolute top-20 right-10 opacity-20 hidden lg:block" delay={0}>
+        <ClayBlob className="w-48 h-48" color="var(--theme-primary)" />
+      </FloatingDecoration>
+      <FloatingDecoration className="absolute bottom-40 left-10 opacity-15 hidden lg:block" delay={2}>
+        <ClayBlob className="w-32 h-32" color="var(--theme-accent)" />
+      </FloatingDecoration>
+
+      {/* Header */}
+      <div className="relative py-12 sm:py-16" style={{ backgroundColor: 'var(--theme-primary-light)' }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Back link */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm mb-6 hover:opacity-70 transition-opacity"
+            style={{ color: 'var(--theme-text-muted)' }}
+          >
+            <ArrowLeft size={16} />
+            Back to Home
+          </Link>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center"
           >
-            <h1 className={`text-4xl md:text-5xl font-serif font-bold mb-4 text-[var(--theme-text)]`}>
-              Got a Pottery Idea?
+            {/* Hands on clay illustration */}
+            <HandsOnClay
+              className="w-20 h-20 mx-auto mb-4"
+              color="var(--theme-text)"
+            />
+
+            <h1
+              className="text-4xl sm:text-5xl font-bold mb-4"
+              style={{
+                color: 'var(--theme-text)',
+                fontFamily: 'var(--font-caveat), cursive'
+              }}
+            >
+              Design Your Dream Pot
             </h1>
-            <p className={`text-lg mb-6 opacity-70 text-[var(--theme-text)]`}>
-              Have an idea for a pottery piece you&apos;d love to see? I&apos;d love to hear about it!
+            <p
+              className="text-lg max-w-2xl mx-auto"
+              style={{ color: 'var(--theme-text-muted)' }}
+            >
+              Walk through a few quick steps to tell me about your perfect pottery piece.
+              I&apos;ll review your idea and we&apos;ll bring it to life together!
             </p>
           </motion.div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-medium-light rounded-lg shadow-sm p-8"
-            >
-              <h2 className={`text-2xl font-serif font-bold mb-6 text-[var(--theme-text)]`}>
-                Share Your Pottery Idea
-              </h2>
-
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
-                      Your Name
-                    </label>
-                    <input
-                      {...register('name')}
-                      className="w-full px-0 py-2 border-0 border-b border-gray-300 rounded-none focus:outline-none focus:border-current bg-transparent"
-                      placeholder="Enter your full name"
-                    />
-                    {errors.name && (
-                      <p className="text-theme-error text-sm mt-1">{errors.name.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
-                      Email Address
-                    </label>
-                    <input
-                      {...register('email')}
-                      type="email"
-                      className="w-full px-0 py-2 border-0 border-b border-gray-300 rounded-none focus:outline-none focus:border-current bg-transparent"
-                      placeholder="your@email.com"
-                    />
-                    {errors.email && (
-                      <p className="text-theme-error text-sm mt-1">{errors.email.message}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
-                    Describe Your Pottery Idea
-                  </label>
-                  <textarea
-                    {...register('description')}
-                    rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-medium-green"
-                    placeholder="Describe your pottery vision in detail. Include size, style, colors, intended use (functional/decorative), glaze preferences, and any specific requirements..."
-                  />
-                  {errors.description && (
-                    <p className="text-theme-error text-sm mt-1">{errors.description.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
-                    Reference Images (Optional)
-                  </label>
-                  <FileUpload
-                    onFilesChange={setReferenceImages}
-                    maxFiles={5}
-                    maxSize={5}
-                  />
-                  <p className={`text-xs opacity-60 mt-2 text-[var(--theme-text)]`}>
-                    Upload images of pottery styles, colors, or designs that inspire your idea
-                  </p>
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 text-[var(--theme-text)]`}>
-                    Sketch Your Idea (Optional)
-                  </label>
-                  <p className={`text-xs opacity-60 mb-4 text-[var(--theme-text)]`}>
-                    Can&apos;t find a reference? Sketch your pottery idea here - even simple drawings help!
-                  </p>
-                  <DrawingCanvas
-                    onSave={(imageData) => setDrawing(imageData)}
-                    placeholder="Draw your pottery idea here - shapes, handles, decorative elements, etc."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full py-3 text-sm hover:opacity-70 transition-opacity disabled:opacity-30 underline text-[var(--theme-text)]`}
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit Pottery Idea'}
-                </button>
-              </form>
-            </motion.div>
-        </div>
+      {/* Wizard */}
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <PotteryWizard
+          onComplete={handleWizardComplete}
+          initialName={userProfile?.displayName || ''}
+          initialEmail={user?.email || ''}
+        />
       </div>
     </div>
   );

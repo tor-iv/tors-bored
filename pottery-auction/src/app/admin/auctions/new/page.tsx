@@ -131,7 +131,7 @@ export default function NewAuctionPage() {
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            <div className="p-4 bg-theme-error-light border border-theme-error rounded-lg text-theme-error">
               {error}
             </div>
           )}

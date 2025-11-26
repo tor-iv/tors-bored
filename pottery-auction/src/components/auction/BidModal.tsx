@@ -137,7 +137,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
                 </div>
                 
                 {error && (
-                  <p className="text-red-500 text-sm">{error}</p>
+                  <p className="text-theme-error text-sm">{error}</p>
                 )}
                 
                 <div className="pt-4 border-t">

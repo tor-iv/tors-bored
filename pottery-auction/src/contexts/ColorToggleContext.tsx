@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 
-type PresetTheme = 'blue' | 'green' | 'purple';
+type PresetTheme = 'terracotta' | 'sage' | 'charcoal';
 type ThemeType = PresetTheme | 'custom';
 
 interface ThemeColors {
@@ -11,6 +11,11 @@ interface ThemeColors {
   primaryLight: string;
   text: string;
   textMuted: string;
+  // Semantic colors derived from theme
+  error: string;
+  errorLight: string;
+  success: string;
+  successLight: string;
 }
 
 interface ColorToggleContextType {
@@ -21,28 +26,40 @@ interface ColorToggleContextType {
   themeHex: string;
 }
 
-// Pastel color presets
+// Pottery studio color presets - warm, earthy, handcrafted feel
 const THEME_PRESETS: Record<PresetTheme, ThemeColors> = {
-  blue: {
-    primary: '#93c5fd',      // blue-300
-    primaryDark: '#60a5fa',  // blue-400
-    primaryLight: '#dbeafe', // blue-100
-    text: '#1e40af',         // blue-800
-    textMuted: '#1d4ed8',    // blue-700
+  terracotta: {
+    primary: '#E07856',      // Warm terracotta clay
+    primaryDark: '#C96846',  // Fired clay
+    primaryLight: '#FAE5DE', // Light terracotta wash
+    text: '#5C3D2E',         // Rich brown
+    textMuted: '#8B6B5C',    // Muted clay brown
+    error: '#A04030',        // Deep terracotta for errors
+    errorLight: '#FAE5DE',   // Light terracotta bg for errors
+    success: '#5C3D2E',      // Brown for success
+    successLight: '#FAE5DE', // Light terracotta bg for success
   },
-  green: {
-    primary: '#86efac',      // green-300
-    primaryDark: '#4ade80',  // green-400
-    primaryLight: '#dcfce7', // green-100
-    text: '#166534',         // green-800
-    textMuted: '#15803d',    // green-700
+  sage: {
+    primary: '#8B9D83',      // Sage green
+    primaryDark: '#6B7D63',  // Deep sage
+    primaryLight: '#E8EBE6', // Light sage wash
+    text: '#3D4A38',         // Forest green
+    textMuted: '#5E6B58',    // Muted sage
+    error: '#4A5544',        // Dark sage for errors
+    errorLight: '#E8EBE6',   // Light sage bg for errors
+    success: '#3D4A38',      // Forest for success
+    successLight: '#E8EBE6', // Light sage bg for success
   },
-  purple: {
-    primary: '#c4b5fd',      // violet-300
-    primaryDark: '#a78bfa',  // violet-400
-    primaryLight: '#ede9fe', // violet-100
-    text: '#5b21b6',         // violet-800
-    textMuted: '#6d28d9',    // violet-700
+  charcoal: {
+    primary: '#6B6B6B',      // Warm charcoal
+    primaryDark: '#4A4A4A',  // Deep charcoal
+    primaryLight: '#E8E8E8', // Light gray wash
+    text: '#2B2B2B',         // Near black
+    textMuted: '#5A5A5A',    // Muted charcoal
+    error: '#3A3A3A',        // Dark charcoal for errors
+    errorLight: '#E8E8E8',   // Light gray bg for errors
+    success: '#2B2B2B',      // Dark for success
+    successLight: '#E8E8E8', // Light gray bg for success
   },
 };
 
@@ -109,7 +126,33 @@ function generateThemeFromHex(hex: string): ThemeColors {
     primaryLight: hslToHex(h, Math.max(s - 20, 10), Math.min(l + 25, 95)),
     text: hslToHex(h, Math.min(s + 20, 80), 25),
     textMuted: hslToHex(h, Math.min(s + 15, 70), 35),
+    // Semantic colors - derived from the theme color
+    error: hslToHex(h, Math.min(s + 20, 80), 20),       // Very dark variant
+    errorLight: hslToHex(h, Math.max(s - 20, 10), 92),  // Very light bg
+    success: hslToHex(h, Math.min(s + 20, 80), 25),     // Dark variant
+    successLight: hslToHex(h, Math.max(s - 20, 10), 92), // Very light bg
   };
+}
+
+// Calculate relative luminance for contrast checking
+function getLuminance(hex: string): number {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!result) return 0;
+
+  const [r, g, b] = [
+    parseInt(result[1], 16) / 255,
+    parseInt(result[2], 16) / 255,
+    parseInt(result[3], 16) / 255,
+  ].map(c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+// Get text color that contrasts well with background
+function getContrastText(bgHex: string): string {
+  const luminance = getLuminance(bgHex);
+  // If background is light (luminance > 0.5), use dark text; otherwise use light text
+  return luminance > 0.5 ? '#1a1a1a' : '#ffffff';
 }
 
 // Apply theme colors to CSS variables on :root
@@ -125,6 +168,17 @@ function applyThemeToDOM(colors: ThemeColors, hex: string) {
   root.style.setProperty('--theme-border', colors.primary);
   root.style.setProperty('--theme-ring', colors.primary);
   root.style.setProperty('--theme-hex', hex);
+
+  // Semantic colors
+  root.style.setProperty('--theme-error', colors.error);
+  root.style.setProperty('--theme-error-light', colors.errorLight);
+  root.style.setProperty('--theme-success', colors.success);
+  root.style.setProperty('--theme-success-light', colors.successLight);
+
+  // Contrast-safe text colors for use on primary backgrounds
+  root.style.setProperty('--theme-text-on-primary', getContrastText(colors.primary));
+  root.style.setProperty('--theme-text-on-primary-dark', getContrastText(colors.primaryDark));
+  root.style.setProperty('--theme-text-on-primary-light', getContrastText(colors.primaryLight));
 }
 
 const ColorToggleContext = createContext<ColorToggleContextType | undefined>(undefined);
@@ -135,13 +189,13 @@ interface StoredTheme {
 }
 
 export function ColorToggleProvider({ children }: { children: ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState<ThemeType>('green');
+  const [currentTheme, setCurrentTheme] = useState<ThemeType>('terracotta');
   const [customColor, setCustomColorState] = useState<string | null>(null);
 
   // Calculate current theme hex
   const themeHex = currentTheme === 'custom' && customColor
     ? customColor
-    : THEME_PRESETS[currentTheme as PresetTheme]?.primary || THEME_PRESETS.green.primary;
+    : THEME_PRESETS[currentTheme as PresetTheme]?.primary || THEME_PRESETS.terracotta.primary;
 
   // Apply theme whenever it changes
   useEffect(() => {
@@ -152,7 +206,7 @@ export function ColorToggleProvider({ children }: { children: ReactNode }) {
       colors = generateThemeFromHex(customColor);
       hex = customColor;
     } else {
-      const preset = THEME_PRESETS[currentTheme as PresetTheme] || THEME_PRESETS.green;
+      const preset = THEME_PRESETS[currentTheme as PresetTheme] || THEME_PRESETS.terracotta;
       colors = preset;
       hex = preset.primary;
     }
@@ -168,15 +222,15 @@ export function ColorToggleProvider({ children }: { children: ReactNode }) {
     if (stored) {
       try {
         const parsed: StoredTheme = JSON.parse(stored);
-        if (parsed.type === 'preset' && ['blue', 'green', 'purple'].includes(parsed.value)) {
+        if (parsed.type === 'preset' && ['terracotta', 'sage', 'charcoal'].includes(parsed.value)) {
           setCurrentTheme(parsed.value as PresetTheme);
         } else if (parsed.type === 'custom' && parsed.value) {
           setCurrentTheme('custom');
           setCustomColorState(parsed.value);
         }
       } catch {
-        // Legacy format - just a string like 'blue'
-        if (['blue', 'green', 'purple'].includes(stored)) {
+        // Legacy format - just a string like 'terracotta'
+        if (['terracotta', 'sage', 'charcoal'].includes(stored)) {
           setCurrentTheme(stored as PresetTheme);
         }
       }
