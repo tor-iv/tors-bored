@@ -43,7 +43,15 @@ export const useAuth = () => {
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        // PGRST116 = "no rows returned" - profile doesn't exist yet
+        if (error.code === 'PGRST116') {
+          console.warn('No profile found for user:', userId);
+          setUserProfile(null);
+          return;
+        }
+        throw error;
+      }
 
       if (data) {
         const userProfile: User = {
@@ -58,7 +66,10 @@ export const useAuth = () => {
         setUserProfile(userProfile);
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      // Log the actual error message from Supabase
+      const message = error instanceof Error ? error.message : (error as { message?: string })?.message || 'Unknown error';
+      console.error('Error fetching user profile:', message);
+      setUserProfile(null);
     } finally {
       setLoading(false);
     }
