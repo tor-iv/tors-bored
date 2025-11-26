@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Search, Grid, List } from 'lucide-react';
 import Image from 'next/image';
+import { VaseSketch, ClayBlob, FloatingDecoration } from '@/components/decorations';
+import { staggerContainer, clayForm } from '@/lib/animation-variants';
 
 export default function GalleryPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -68,18 +70,36 @@ export default function GalleryPage() {
   });
 
   return (
-    <div className="min-h-screen bg-medium-cream/30">
-      <div className="bg-[var(--theme-primary)] text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen" style={{ backgroundColor: '#F5F1EC' }}>
+      {/* Header */}
+      <div
+        className="relative overflow-hidden py-16"
+        style={{ backgroundColor: 'var(--theme-primary)' }}
+      >
+        {/* Floating decoration */}
+        <FloatingDecoration className="absolute top-10 right-20 opacity-20 hidden lg:block" delay={0}>
+          <ClayBlob className="w-32 h-32" color="white" />
+        </FloatingDecoration>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            <h1
+              className="text-4xl md:text-6xl font-bold mb-4"
+              style={{
+                color: 'var(--theme-text-on-primary)',
+                fontFamily: 'var(--font-caveat), cursive'
+              }}
+            >
               Gallery
             </h1>
-            <p className="text-xl mb-6">
+            <p
+              className="text-xl"
+              style={{ color: 'var(--theme-text-on-primary)', opacity: 0.9 }}
+            >
               Explore past pottery pieces and completed works
             </p>
           </motion.div>
@@ -87,27 +107,48 @@ export default function GalleryPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row gap-8 mb-8">
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col lg:flex-row gap-4 mb-8"
+        >
+          {/* Search */}
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-medium-dark/40" size={20} />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                size={20}
+                style={{ color: 'var(--theme-text-muted)' }}
+              />
               <input
                 type="text"
                 placeholder="Search pottery..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-[var(--theme-border)]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)] bg-white"
+                className="w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all"
+                style={{
+                  border: '2px solid rgba(224, 120, 86, 0.2)',
+                  backgroundColor: 'white',
+                  color: 'var(--theme-text)'
+                }}
               />
             </div>
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Category filter */}
             <div className="flex items-center gap-2">
-              <Filter size={16} className="text-medium-dark" />
+              <Filter size={16} style={{ color: 'var(--theme-text-muted)' }} />
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="px-3 py-2 border border-[var(--theme-border)]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)] bg-white"
+                className="px-3 py-2 rounded-lg focus:outline-none focus:ring-2 cursor-pointer"
+                style={{
+                  border: '2px solid rgba(224, 120, 86, 0.2)',
+                  backgroundColor: 'white',
+                  color: 'var(--theme-text)'
+                }}
               >
                 {categories.map(category => (
                   <option key={category} value={category}>
@@ -117,65 +158,108 @@ export default function GalleryPage() {
               </select>
             </div>
 
-            <div className="flex border border-[var(--theme-border)]/30 rounded-lg overflow-hidden bg-white">
+            {/* View mode toggle */}
+            <div
+              className="flex rounded-lg overflow-hidden"
+              style={{ border: '2px solid rgba(224, 120, 86, 0.2)' }}
+            >
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 ${viewMode === 'grid' ? 'bg-[var(--theme-primary)] text-white' : 'text-medium-dark hover:bg-medium-cream'}`}
+                className="p-2 transition-colors"
+                style={{
+                  backgroundColor: viewMode === 'grid' ? 'var(--theme-primary)' : 'white',
+                  color: viewMode === 'grid' ? 'var(--theme-text-on-primary)' : 'var(--theme-text-muted)'
+                }}
               >
                 <Grid size={16} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 ${viewMode === 'list' ? 'bg-[var(--theme-primary)] text-white' : 'text-medium-dark hover:bg-medium-cream'}`}
+                className="p-2 transition-colors"
+                style={{
+                  backgroundColor: viewMode === 'list' ? 'var(--theme-primary)' : 'white',
+                  color: viewMode === 'list' ? 'var(--theme-text-on-primary)' : 'var(--theme-text-muted)'
+                }}
               >
                 <List size={16} />
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
+        {/* Gallery Grid */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
           className={
             viewMode === 'grid'
               ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-8'
               : 'space-y-6'
           }
         >
-          {filteredPieces.map((piece, index) => (
+          {filteredPieces.map((piece) => (
             <motion.div
               key={piece.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={
-                viewMode === 'grid'
-                  ? 'bg-white rounded-lg shadow-lg overflow-hidden group cursor-pointer'
-                  : 'bg-white rounded-lg shadow-lg overflow-hidden flex gap-6 p-6'
-              }
+              variants={clayForm}
+              whileHover={{ y: -8, transition: { type: "spring", stiffness: 300 } }}
+              className={`
+                group cursor-pointer
+                ${viewMode === 'grid'
+                  ? 'rounded-xl overflow-hidden'
+                  : 'rounded-xl overflow-hidden flex gap-6 p-4'
+                }
+              `}
+              style={{
+                background: 'linear-gradient(135deg, #FFFFFF 0%, #FAF8F5 100%)',
+                border: '1px solid rgba(224, 120, 86, 0.15)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+                borderRadius: viewMode === 'grid' ? '12px 8px 12px 8px' : '12px'
+              }}
             >
-              <div className={viewMode === 'grid' ? 'relative aspect-square' : 'w-48 aspect-square relative flex-shrink-0'}>
+              {/* Image */}
+              <div className={viewMode === 'grid' ? 'relative aspect-square' : 'w-48 aspect-square relative flex-shrink-0 rounded-lg overflow-hidden'}>
                 <Image
                   src={piece.image}
                   alt={piece.title}
                   fill
-                  className="object-cover rounded-t-lg"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
                   sizes={viewMode === 'grid' ? '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw' : '192px'}
                 />
-                {viewMode === 'grid' && (
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 rounded-t-lg" />
-                )}
+                {/* Overlay on hover */}
+                <div
+                  className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"
+                />
+                {/* Sold badge */}
+                <div className="absolute top-3 right-3">
+                  <span
+                    className="px-3 py-1 rounded-full text-xs font-medium pottery-badge"
+                    style={{ transform: 'rotate(3deg)' }}
+                  >
+                    Sold
+                  </span>
+                </div>
               </div>
 
-              <div className={viewMode === 'grid' ? 'p-6' : 'flex-1 flex flex-col justify-center'}>
-                <h3 className="text-xl font-semibold text-medium-dark mb-2">
+              {/* Content */}
+              <div className={viewMode === 'grid' ? 'p-5' : 'flex-1 flex flex-col justify-center'}>
+                <h3
+                  className="text-xl font-semibold mb-2"
+                  style={{
+                    color: 'var(--theme-text)',
+                    fontFamily: 'var(--font-caveat), cursive',
+                    fontSize: '1.5rem'
+                  }}
+                >
                   {piece.title}
                 </h3>
 
-                <div className="flex items-center gap-4 mb-3 text-sm text-medium-dark/60">
+                <div className="flex items-center gap-4 mb-3 text-sm" style={{ color: 'var(--theme-text-muted)' }}>
                   <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 bg-[var(--theme-primary)] rounded-full" />
+                    <span
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: 'var(--theme-primary)' }}
+                    />
                     {piece.technique}
                   </span>
                   <span>{piece.auctionDate}</span>
@@ -183,34 +267,47 @@ export default function GalleryPage() {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-medium-dark/60">Final Sale Price</p>
-                    <p className="text-xl font-bold text-[var(--theme-text-muted)]">
+                    <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>
+                      Final Sale Price
+                    </p>
+                    <p
+                      className="font-bold"
+                      style={{
+                        color: 'var(--theme-text)',
+                        fontFamily: 'var(--font-caveat), cursive',
+                        fontSize: '1.5rem'
+                      }}
+                    >
                       ${piece.finalPrice}
                     </p>
                   </div>
-
-                  <span className="px-3 py-1 bg-[var(--theme-primary-light)]/20 text-medium-dark rounded-full text-sm font-medium">
-                    Sold
-                  </span>
                 </div>
               </div>
             </motion.div>
           ))}
         </motion.div>
 
+        {/* Empty state */}
         {filteredPieces.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12"
+            className="text-center py-16"
           >
-            <div className="w-16 h-16 bg-[var(--theme-primary-light)]/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Search className="text-[var(--theme-text-muted)]" size={24} />
-            </div>
-            <h3 className="text-xl font-semibold text-medium-dark mb-2">
+            <VaseSketch
+              className="w-24 h-24 mx-auto mb-4"
+              color="var(--theme-text-muted)"
+            />
+            <h3
+              className="text-2xl font-semibold mb-2"
+              style={{
+                color: 'var(--theme-text)',
+                fontFamily: 'var(--font-caveat), cursive'
+              }}
+            >
               No pottery found
             </h3>
-            <p className="text-medium-dark/70">
+            <p style={{ color: 'var(--theme-text-muted)' }}>
               Try adjusting your search terms or filters
             </p>
           </motion.div>
