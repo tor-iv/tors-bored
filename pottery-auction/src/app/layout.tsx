@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { ColorToggleProvider } from "@/contexts/ColorToggleContext";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,11 +31,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${caveat.variable} antialiased bg-medium-cream`}>
-        <ColorToggleProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </ColorToggleProvider>
+        <QueryProvider>
+          <ColorToggleProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </ColorToggleProvider>
+        </QueryProvider>
       </body>
     </html>
   );
