@@ -4,6 +4,57 @@
   --color-background: #FEFEFE;
   --color-foreground: #36454F;
   --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-caveat), cursive;
+
+  /* Custom pottery colors */
+  --color-pottery-charcoal: #2B2B2B;
+  --color-pottery-terracotta: #E07856;
+  --color-pottery-clay: #C96846;
+  --color-pottery-sage: #8B9D83;
+  --color-pottery-cream: #F5F1EC;
+
+  /* Medium colors */
+  --color-medium-green: #0A8754;
+  --color-medium-cream: #F5F1EC;
+  --color-medium-dark: #2B2B2B;
+  --color-medium-light: #FFFFFF;
+
+  /* Toggle colors */
+  --color-toggle-red: #E74C3C;
+  --color-toggle-green: #0A8754;
+  --color-toggle-blue: #2E86AB;
+
+  /* Theme colors (CSS variable based) */
+  --color-theme-primary: var(--theme-primary);
+  --color-theme-secondary: var(--theme-secondary);
+  --color-theme-background: var(--theme-background);
+  --color-theme-background-light: var(--theme-background-light);
+  --color-theme-text: var(--theme-text);
+  --color-theme-text-light: var(--theme-text-light);
+  --color-theme-border: var(--theme-border);
+  --color-theme-accent: var(--theme-accent);
+  --color-theme-muted: var(--theme-muted);
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.5s ease-in-out;
+  --animate-slide-up: slideUp 0.5s ease-out;
+  --animate-gentle-bounce: gentleBounce 3s ease-in-out infinite;
+  --animate-pottery-wheel: spin 2s linear infinite;
+
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes gentleBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
 }
 
 /* Theme color CSS variables - default to warm terracotta */

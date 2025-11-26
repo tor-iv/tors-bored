@@ -159,7 +159,7 @@ export default function Footer() {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           className="border-t mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
-          style={{ borderColor: 'var(--theme-text-on-primary)', borderOpacity: 0.2 }}
+          style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
         >
           <p
             className="text-sm"
