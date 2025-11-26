@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -22,7 +22,7 @@ import { useAuctions } from '@/hooks/queries/useAuctions';
 import { useItems } from '@/hooks/queries/useItems';
 import { useCommissions } from '@/hooks/queries/useCommissions';
 
-export default function AdminPage() {
+function AdminPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userProfile, isLoading: authLoading } = useAuth();
@@ -154,7 +154,7 @@ export default function AdminPage() {
                 </div>
               </div>
               <div className="mt-2">
-                <span className={`text-sm ${stat.change.includes('+') ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`text-sm ${stat.change.includes('+') ? 'text-theme-success' : 'text-theme-error'}`}>
                   {stat.change}
                 </span>
                 <span className="text-medium-dark/60 text-sm ml-1">
@@ -285,13 +285,7 @@ export default function AdminPage() {
                           </div>
                           <div className="flex items-center gap-3">
                             <span
-                              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                auction.status === 'active'
-                                  ? 'bg-green-100 text-green-800'
-                                  : auction.status === 'upcoming'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}
+                              className="px-3 py-1 rounded-full text-xs font-medium bg-theme-primary-light text-theme"
                             >
                               {auction.status}
                             </span>
@@ -437,19 +431,7 @@ export default function AdminPage() {
                           </div>
                           <div className="flex items-center gap-3">
                             <span
-                              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                commission.status === 'submitted'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : commission.status === 'reviewing'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : commission.status === 'accepted'
-                                  ? 'bg-green-100 text-green-800'
-                                  : commission.status === 'declined'
-                                  ? 'bg-red-100 text-red-800'
-                                  : commission.status === 'in_progress'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}
+                              className="px-3 py-1 rounded-full text-xs font-medium bg-theme-primary-light text-theme"
                             >
                               {commission.status.replace('_', ' ')}
                             </span>
@@ -495,5 +477,17 @@ export default function AdminPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-medium-cream/30 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-medium-green border-t-transparent rounded-full animate-pottery-wheel" />
+      </div>
+    }>
+      <AdminPageContent />
+    </Suspense>
   );
 }

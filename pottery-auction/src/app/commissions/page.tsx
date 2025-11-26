@@ -75,7 +75,7 @@ export default function CommissionsPage() {
           className="bg-medium-light rounded-lg shadow-sm p-8 max-w-md mx-4 text-center"
         >
           <div className="w-16 h-16 bg-medium-green bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Send size={32} className={getTextColorClass()} />
+            <Send size={32} className="text-[var(--theme-text)]" />
           </div>
           <h2 className={`text-2xl font-serif font-bold mb-4 text-[var(--theme-text)]`}>
             Pottery Idea Submitted!
@@ -136,7 +136,7 @@ export default function CommissionsPage() {
                       placeholder="Enter your full name"
                     />
                     {errors.name && (
-                      <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                      <p className="text-theme-error text-sm mt-1">{errors.name.message}</p>
                     )}
                   </div>
 
@@ -151,7 +151,7 @@ export default function CommissionsPage() {
                       placeholder="your@email.com"
                     />
                     {errors.email && (
-                      <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                      <p className="text-theme-error text-sm mt-1">{errors.email.message}</p>
                     )}
                   </div>
                 </div>
@@ -167,7 +167,7 @@ export default function CommissionsPage() {
                     placeholder="Describe your pottery vision in detail. Include size, style, colors, intended use (functional/decorative), glaze preferences, and any specific requirements..."
                   />
                   {errors.description && (
-                    <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+                    <p className="text-theme-error text-sm mt-1">{errors.description.message}</p>
                   )}
                 </div>
 
