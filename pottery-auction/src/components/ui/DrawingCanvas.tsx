@@ -11,15 +11,15 @@ interface DrawingCanvasProps {
 export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }: DrawingCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [currentColor, setCurrentColor] = useState('#FF6B35'); // orange
+  const [currentColor, setCurrentColor] = useState('#065f46'); // emerald green (default theme)
   const [brushSize, setBrushSize] = useState(3);
   const [history, setHistory] = useState<string[]>([]);
   const { getTextColorClass } = useColorToggle();
 
   const colors = [
-    { name: 'Orange', value: '#FF6B35' },
-    { name: 'Green', value: '#0A8754' },
-    { name: 'Blue', value: '#2E86AB' }
+    { name: 'Blue', value: '#7dd3fc' },    // sky-300 (Pastel Blue theme)
+    { name: 'Green', value: '#065f46' },   // emerald-800 (default theme)
+    { name: 'Purple', value: '#581c87' }   // purple-900 (Royal Purple theme)
   ];
 
   useEffect(() => {
