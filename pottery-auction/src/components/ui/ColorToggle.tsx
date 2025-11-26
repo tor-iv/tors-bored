@@ -17,7 +17,7 @@ const glazeColors = [
   // Row 2 - Natural greens and blues
   '#8B9D83', '#6B8E23', '#556B2F', '#708090', '#5F9EA0', '#6B7D63', '#4A5D4A', '#2F4F4F',
   // Row 3 - Neutrals and accents
-  '#D4A574', '#C4A35A', '#B8860B', '#DEB887', '#F5DEB3', '#D2B48C', '#BC8F8F', '#9C8B7D',
+  '#D4A574', '#C4A35A', '#DAA520', '#DEB887', '#F5DEB3', '#D2B48C', '#BC8F8F', '#9C8B7D',
 ];
 
 // Glaze Test Tile Component
