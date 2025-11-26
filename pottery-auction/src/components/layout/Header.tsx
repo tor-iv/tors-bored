@@ -90,7 +90,7 @@ export default function Header() {
       </motion.header>
 
       {/* Navigation Tabs */}
-      <nav className="bg-medium-light/90 backdrop-blur-sm shadow-[0_4px_12px_-4px_rgba(0,0,0,0.08)]">
+      <nav className="bg-medium-light/90 backdrop-blur-sm shadow-[0_4px_12px_-4px_rgba(0,0,0,0.08)] relative after:absolute after:left-0 after:right-0 after:top-full after:h-4 after:bg-gradient-to-b after:from-medium-light/50 after:to-transparent after:pointer-events-none after:content-['']">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="hidden md:flex space-x-12 py-4">
             {navItems.map((item) => (
