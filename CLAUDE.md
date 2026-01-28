@@ -11,13 +11,14 @@ Tor's Pottery Shop - an auction marketplace for handmade pottery built with Next
 ## Commands
 
 ```bash
-npm run dev      # Start dev server with Turbopack
-npm run build    # Production build with Turbopack
-npm run start    # Start production server
-npm run lint     # Run ESLint
+bun run dev      # Start dev server with Turbopack (Bun runtime)
+bun run build    # Production build (Bun runtime)
+bun run start    # Start production server (Bun runtime)
+bun run lint     # Run ESLint (Bun runtime)
+bun install      # Install dependencies
 ```
 
-This is a monorepo - all commands run from root and delegate to the `pottery-auction` workspace.
+This is a monorepo using Bun as the JavaScript runtime. All commands run from root and delegate to the `pottery-auction` workspace via `bun run --filter`.
 
 ## Environment Setup
 

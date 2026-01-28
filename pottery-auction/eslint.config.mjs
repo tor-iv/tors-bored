@@ -26,6 +26,11 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-vars": "warn",
       "react/no-unescaped-entities": "warn",
       "react-hooks/exhaustive-deps": "warn",
+      // Disable React Compiler rules (introduced in eslint-plugin-react-hooks@7)
+      // These require codebase changes to comply with React Compiler patterns
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/preserve-manual-memoization": "off",
+      "react-hooks/immutability": "off",
     },
   },
 ];

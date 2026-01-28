@@ -5,11 +5,11 @@
     "pottery-auction"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=pottery-auction",
-    "build": "npm run build --workspace=pottery-auction",
-    "start": "npm run start --workspace=pottery-auction",
-    "lint": "npm run lint --workspace=pottery-auction",
-    "test": "npm run test --workspace=pottery-auction"
+    "dev": "bun run --filter marketplace dev",
+    "build": "bun run --filter marketplace build",
+    "start": "bun run --filter marketplace start",
+    "lint": "bun run --filter marketplace lint",
+    "test": "bun run --filter marketplace test"
   },
   "devDependencies": {},
   "dependencies": {}
