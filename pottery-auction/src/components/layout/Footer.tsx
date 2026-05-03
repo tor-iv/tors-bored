@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { PotteryWheelDoodle } from '@/components/decorations';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 
 // Rotating pottery quotes/facts
 const potteryQuotes = [
@@ -190,6 +191,7 @@ export default function Footer() {
           </p>
         </motion.div>
       </div>
+      <ThemeToggle />
     </footer>
   );
 }

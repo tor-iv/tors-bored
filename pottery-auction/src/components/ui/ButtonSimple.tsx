@@ -1,14 +1,16 @@
 'use client';
 
 import { ButtonHTMLAttributes, useState } from 'react';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
 }
 
 export default function ButtonSimple({ children, isLoading, className = '', ...props }: ButtonProps) {
-  const { themeHex } = useColorToggle();
+  const { theme } = useTheme();
+  const accentByTheme = { handdrawn: '#8c6e4b', y2k: '#000080', receipt: '#1a1a1a' };
+  const themeHex = accentByTheme[theme];
   const [isHovered, setIsHovered] = useState(false);
 
   // Get theme colors

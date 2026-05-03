@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface DrawingCanvasProps {
   onSave?: (imageData: string) => void;
@@ -14,14 +14,16 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
   const [currentColor, setCurrentColor] = useState('#166534'); // green-800 (default theme text)
   const [brushSize, setBrushSize] = useState(3);
   const [history, setHistory] = useState<string[]>([]);
-  const { themeHex } = useColorToggle();
+  const { theme } = useTheme();
+  const accentByTheme = { handdrawn: '#8c6e4b', y2k: '#000080', receipt: '#1a1a1a' };
+  const themeAccent = accentByTheme[theme];
 
-  // Pastel drawing colors
+  // Drawing colors
   const colors = [
-    { name: 'Blue', value: '#1e40af' },    // blue-800 (readable on white)
-    { name: 'Green', value: '#166534' },   // green-800 (default theme)
-    { name: 'Purple', value: '#5b21b6' },  // violet-800
-    { name: 'Theme', value: themeHex },    // current theme color
+    { name: 'Blue', value: '#1e40af' },
+    { name: 'Green', value: '#166534' },
+    { name: 'Purple', value: '#5b21b6' },
+    { name: 'Accent', value: themeAccent },
   ];
 
   useEffect(() => {

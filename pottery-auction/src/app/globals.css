@@ -87,6 +87,84 @@
   --theme-text-on-primary-light: #2B2B2B;
 }
 
+/* ================================================
+   THREE-THEME DESIGN TOKEN LAYER
+   ================================================ */
+
+[data-theme="handdrawn"] {
+  --bg:           #f7f3e8;
+  --bg-well:      #ede8d8;
+  --ink:          #1b1211;
+  --ink-muted:    #3d3028;
+  --accent:       #8c6e4b;
+  --accent-hover: #7a5e3b;
+  --accent-light: #e8d9b5;
+  --border:       #c4b89a;
+  --error:        #9b3a2c;
+  --success:      #5a7a4a;
+  --font-display: 'Caveat', cursive;
+  --font-body:    'Nunito', var(--font-nunito), sans-serif;
+}
+
+[data-theme="y2k"] {
+  --bg:           #c0c0c0;
+  --bg-well:      #d4d0c8;
+  --ink:          #000000;
+  --ink-muted:    #444444;
+  --accent:       #000080;
+  --accent-hover: #0000aa;
+  --accent-light: #d0d0ff;
+  --border:       #808080;
+  --error:        #ff0000;
+  --success:      #008000;
+  --font-display: 'Comic Sans MS', cursive;
+  --font-body:    Verdana, Geneva, Tahoma, sans-serif;
+  --font-ui:      Tahoma, 'MS Sans Serif', sans-serif;
+  --font-mono:    'Courier New', monospace;
+  --teal:         #008080;
+  --link:         #0000ff;
+  --link-visited: #800080;
+  --badge-new:    #00ff00;
+  --blink-red:    #ff0000;
+}
+
+[data-theme="receipt"] {
+  --bg:              #f2ede3;
+  --bg-well:         #e8e3d6;
+  --ink:             #1a1a1a;
+  --ink-muted:       #4a4a4a;
+  --accent:          #1a1a1a;
+  --accent-hover:    #000000;
+  --accent-light:    #e2ddd0;
+  --border:          #888888;
+  --error:           #cc2200;
+  --success:         #006600;
+  --paper-highlight: #f8f4ec;
+  --font-display:    var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
+  --font-body:       var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+/* Apply semantic token vars as body defaults when a theme is set */
+[data-theme] body {
+  background-color: var(--bg);
+  color: var(--ink);
+}
+
+[data-theme="handdrawn"] body {
+  font-family: var(--font-body);
+  line-height: 1.7;
+}
+
+[data-theme="y2k"] body {
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+[data-theme="receipt"] body {
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
 /* Smooth transitions for text color changes only */
 * {
   transition: color 0.3s ease;
@@ -221,3 +299,658 @@ html {
 .border-theme-success { border-color: var(--theme-success); }
 
 .ring-theme { --tw-ring-color: var(--theme-ring); }
+
+/* ================================================
+   DESIGN VARIANT CSS VARIABLES
+   ================================================ */
+
+/* Variant A: Illustrated Studio */
+.variant-illustrated {
+  --studio-cream: #F5EDE4;
+  --studio-sage: #7A9E7E;
+  --studio-terracotta: #C96F53;
+  --studio-umber: #5C4033;
+  --studio-ochre: #D4A853;
+  --studio-white: #FFFEF8;
+}
+
+/* Variant B: Retro Web Revival (original) */
+.variant-retro {
+  --win95-face: #d4d4d4;
+  --win95-shadow: #808080;
+  --win95-dark-shadow: #404040;
+  --win95-highlight: #ffffff;
+  --win95-light: #dfdfdf;
+  --netscape-blue: #0066ff;
+  --retro-red: #ff0000;
+  --retro-black: #000000;
+  --retro-white: #ffffff;
+}
+
+/* Variant: Modern Retro (Foe Finder Inspired) */
+.variant-modern-retro {
+  --off-white: #FAFAF8;
+  --muted-blue: #4A6FA5;
+  --blue-dark: #3A5A8A;
+  --blue-light: rgba(74, 111, 165, 0.1);
+  --warm-black: #1A1A1A;
+  --text-secondary: #4A4A4A;
+  --coral: #E8734A;
+  --coral-dark: #D45F38;
+  --coral-light: rgba(232, 115, 74, 0.1);
+  --light-gray: #F0F0EE;
+  --border-gray: #E0E0DE;
+  --subtle-shadow: rgba(26, 26, 26, 0.08);
+}
+
+/* Variant C: Refined Artisan (original) */
+.variant-refined {
+  --refined-cream: #FFFEF8;
+  --refined-green: #0A8754;
+  --refined-green-dark: #086B43;
+  --refined-charcoal: #2B2520;
+  --refined-charcoal-light: #4A453E;
+  --refined-white: #FFFFFF;
+  --refined-border: #E8E6E1;
+}
+
+/* Variant: Refined v2 (Happy Medium Inspired) */
+.variant-refined-v2 {
+  --warm-cream: #FDF9F3;
+  --soft-sage: #4A7C59;
+  --sage-dark: #3D6B4A;
+  --sage-light: rgba(74, 124, 89, 0.1);
+  --warm-charcoal: #3D3833;
+  --charcoal-light: #5A534C;
+  --honey: #D4A853;
+  --honey-light: rgba(212, 168, 83, 0.15);
+  --soft-border: #EAE6E1;
+  --soft-shadow: rgba(61, 56, 51, 0.06);
+}
+
+/* Variant D: Hybrid */
+.variant-hybrid {
+  /* Uses studio colors for backgrounds */
+  --hybrid-cream: #F5EDE4;
+  --hybrid-sage: #7A9E7E;
+  --hybrid-terracotta: #C96F53;
+  --hybrid-terracotta-dark: #B8432F;
+  --hybrid-umber: #5C4033;
+  --hybrid-ochre: #D4A853;
+  /* With retro-style UI accents */
+  --hybrid-button-shadow: #B8432F;
+  --hybrid-ui-dark: #2B2520;
+}
+
+/* ================================================
+   VARIANT A: ILLUSTRATED STUDIO STYLES
+   ================================================ */
+
+.pottery-tag {
+  background: linear-gradient(135deg, #FFFEF8 0%, #F5EDE4 100%);
+  border-radius: 2px 12px 2px 12px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.pottery-tag::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(92, 64, 51, 0.3);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.wooden-beam {
+  background: linear-gradient(180deg, #8B6B4A 0%, #6B4F3A 50%, #5C4033 100%);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ================================================
+   VARIANT B: RETRO WEB REVIVAL STYLES
+   ================================================ */
+
+.win95-window {
+  background: #d4d4d4;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  box-shadow: 1px 1px 0 #000;
+}
+
+.win95-title-bar {
+  background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+  color: white;
+  padding: 2px 4px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.win95-button {
+  background: #d4d4d4;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  padding: 4px 12px;
+  font-family: var(--font-space-mono), monospace;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 #000;
+}
+
+.win95-button:active {
+  border-color: #808080 #ffffff #ffffff #808080;
+  box-shadow: none;
+  transform: translate(1px, 1px);
+}
+
+.win95-inset {
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  background: #ffffff;
+}
+
+.retro-link {
+  color: #0066ff;
+  text-decoration: underline;
+  font-family: var(--font-space-mono), monospace;
+}
+
+.retro-link:hover {
+  color: #ff0000;
+}
+
+.retro-link:visited {
+  color: #800080;
+}
+
+.tiled-background {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 20px,
+      rgba(0, 0, 0, 0.03) 20px,
+      rgba(0, 0, 0, 0.03) 21px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 20px,
+      rgba(0, 0, 0, 0.03) 20px,
+      rgba(0, 0, 0, 0.03) 21px
+    );
+}
+
+/* ================================================
+   VARIANT C: REFINED ARTISAN STYLES
+   ================================================ */
+
+.refined-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #E8E6E1;
+}
+
+.refined-button {
+  background: #0A8754;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.refined-button:hover {
+  background: #086B43;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 135, 84, 0.3);
+}
+
+.paper-texture-subtle {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-blend-mode: overlay;
+}
+
+/* ================================================
+   VARIANT D: HYBRID STYLES
+   ================================================ */
+
+.hybrid-button {
+  font-family: var(--font-space-mono), monospace;
+  background: #C96F53;
+  color: white;
+  padding: 12px 24px;
+  box-shadow: 0 4px 0 #B8432F;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.1s ease;
+}
+
+.hybrid-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #B8432F;
+}
+
+.hybrid-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #B8432F;
+}
+
+.hybrid-tag {
+  background: linear-gradient(135deg, #FFFEF8 0%, #F5EDE4 100%);
+  border: 2px solid #5C4033;
+  box-shadow: 3px 3px 0 #5C4033;
+}
+
+/* ================================================
+   SHARED DESIGN PREVIEW UTILITIES
+   ================================================ */
+
+.design-preview-container {
+  min-height: 100vh;
+}
+
+/* Navigation pill for switching between previews */
+.preview-nav-pill {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 999px;
+  display: flex;
+  gap: 16px;
+  z-index: 1000;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.preview-nav-pill a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.preview-nav-pill a:hover,
+.preview-nav-pill a.active {
+  color: white;
+}
+
+.preview-nav-pill a.active {
+  font-weight: 600;
+}
+
+/* ================================================
+   VARIANT: REFINED V2 (Happy Medium Inspired)
+   ================================================ */
+
+.refined-v2-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px var(--soft-shadow, rgba(61, 56, 51, 0.06));
+  border: 1px solid var(--soft-border, #EAE6E1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.refined-v2-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px var(--soft-shadow, rgba(61, 56, 51, 0.1));
+}
+
+.refined-v2-button {
+  background: var(--soft-sage, #4A7C59);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(74, 124, 89, 0.2);
+}
+
+.refined-v2-button:hover {
+  background: var(--sage-dark, #3D6B4A);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 124, 89, 0.3);
+}
+
+.refined-v2-link {
+  color: var(--soft-sage, #4A7C59);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.refined-v2-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--honey, #D4A853);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.refined-v2-link:hover::after {
+  width: 100%;
+}
+
+.refined-v2-link:hover {
+  color: var(--sage-dark, #3D6B4A);
+}
+
+/* ================================================
+   VARIANT: MODERN RETRO (Foe Finder Inspired)
+   ================================================ */
+
+.modern-retro-card {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px var(--subtle-shadow, rgba(26, 26, 26, 0.08));
+  border: 1px solid var(--border-gray, #E0E0DE);
+  transition: all 0.2s ease;
+}
+
+.modern-retro-card:hover {
+  box-shadow: 0 4px 20px var(--subtle-shadow, rgba(26, 26, 26, 0.12));
+}
+
+.modern-retro-button {
+  background: var(--muted-blue, #4A6FA5);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 0 var(--blue-dark, #3A5A8A);
+}
+
+.modern-retro-button:hover {
+  background: var(--blue-dark, #3A5A8A);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 var(--blue-dark, #3A5A8A);
+}
+
+.modern-retro-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--blue-dark, #3A5A8A);
+}
+
+.modern-retro-button-coral {
+  background: var(--coral, #E8734A);
+  box-shadow: 0 2px 0 var(--coral-dark, #D45F38);
+}
+
+.modern-retro-button-coral:hover {
+  background: var(--coral-dark, #D45F38);
+  box-shadow: 0 3px 0 var(--coral-dark, #D45F38);
+}
+
+.modern-retro-divider {
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--muted-blue, #4A6FA5) 0px,
+    var(--muted-blue, #4A6FA5) 8px,
+    transparent 8px,
+    transparent 12px
+  );
+}
+
+.modern-retro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--coral-light, rgba(232, 115, 74, 0.1));
+  color: var(--coral, #E8734A);
+  border-radius: 4px;
+  font-family: var(--font-space-mono), monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ================================================
+   VARIANT: HAPPY MEDIUM (True Recreation)
+   ================================================ */
+
+.variant-happy-medium {
+  --hm-cream: #FDF8F3;
+  --hm-green: #0A8754;
+  --hm-green-dark: #086B43;
+  --hm-green-light: rgba(10, 135, 84, 0.1);
+  --hm-charcoal: #2B2520;
+  --hm-charcoal-light: #4A453E;
+  --hm-honey: #D4A853;
+  --hm-honey-light: rgba(212, 168, 83, 0.15);
+  --hm-white: #FFFFFF;
+  --hm-border: #E8E6E1;
+  --hm-shadow: rgba(43, 37, 32, 0.08);
+}
+
+/* Happy Medium navigation - dark green header */
+.hm-nav {
+  background: var(--hm-green);
+  color: white;
+}
+
+/* Happy Medium pill buttons */
+.hm-button {
+  background: var(--hm-green);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(10, 135, 84, 0.25);
+}
+
+.hm-button:hover {
+  background: var(--hm-green-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(10, 135, 84, 0.35);
+}
+
+.hm-button-secondary {
+  background: white;
+  color: var(--hm-charcoal);
+  border: 2px solid var(--hm-border);
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  transition: all 0.25s ease;
+}
+
+.hm-button-secondary:hover {
+  border-color: var(--hm-green);
+  background: var(--hm-green-light);
+}
+
+/* Happy Medium cards with large border radius */
+.hm-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px var(--hm-shadow);
+  border: 1px solid var(--hm-border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hm-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px var(--hm-shadow);
+}
+
+/* Happy Medium brush script logo */
+.hm-logo {
+  font-family: var(--font-satisfy), cursive;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* Happy Medium color toggle pills */
+.hm-color-toggle {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hm-color-pill {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hm-color-pill:hover {
+  transform: scale(1.1);
+}
+
+.hm-color-pill.active {
+  border-color: var(--hm-charcoal);
+  transform: scale(1.15);
+}
+
+/* ================================================
+   VARIANT: FOE FINDER (True Recreation)
+   ================================================ */
+
+.variant-foe-finder {
+  --ff-gray: #d4d4d4;
+  --ff-gray-dark: #a0a0a0;
+  --ff-blue: #0066ff;
+  --ff-blue-dark: #0052cc;
+  --ff-black: #1A1A1A;
+  --ff-white: #ffffff;
+  --ff-title-gradient: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+}
+
+/* FoeFinder window-style cards */
+.ff-window {
+  background: var(--ff-gray);
+  border: 1px solid var(--ff-gray-dark);
+  border-radius: 0px;
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #ffffff,
+    1px 1px 0 #000;
+}
+
+/* FoeFinder title bar */
+.ff-title-bar {
+  background: var(--ff-title-gradient);
+  color: white;
+  padding: 4px 8px;
+  font-family: var(--font-space-mono), monospace;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* FoeFinder title bar buttons */
+.ff-title-buttons {
+  display: flex;
+  gap: 2px;
+}
+
+.ff-title-btn {
+  width: 16px;
+  height: 16px;
+  background: var(--ff-gray);
+  border: 1px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  font-family: var(--font-space-mono), monospace;
+}
+
+/* FoeFinder flat blue buttons */
+.ff-button {
+  background: var(--ff-blue);
+  color: white;
+  border-radius: 0px;
+  font-family: var(--font-space-mono), monospace;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 24px;
+  border: none;
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+.ff-button:hover {
+  background: var(--ff-blue-dark);
+}
+
+.ff-button:active {
+  background: #003d99;
+}
+
+/* FoeFinder content area inside windows */
+.ff-content {
+  background: white;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  padding: 16px;
+}
+
+/* FoeFinder headings */
+.ff-heading {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ff-black);
+}
+
+/* FoeFinder body text */
+.ff-text {
+  font-family: var(--font-space-mono), monospace;
+  font-size: 14px;
+  color: var(--ff-black);
+}
+
+/* FoeFinder inset panel */
+.ff-inset {
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  background: white;
+}
+
+/* FoeFinder status bar */
+.ff-status-bar {
+  background: var(--ff-gray);
+  border-top: 1px solid var(--ff-gray-dark);
+  padding: 4px 8px;
+  font-family: var(--font-space-mono), monospace;
+  font-size: 11px;
+  color: var(--ff-black);
+}

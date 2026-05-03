@@ -7,7 +7,7 @@ import { Menu, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '../auth/AuthModal';
-import ColorToggle from '../ui/ColorToggle';
+// ColorToggle replaced by ThemeToggle (now in Footer)
 
 export default function Header() {
   const { user, userProfile, isAuthenticated } = useAuth();
@@ -49,8 +49,6 @@ export default function Header() {
 
             {/* Right side */}
             <div className="flex items-center space-x-6">
-              <ColorToggle />
-              
               {isAuthenticated ? (
                 <div className="flex items-center space-x-4">
                   <span className={`hidden sm:block text-sm font-serif text-[var(--theme-text)]`}>
