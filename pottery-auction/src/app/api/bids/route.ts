@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate bid amount is at least the starting bid
-    if (amount < item.starting_bid) {
+    if (item.starting_bid != null && amount < item.starting_bid) {
       return NextResponse.json(
         {
           error: `Bid must be at least the starting bid of $${item.starting_bid}`,
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate bid amount is higher than current bid
-    if (amount <= item.current_bid) {
+    if (item.current_bid != null && amount <= item.current_bid) {
       return NextResponse.json(
         {
           error: `Bid must be higher than current bid of $${item.current_bid}`,

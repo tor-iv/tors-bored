@@ -46,8 +46,10 @@ export type Database = {
           description: string | null
           start_date: string
           end_date: string
+          extended_end_date: string | null
           status: 'upcoming' | 'active' | 'ended'
           featured_image: string | null
+          reserve_price: number | null
           created_at: string
           updated_at: string
         }
@@ -57,8 +59,10 @@ export type Database = {
           description?: string | null
           start_date: string
           end_date: string
+          extended_end_date?: string | null
           status: 'upcoming' | 'active' | 'ended'
           featured_image?: string | null
+          reserve_price?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -68,8 +72,10 @@ export type Database = {
           description?: string | null
           start_date?: string
           end_date?: string
+          extended_end_date?: string | null
           status?: 'upcoming' | 'active' | 'ended'
           featured_image?: string | null
+          reserve_price?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -82,8 +88,8 @@ export type Database = {
           title: string
           description: string | null
           images: string[]
-          starting_bid: number
-          current_bid: number
+          starting_bid: number | null
+          current_bid: number | null
           highest_bidder: string | null
           dimensions: Json | null
           techniques: string[]
@@ -91,6 +97,14 @@ export type Database = {
           featured: boolean
           created_at: string
           updated_at: string
+          // Phase 1 additions
+          listing_type: 'auction' | 'buy_now' | null
+          sku: string | null
+          buy_now_price: number | null
+          // Phase 2 additions
+          sold_at: string | null
+          reserved_until: string | null
+          reserved_order_id: string | null
         }
         Insert: {
           id?: string
@@ -98,8 +112,8 @@ export type Database = {
           title: string
           description?: string | null
           images?: string[]
-          starting_bid: number
-          current_bid?: number
+          starting_bid?: number | null
+          current_bid?: number | null
           highest_bidder?: string | null
           dimensions?: Json | null
           techniques?: string[]
@@ -107,6 +121,12 @@ export type Database = {
           featured?: boolean
           created_at?: string
           updated_at?: string
+          listing_type?: 'auction' | 'buy_now' | null
+          sku?: string | null
+          buy_now_price?: number | null
+          sold_at?: string | null
+          reserved_until?: string | null
+          reserved_order_id?: string | null
         }
         Update: {
           id?: string
@@ -114,8 +134,8 @@ export type Database = {
           title?: string
           description?: string | null
           images?: string[]
-          starting_bid?: number
-          current_bid?: number
+          starting_bid?: number | null
+          current_bid?: number | null
           highest_bidder?: string | null
           dimensions?: Json | null
           techniques?: string[]
@@ -123,6 +143,12 @@ export type Database = {
           featured?: boolean
           created_at?: string
           updated_at?: string
+          listing_type?: 'auction' | 'buy_now' | null
+          sku?: string | null
+          buy_now_price?: number | null
+          sold_at?: string | null
+          reserved_until?: string | null
+          reserved_order_id?: string | null
         }
         Relationships: [
           {
@@ -140,6 +166,134 @@ export type Database = {
             referencedColumns: ["id"]
           }
         ]
+      }
+      orders: {
+        Row: {
+          id: string
+          user_id: string
+          status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled'
+          total_cents: number
+          subtotal_cents: number | null
+          shipping_cents: number | null
+          tax_cents: number | null
+          stripe_payment_intent_id: string | null
+          shipping_name: string | null
+          shipping_line1: string | null
+          shipping_line2: string | null
+          shipping_city: string | null
+          shipping_state: string | null
+          shipping_postal_code: string | null
+          shipping_country: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          status?: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled'
+          total_cents: number
+          subtotal_cents?: number | null
+          shipping_cents?: number | null
+          tax_cents?: number | null
+          stripe_payment_intent_id?: string | null
+          shipping_name?: string | null
+          shipping_line1?: string | null
+          shipping_line2?: string | null
+          shipping_city?: string | null
+          shipping_state?: string | null
+          shipping_postal_code?: string | null
+          shipping_country?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          status?: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled'
+          total_cents?: number
+          subtotal_cents?: number | null
+          shipping_cents?: number | null
+          tax_cents?: number | null
+          stripe_payment_intent_id?: string | null
+          shipping_name?: string | null
+          shipping_line1?: string | null
+          shipping_line2?: string | null
+          shipping_city?: string | null
+          shipping_state?: string | null
+          shipping_postal_code?: string | null
+          shipping_country?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      order_items: {
+        Row: {
+          id: string
+          order_id: string
+          item_id: string
+          price_cents: number
+          source: 'buy_now' | 'auction_win'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          item_id: string
+          price_cents: number
+          source: 'buy_now' | 'auction_win'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          item_id?: string
+          price_cents?: number
+          source?: 'buy_now' | 'auction_win'
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      stripe_events: {
+        Row: {
+          id: string
+          type: string
+          received_at: string
+        }
+        Insert: {
+          id: string
+          type: string
+          received_at?: string
+        }
+        Update: {
+          id?: string
+          type?: string
+          received_at?: string
+        }
+        Relationships: []
       }
       bids: {
         Row: {
@@ -244,7 +398,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      try_reserve_item: {
+        Args: { p_item_id: string; p_order_id: string; p_ttl_minutes?: number }
+        Returns: boolean
+      }
+      mark_order_paid: {
+        Args: { p_order_id: string }
+        Returns: undefined
+      }
+      mark_order_cancelled: {
+        Args: { p_order_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

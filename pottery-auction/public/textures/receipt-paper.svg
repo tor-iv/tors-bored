@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150">
+  <!-- Subtle horizontal stripe pattern — dot-matrix paper guides -->
+  <defs>
+    <pattern id="hlines" x="0" y="0" width="150" height="8" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="7.5" x2="150" y2="7.5" stroke="#888888" stroke-width="0.4" stroke-dasharray="none" opacity="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="150" height="150" fill="url(#hlines)"/>
+</svg>

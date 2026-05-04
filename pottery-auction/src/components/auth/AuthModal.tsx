@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Lock, User, Wand2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import ButtonSimple from '../ui/ButtonSimple';
+import Button from '../ui/Button';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -216,14 +216,16 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       <p className="text-theme-error text-sm">{error}</p>
                     )}
 
-                    <ButtonSimple
+                    <Button
                       type="submit"
+                      intent="primary"
                       isLoading={isLoading}
+                      className="w-full"
                     >
                       {authMode === 'login' && 'Sign In'}
                       {authMode === 'signup' && 'Create Account'}
                       {authMode === 'magic-link' && 'Send Magic Link'}
-                    </ButtonSimple>
+                    </Button>
                   </form>
 
                   {/* Divider for Magic Link */}

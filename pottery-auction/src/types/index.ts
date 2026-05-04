@@ -17,6 +17,12 @@ export interface Item {
   currentBid: number;
   highestBidder?: string;
   auctionId: string;
+  sku?: string;
+  listingType?: 'auction' | 'buy_now';
+  buyNowPrice?: number;
+  reservePrice?: number;
+  soldAt?: Date;
+  reservedUntil?: Date;
   dimensions: {
     height: number;
     width: number;
@@ -74,4 +80,41 @@ export interface NotificationPreferences {
   bidWon: boolean;
   commissionUpdates: boolean;
   newsletter: boolean;
+}
+
+export type OrderStatus = 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
+
+export interface ShippingAddress {
+  name: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  itemId: string;
+  priceCents: number;
+  source: 'buy_now' | 'auction_win';
+  createdAt: Date;
+  item?: Pick<Item, 'id' | 'title' | 'sku' | 'images'>;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  subtotalCents: number;
+  shippingCents: number;
+  taxCents: number;
+  totalCents: number;
+  status: OrderStatus;
+  stripePaymentIntentId?: string;
+  shipping?: ShippingAddress;
+  createdAt: Date;
+  updatedAt: Date;
+  orderItems?: OrderItem[];
 }
