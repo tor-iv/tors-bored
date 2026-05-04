@@ -613,3 +613,37 @@ html {
 .preview-nav-pill a.active {
   font-weight: 600;
 }
+
+/* ================================================
+   M7 POLISH — THEMED FOCUS RINGS
+   ================================================ */
+
+/* HAND-DRAWN: wavy underline focus ring */
+[data-theme="handdrawn"] :focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 4px;
+}
+/* For non-text elements (buttons, links without visible text) */
+[data-theme="handdrawn"] button:focus-visible,
+[data-theme="handdrawn"] a:focus-visible,
+[data-theme="handdrawn"] [role="button"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  text-decoration: none;
+}
+
+/* Y2K: dotted Win98-style focus ring */
+[data-theme="y2k"] :focus-visible {
+  outline: 2px dotted var(--ink);
+  outline-offset: 2px;
+}
+
+/* RECEIPT: bracket-style outline already handled per-component; 
+   add a safe fallback */
+[data-theme="receipt"] :focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
