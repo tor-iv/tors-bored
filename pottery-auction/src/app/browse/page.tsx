@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
+import HanddrawnBrowseLayout from '@/components/theme/handdrawn/HanddrawnBrowseLayout';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
 import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
@@ -30,8 +31,11 @@ export default async function BrowsePage() {
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
 
-  if (theme !== 'receipt') {
-    // TODO M5/M6: HanddrawnBrowseLayout / Y2KBrowseLayout
+  if (theme === 'handdrawn') {
+    return <HanddrawnBrowseLayout items={items} heading="Browse All Pieces" />;
+  }
+
+  if (theme === 'y2k') {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16">
         <h1 className="text-3xl font-bold mb-8" style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>

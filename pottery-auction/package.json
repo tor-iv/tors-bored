@@ -23,6 +23,8 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
+    "react-rough-fiber": "^0.0.8",
+    "roughjs": "^4.6.6",
     "stripe": "^18.4.0",
     "zod": "^4.0.17",
     "zustand": "^5.0.8"

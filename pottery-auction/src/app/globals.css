@@ -114,6 +114,45 @@
   line-height: 1.7;
 }
 
+/* Dog-eared page corner — top-right */
+[data-theme="handdrawn"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(225deg, var(--bg) 50%, var(--border) 50%);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Paper texture overlay */
+[data-theme="handdrawn"] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url(/textures/paper.svg);
+  background-repeat: repeat;
+  background-size: 200px;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Custom pencil cursor — desktop only */
+@media (pointer: fine) {
+  [data-theme="handdrawn"] {
+    cursor: url('/cursors/pencil.svg') 4 28, auto;
+  }
+  [data-theme="handdrawn"] a,
+  [data-theme="handdrawn"] button,
+  [data-theme="handdrawn"] [role="button"] {
+    cursor: url('/cursors/pencil-pointer.svg') 12 0, pointer;
+  }
+}
+
 [data-theme="y2k"] body {
   font-family: var(--font-body);
   line-height: 1.5;

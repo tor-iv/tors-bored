@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { formatReceiptTimestamp } from '@/lib/format/receipt-timestamp';
+import HanddrawnPieceDetail from '@/components/theme/handdrawn/HanddrawnPieceDetail';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
 import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
@@ -66,8 +67,11 @@ export default async function PiecePage({ params }: Props) {
   const reserveMet = !auction?.reserve_price || (item.current_bid ?? 0) >= auction.reserve_price;
   const now = new Date();
 
-  if (theme !== 'receipt') {
-    // Minimal fallback for non-receipt themes (M5/M6 will flesh these out)
+  if (theme === 'handdrawn') {
+    return <HanddrawnPieceDetail item={item} bids={bids ?? []} sku={sku} />;
+  }
+
+  if (theme === 'y2k') {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16">
         <div className="text-sm uppercase mb-2" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}>

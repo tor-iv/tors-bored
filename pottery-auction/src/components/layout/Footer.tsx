@@ -46,7 +46,72 @@ export default function Footer() {
     );
   }
 
-  // HAND-DRAWN / Y2K stub — functional with CSS tokens
+  if (theme === 'handdrawn') {
+    return (
+      <footer
+        className="py-12 mt-auto"
+        style={{ backgroundColor: 'var(--bg-well)' }}
+      >
+        {/* Brush-stroke divider */}
+        <div style={{ marginBottom: '2rem' }}>
+          <svg viewBox="0 0 800 12" preserveAspectRatio="none" style={{ width: '100%', height: '12px', display: 'block' }}>
+            <path
+              d="M0 6 C100 2, 200 10, 300 6 S500 2, 600 6 S750 10, 800 6"
+              stroke="var(--border)"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <div
+                className="text-xl font-bold mb-3"
+                style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}
+              >
+                Tor&apos;s Bored Pottery
+              </div>
+              <p className="text-sm max-w-sm" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}>
+                Handcrafted ceramics released monthly. Every piece is thrown on the wheel, glazed by hand, and fired with care.
+              </p>
+            </div>
+
+            <nav className="space-y-2">
+              <div
+                className="text-sm font-semibold mb-2 uppercase"
+                style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}
+              >
+                Explore
+              </div>
+              {footerLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block text-sm hover-wobbly"
+                  style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div
+            className="mt-8 pt-6 text-sm flex flex-col sm:flex-row justify-between gap-4"
+            style={{ borderTop: '1px solid var(--border)', color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}
+          >
+            <span>© {year} Tor&apos;s Bored Pottery. All rights reserved.</span>
+            <span>Handmade with care in Brooklyn.</span>
+          </div>
+        </div>
+        <ThemeToggle />
+      </footer>
+    );
+  }
+
+  // Y2K / generic stub — functional with CSS tokens
   return (
     <footer
       className="py-12 mt-auto"

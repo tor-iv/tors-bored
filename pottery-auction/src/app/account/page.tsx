@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { formatReceiptTimestamp, formatReceiptDate } from '@/lib/format/receipt-timestamp';
+import HanddrawnAccountPage from '@/components/theme/handdrawn/HanddrawnAccountPage';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
 import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
@@ -62,7 +63,19 @@ export default async function AccountPage() {
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
 
-  if (theme !== 'receipt') {
+  if (theme === 'handdrawn') {
+    return (
+      <HanddrawnAccountPage
+        user={user}
+        activeBids={activeBids}
+        orders={orders}
+        wonBids={wonBids}
+        outbidBids={outbidBids}
+      />
+    );
+  }
+
+  if (theme === 'y2k') {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16">
         <h1 className="text-3xl font-bold mb-4" style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>
