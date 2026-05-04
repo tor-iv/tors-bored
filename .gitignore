@@ -17,3 +17,6 @@ SUPABASE_SETUP.md
 
 # OS files
 .DS_Store
+
+# Git worktrees
+.worktrees/
