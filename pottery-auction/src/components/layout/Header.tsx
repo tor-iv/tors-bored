@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import AuthModal from '../auth/AuthModal';
 import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
+import Marquee from '@/components/theme/y2k/Marquee';
 
 const navItems = [
   { href: '/',           label: 'Home',        receiptLabel: 'HOME'         },
@@ -201,7 +202,53 @@ export default function Header() {
     );
   }
 
-  // Y2K / generic stub — functional, uses CSS tokens
+  // Y2K branch
+  if (theme === 'y2k') {
+    return (
+      <>
+        <header className="win98-window sticky top-0 z-40">
+          {/* Menu bar */}
+          <div style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)', padding: '2px 8px', fontFamily: 'Tahoma, sans-serif', fontSize: 11, display: 'flex', gap: 12 }}>
+            <span>File</span><span>Edit</span><span>View</span><span>Help</span>
+          </div>
+          {/* Brand */}
+          <div style={{ background: 'var(--bg)', padding: '4px 8px', fontFamily: '"Comic Sans MS", cursive', fontSize: 16, fontWeight: 'bold', color: 'var(--ink)' }}>
+            Tor&apos;s Bored Pottery
+          </div>
+          {/* Nav */}
+          <div className="win98-title-bar" style={{ padding: '4px 8px', gap: 16 }}>
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{ color: '#ffffff', fontFamily: 'Tahoma, sans-serif', fontSize: 11, textDecoration: 'none' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none'; }}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <div style={{ flex: 1 }} />
+            {isAuthenticated ? (
+              <>
+                {userProfile?.isAdmin && (
+                  <Link href="/admin" style={{ color: '#ffffff', fontFamily: 'Tahoma, sans-serif', fontSize: 11, textDecoration: 'none' }}>Admin</Link>
+                )}
+                <Link href="/account" style={{ color: '#ffffff', fontFamily: 'Tahoma, sans-serif', fontSize: 11, textDecoration: 'none' }}>Account</Link>
+                <button onClick={handleSignOut} style={{ color: '#ffffff', fontFamily: 'Tahoma, sans-serif', fontSize: 11, background: 'none', border: 'none', cursor: 'pointer' }}>Sign Out</button>
+              </>
+            ) : (
+              <button onClick={() => setShowAuthModal(true)} style={{ color: '#ffffff', fontFamily: 'Tahoma, sans-serif', fontSize: 11, background: 'none', border: 'none', cursor: 'pointer' }}>Sign In</button>
+            )}
+          </div>
+          <Marquee />
+        </header>
+        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      </>
+    );
+  }
+
+  // Generic stub — functional, uses CSS tokens
   return (
     <>
       <header

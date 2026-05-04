@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { formatReceiptTimestamp, formatReceiptDate } from '@/lib/format/receipt-timestamp';
 import HanddrawnOrderDetail from '@/components/theme/handdrawn/HanddrawnOrderDetail';
+import Y2KOrderDetail from '@/components/theme/y2k/Y2KOrderDetail';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
 import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
@@ -69,21 +70,7 @@ export default async function OrderDetailPage({ params }: Props) {
   }
 
   if (theme === 'y2k') {
-    return (
-      <div className="max-w-3xl mx-auto px-4 py-16">
-        <div className="text-sm uppercase mb-2" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}>
-          Order #{id.slice(0, 8).toUpperCase()}
-        </div>
-        <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>
-          Order Detail
-        </h1>
-        <p style={{ color: 'var(--ink-muted)' }}>Status: {order.status.toUpperCase()}</p>
-        <p style={{ color: 'var(--ink-muted)' }}>Total: {formatCents(order.total_cents)}</p>
-        <Link href="/account" className="mt-4 inline-block underline" style={{ color: 'var(--ink)' }}>
-          Back to Account
-        </Link>
-      </div>
-    );
+    return <Y2KOrderDetail order={order} />;
   }
 
   return (

@@ -40,6 +40,42 @@ export default function Toast({
     info:    'var(--ink)',
   };
 
+  if (theme === 'y2k') {
+    return (
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            className="fixed bottom-6 right-6 z-[100]"
+          >
+            <div className="win98-window" style={{ minWidth: 200 }}>
+              <div className="win98-title-bar">
+                <img
+                  src={intent === 'error' ? '/y2k/error-icon.svg' : '/y2k/info-icon.svg'}
+                  width="14"
+                  height="14"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <span className="win98-title-bar-text" style={{ fontSize: 10 }}>
+                  {intent === 'error' ? 'Error' : intent === 'success' ? 'Information' : 'Message'}
+                </span>
+                <div className="win98-title-bar-controls">
+                  <button onClick={onDismiss} aria-label="Close">✕</button>
+                </div>
+              </div>
+              <div className="win98-window-body" style={{ fontFamily: 'Tahoma, sans-serif', fontSize: 11 }}>
+                {message}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
+
   if (theme === 'handdrawn') {
     const rotation = 2 + (message.length % 2) * 0.5;
     return (

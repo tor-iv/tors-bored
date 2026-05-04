@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { formatReceiptTimestamp } from '@/lib/format/receipt-timestamp';
 import HanddrawnPieceDetail from '@/components/theme/handdrawn/HanddrawnPieceDetail';
+import Y2KPieceDetail from '@/components/theme/y2k/Y2KPieceDetail';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
 import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
@@ -72,27 +73,7 @@ export default async function PiecePage({ params }: Props) {
   }
 
   if (theme === 'y2k') {
-    return (
-      <div className="max-w-3xl mx-auto px-4 py-16">
-        <div className="text-sm uppercase mb-2" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}>
-          {item.sku}
-        </div>
-        <h1 className="text-3xl font-bold mb-4" style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>
-          {item.title}
-        </h1>
-        <p className="mb-8" style={{ color: 'var(--ink-muted)' }}>{item.description}</p>
-        {isBuyNow && !isSold && !isReserved && (
-          <Link
-            href={`/checkout?sku=${sku}`}
-            className="inline-block px-6 py-3 font-semibold"
-            style={{ backgroundColor: 'var(--accent)', color: 'var(--bg)' }}
-          >
-            Buy Now — {formatPrice(item.buy_now_price)}
-          </Link>
-        )}
-        {isSold && <p style={{ color: 'var(--ink-muted)' }}>SOLD</p>}
-      </div>
-    );
+    return <Y2KPieceDetail item={item} bids={bids ?? []} sku={sku} />;
   }
 
   return (

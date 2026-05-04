@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { ThemeProvider, type Theme } from "@/contexts/ThemeContext";
 import { QueryProvider } from "@/components/providers/QueryProvider";
+import CursorTrail from "@/components/theme/y2k/CursorTrail";
 
 const VALID_THEMES: Theme[] = ['handdrawn', 'y2k', 'receipt'];
 
@@ -61,6 +62,7 @@ export default async function RootLayout({
             <Header />
             <main>{children}</main>
             <Footer />
+            {theme === 'y2k' && <CursorTrail />}
           </ThemeProvider>
         </QueryProvider>
       </body>

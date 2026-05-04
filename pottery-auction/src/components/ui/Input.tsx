@@ -72,7 +72,26 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       );
     }
 
-    // Y2K + generic fallback
+    if (theme === 'y2k') {
+      return (
+        <div className="w-full">
+          {label && (
+            <label htmlFor={id} style={{ fontFamily: 'Tahoma, sans-serif', fontSize: '11px', color: 'var(--ink)', display: 'block', marginBottom: 2 }}>
+              {label}
+            </label>
+          )}
+          <input
+            ref={ref}
+            id={id}
+            className={`win98-text-field w-full ${className}`}
+            {...props}
+          />
+          {error && <p style={{ fontFamily: 'Tahoma, sans-serif', fontSize: '11px', color: 'var(--error)', marginTop: 2 }}>{error}</p>}
+        </div>
+      );
+    }
+
+    // Generic fallback
     return (
       <div className="w-full">
         {label && (

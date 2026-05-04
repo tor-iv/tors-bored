@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
 import RoughBorder from '@/components/theme/handdrawn/RoughBorder';
+import Win98Modal from '@/components/theme/y2k/Win98Modal';
 
 interface ModalProps {
   isOpen: boolean;
@@ -24,6 +25,14 @@ export default function Modal({ isOpen, onClose, title, children, className = ''
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [isOpen, onClose]);
+
+  if (theme === 'y2k') {
+    return (
+      <Win98Modal isOpen={isOpen} onClose={onClose} title={title ?? 'Dialog'} className={className}>
+        {children}
+      </Win98Modal>
+    );
+  }
 
   return (
     <AnimatePresence>

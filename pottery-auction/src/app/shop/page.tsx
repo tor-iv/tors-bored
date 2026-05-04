@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import HanddrawnBrowseLayout from '@/components/theme/handdrawn/HanddrawnBrowseLayout';
+import Y2KBrowseLayout from '@/components/theme/y2k/Y2KBrowseLayout';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
 import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
@@ -24,6 +25,7 @@ export default async function ShopPage() {
     soldAt: i.sold_at,
     reservedUntil: i.reserved_until,
     techniques: i.techniques ?? [],
+    images: i.images ?? [],
   }));
 
   const cookieStore = await cookies();
@@ -40,31 +42,7 @@ export default async function ShopPage() {
   }
 
   if (theme === 'y2k') {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold mb-8" style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>
-          Shop — Buy Now
-        </h1>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((item) => (
-            <a
-              key={item.id}
-              href={`/piece/${item.sku}`}
-              className="block border p-4 hover:opacity-80 transition-opacity"
-              style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-well)' }}
-            >
-              <div className="font-semibold" style={{ color: 'var(--ink)' }}>{item.title}</div>
-              <div className="text-sm mt-1" style={{ color: 'var(--ink-muted)' }}>
-                ${item.buyNowPrice?.toFixed(2)} — {item.sku}
-              </div>
-            </a>
-          ))}
-          {items.length === 0 && (
-            <p style={{ color: 'var(--ink-muted)' }}>No items available for purchase right now.</p>
-          )}
-        </div>
-      </div>
-    );
+    return <Y2KBrowseLayout items={items} heading="Shop — Buy Now" emptyMessage="No buy-now pieces available." />;
   }
 
   return (

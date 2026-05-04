@@ -158,6 +158,126 @@
   line-height: 1.5;
 }
 
+/* ================================================
+   Y2K / WIN98 THEME — CHROME STYLES
+   ================================================ */
+
+[data-theme="y2k"] .win98-btn {
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  background: #c0c0c0;
+  border: none;
+  padding: 4px 12px;
+  font-family: Tahoma, 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+  min-width: 75px;
+}
+[data-theme="y2k"] .win98-btn:active {
+  box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+}
+
+[data-theme="y2k"] .win98-text-field {
+  box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  background: #ffffff;
+  border: none;
+  padding: 2px 4px;
+  font-family: Tahoma, sans-serif;
+  font-size: 11px;
+  outline: none;
+}
+
+[data-theme="y2k"] .win98-window {
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  background: #c0c0c0;
+  padding: 3px;
+}
+
+[data-theme="y2k"] .win98-title-bar {
+  background: linear-gradient(to right, #000080, #1084d0);
+  color: #ffffff;
+  font-family: Tahoma, 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 3px 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+}
+
+[data-theme="y2k"] .win98-title-bar-text {
+  flex: 1;
+}
+
+[data-theme="y2k"] .win98-title-bar-controls {
+  display: flex;
+  gap: 2px;
+}
+
+[data-theme="y2k"] .win98-title-bar-controls button {
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  background: #c0c0c0;
+  color: #000000;
+  border: none;
+  width: 16px;
+  height: 14px;
+  font-size: 9px;
+  font-family: 'Marlett', Tahoma, sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+[data-theme="y2k"] .win98-title-bar-controls button:active {
+  box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+}
+
+[data-theme="y2k"] .win98-window-body {
+  padding: 8px;
+  background: #c0c0c0;
+}
+
+[data-theme="y2k"] .win98-photo-frame {
+  box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  background: #ffffff;
+  padding: 2px;
+  display: inline-block;
+}
+
+/* Y2K keyframes */
+@keyframes y2k-blink-colon {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes y2k-flash-critical {
+  0%, 49% { background: #000000; color: #ff0000; }
+  50%, 100% { background: #ff0000; color: #000000; }
+}
+
+[data-theme="y2k"] .y2k-urgent {
+  color: #ff0000 !important;
+}
+
+[data-theme="y2k"] .y2k-critical {
+  animation: y2k-flash-critical 0.5s step-start infinite;
+}
+
+/* Win98 cursor */
+@media (pointer: fine) {
+  [data-theme="y2k"] {
+    cursor: url('/cursors/win98-arrow.svg') 0 0, auto;
+  }
+  [data-theme="y2k"] a,
+  [data-theme="y2k"] button,
+  [data-theme="y2k"] [role="button"] {
+    cursor: url('/cursors/win98-pointer.svg') 8 0, pointer;
+  }
+}
+
 [data-theme="receipt"] body {
   font-family: var(--font-body);
   line-height: 1.6;

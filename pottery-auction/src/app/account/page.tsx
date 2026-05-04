@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { formatReceiptTimestamp, formatReceiptDate } from '@/lib/format/receipt-timestamp';
 import HanddrawnAccountPage from '@/components/theme/handdrawn/HanddrawnAccountPage';
+import Y2KAccountPage from '@/components/theme/y2k/Y2KAccountPage';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
 import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
@@ -77,25 +78,13 @@ export default async function AccountPage() {
 
   if (theme === 'y2k') {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold mb-4" style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>
-          My Account
-        </h1>
-        <p className="mb-8" style={{ color: 'var(--ink-muted)' }}>{user.email}</p>
-        {orders.length > 0 && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--ink)' }}>Recent Orders</h2>
-            {orders.map((order: any) => (
-              <Link key={order.id} href={`/account/orders/${order.id}`}
-                className="block border p-4 mb-2 hover:opacity-80"
-                style={{ borderColor: 'var(--border)' }}>
-                <div style={{ color: 'var(--ink)' }}>{order.id.slice(0, 8).toUpperCase()} — {order.status.toUpperCase()}</div>
-                <div className="text-sm" style={{ color: 'var(--ink-muted)' }}>{formatCents(order.total_cents)}</div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+      <Y2KAccountPage
+        user={{ email: user.email, created_at: user.created_at }}
+        activeBids={activeBids}
+        wonBids={wonBids}
+        outbidBids={outbidBids}
+        orders={orders}
+      />
     );
   }
 
