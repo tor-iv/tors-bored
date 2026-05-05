@@ -7,15 +7,14 @@ interface ReceiptPageProps {
 
 export default function ReceiptPage({ children, className = '' }: ReceiptPageProps) {
   return (
-    <div
-      className={`receipt-page min-h-screen py-8 ${className}`}
-      style={{
-        fontFamily: 'var(--font-display, "IBM Plex Mono", monospace)',
-        backgroundColor: 'var(--bg)',
-        color: 'var(--ink)',
-      }}
-    >
-      {children}
+    <div className="receipt-strip">
+      <div className={`receipt-strip-paper ${className}`}>
+        <div className="receipt-edge-top" aria-hidden="true" />
+        <div className="receipt-strip-content">
+          {children}
+        </div>
+        <div className="receipt-edge-bottom" aria-hidden="true" />
+      </div>
     </div>
   );
 }
