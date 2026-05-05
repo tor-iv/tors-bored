@@ -141,7 +141,7 @@ export default function GlazeSelector({ selected, onSelect }: GlazeSelectorProps
               className="font-semibold mb-1"
               style={{
                 color: 'var(--theme-text)',
-                fontFamily: 'var(--font-caveat), cursive',
+                fontFamily: 'var(--font-display)',
                 fontSize: '1.2rem'
               }}
             >

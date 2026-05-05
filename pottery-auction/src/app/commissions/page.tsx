@@ -68,7 +68,7 @@ export default function CommissionsPage() {
             className="text-4xl font-bold mb-4"
             style={{
               color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive'
+              fontFamily: 'var(--font-display)'
             }}
           >
             Your Dream Pot is On Its Way!
@@ -112,7 +112,7 @@ export default function CommissionsPage() {
               className="font-semibold mb-4"
               style={{
                 color: 'var(--theme-text)',
-                fontFamily: 'var(--font-caveat), cursive',
+                fontFamily: 'var(--font-display)',
                 fontSize: '1.3rem'
               }}
             >
@@ -131,7 +131,7 @@ export default function CommissionsPage() {
                     style={{
                       backgroundColor: 'var(--theme-primary-light)',
                       color: 'var(--theme-text)',
-                      fontFamily: 'var(--font-caveat), cursive',
+                      fontFamily: 'var(--font-display)',
                       fontSize: '0.9rem'
                     }}
                   >
@@ -219,7 +219,7 @@ export default function CommissionsPage() {
               className="text-4xl sm:text-5xl font-bold mb-4"
               style={{
                 color: 'var(--theme-text)',
-                fontFamily: 'var(--font-caveat), cursive'
+                fontFamily: 'var(--font-display)'
               }}
             >
               Design Your Dream Pot

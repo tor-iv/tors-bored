@@ -4,7 +4,7 @@
   --color-background: #FEFEFE;
   --color-foreground: #36454F;
   --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-serif: var(--font-caveat), cursive;
+  --font-serif: var(--font-display);
 
   /* Pottery brand colors */
   --color-pottery-charcoal:   #2B2B2B;
@@ -50,20 +50,6 @@
    THREE-THEME DESIGN TOKEN LAYER
    ================================================ */
 
-[data-theme="handdrawn"] {
-  --bg:           #f7f3e8;
-  --bg-well:      #ede8d8;
-  --ink:          #1b1211;
-  --ink-muted:    #3d3028;
-  --accent:       #8c6e4b;
-  --accent-hover: #7a5e3b;
-  --accent-light: #e8d9b5;
-  --border:       #c4b89a;
-  --error:        #9b3a2c;
-  --success:      #5a7a4a;
-  --font-display: 'Caveat', cursive;
-  --font-body:    'Nunito', var(--font-nunito), sans-serif;
-}
 
 [data-theme="y2k"] {
   --bg:           #c0c0c0;
@@ -109,49 +95,6 @@
   color: var(--ink);
 }
 
-[data-theme="handdrawn"] body {
-  font-family: var(--font-body);
-  line-height: 1.7;
-}
-
-/* Dog-eared page corner — top-right */
-[data-theme="handdrawn"] body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(225deg, var(--bg) 50%, var(--border) 50%);
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  z-index: 1000;
-  pointer-events: none;
-}
-
-/* Paper texture overlay */
-[data-theme="handdrawn"] body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url(/textures/paper.svg);
-  background-repeat: repeat;
-  background-size: 200px;
-  opacity: 0.35;
-  pointer-events: none;
-  z-index: 999;
-}
-
-/* Custom pencil cursor — desktop only */
-@media (pointer: fine) {
-  [data-theme="handdrawn"] {
-    cursor: url('/cursors/pencil.svg') 4 28, auto;
-  }
-  [data-theme="handdrawn"] a,
-  [data-theme="handdrawn"] button,
-  [data-theme="handdrawn"] [role="button"] {
-    cursor: url('/cursors/pencil-pointer.svg') 12 0, pointer;
-  }
-}
 
 [data-theme="y2k"] body {
   font-family: var(--font-body);
@@ -307,14 +250,14 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-caveat), cursive;
+  font-family: var(--font-display), system-ui, sans-serif;
   line-height: 1.2;
   font-weight: 600;
   font-optical-sizing: auto;
 }
 
 .font-serif {
-  font-family: var(--font-caveat), cursive;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
 }
@@ -338,19 +281,6 @@ html {
   background-size: 60px 60px, 80px 80px;
 }
 
-.paper-texture {
-  position: relative;
-}
-
-.paper-texture::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  pointer-events: none;
-  z-index: 0;
-}
 
 .clay-dots {
   background-image:
@@ -360,46 +290,6 @@ html {
   background-size: 50px 50px, 70px 70px, 40px 40px;
 }
 
-/* Typography personality — used by HAND-DRAWN theme components */
-.hand-underline {
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-underline-offset: 4px;
-  text-decoration-thickness: 2px;
-}
-
-.playful-tilt {
-  display: inline-block;
-  transform: rotate(-2deg);
-}
-
-.playful-tilt-right {
-  display: inline-block;
-  transform: rotate(2deg);
-}
-
-.handwritten-price {
-  font-family: var(--font-caveat), cursive;
-  font-size: 1.4em;
-  font-weight: 600;
-}
-
-.hover-wobbly:hover {
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-underline-offset: 4px;
-}
-
-.pottery-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  font-family: var(--font-caveat), cursive;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 2px 6px 2px 6px;
-  transform: rotate(-2deg);
-  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
-}
 
 /* ================================================
    RECEIPT THEME — SPECIFIC STYLES
@@ -656,22 +546,6 @@ html {
    M7 POLISH — THEMED FOCUS RINGS
    ================================================ */
 
-/* HAND-DRAWN: wavy underline focus ring */
-[data-theme="handdrawn"] :focus-visible {
-  outline: none;
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-decoration-color: var(--accent);
-  text-underline-offset: 4px;
-}
-/* For non-text elements (buttons, links without visible text) */
-[data-theme="handdrawn"] button:focus-visible,
-[data-theme="handdrawn"] a:focus-visible,
-[data-theme="handdrawn"] [role="button"]:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  text-decoration: none;
-}
 
 /* Y2K: dotted Win98-style focus ring */
 [data-theme="y2k"] :focus-visible {

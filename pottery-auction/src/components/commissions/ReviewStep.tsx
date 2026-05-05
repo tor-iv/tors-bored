@@ -59,7 +59,7 @@ export default function ReviewStep({ data, onDataChange }: ReviewStepProps) {
             className="font-semibold"
             style={{
               color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive',
+              fontFamily: 'var(--font-display)',
               fontSize: '1.2rem'
             }}
           >
@@ -83,7 +83,7 @@ export default function ReviewStep({ data, onDataChange }: ReviewStepProps) {
             className="font-semibold"
             style={{
               color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive',
+              fontFamily: 'var(--font-display)',
               fontSize: '1.2rem'
             }}
           >
@@ -107,7 +107,7 @@ export default function ReviewStep({ data, onDataChange }: ReviewStepProps) {
             className="font-semibold"
             style={{
               color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive',
+              fontFamily: 'var(--font-display)',
               fontSize: '1.2rem'
             }}
           >
@@ -159,7 +159,7 @@ export default function ReviewStep({ data, onDataChange }: ReviewStepProps) {
           className="font-medium mb-4"
           style={{
             color: 'var(--theme-text)',
-            fontFamily: 'var(--font-caveat), cursive',
+            fontFamily: 'var(--font-display)',
             fontSize: '1.3rem'
           }}
         >

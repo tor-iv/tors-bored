@@ -102,7 +102,7 @@ export default function ClaySelector({ selected, onSelect }: ClaySelectorProps) 
                   className="font-semibold mb-1"
                   style={{
                     color: 'var(--theme-text)',
-                    fontFamily: 'var(--font-caveat), cursive',
+                    fontFamily: 'var(--font-display)',
                     fontSize: '1.3rem'
                   }}
                 >

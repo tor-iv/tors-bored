@@ -18,7 +18,7 @@ export default function HomeClient() {
     <>
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 paper-texture" style={{ backgroundColor: 'var(--bg, #F5F1EC)' }} />
+        <div className="absolute inset-0" style={{ backgroundColor: 'var(--bg, #F5F1EC)' }} />
 
         <FloatingDecoration className="absolute top-20 left-10 opacity-30 hidden lg:block" delay={0}>
           <ClayBlob className="w-40 h-40" color="var(--accent, #E07856)" />
@@ -46,8 +46,8 @@ export default function HomeClient() {
             className="text-5xl md:text-7xl font-bold mb-6"
             style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}
           >
-            <span className="playful-tilt inline-block">Tor&apos;s Bored</span>{' '}
-            <span className="playful-tilt-right inline-block">Pottery</span>
+            <span className="inline-block">Tor&apos;s Bored</span>{' '}
+            <span className="inline-block">Pottery</span>
             <br />
             <motion.span
               className="opacity-70 text-4xl md:text-5xl"

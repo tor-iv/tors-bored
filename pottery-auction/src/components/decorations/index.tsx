@@ -448,7 +448,7 @@ export function EmptyStateIllustration({
         className="text-lg font-medium"
         style={{
           color: 'var(--theme-text)',
-          fontFamily: 'var(--font-caveat), cursive'
+          fontFamily: 'var(--font-display)'
         }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

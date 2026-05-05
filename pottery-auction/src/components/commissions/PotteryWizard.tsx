@@ -142,7 +142,7 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
                       : 'bg-gray-200 text-gray-400'
                   }
                 `}
-                style={{ fontFamily: 'var(--font-caveat), cursive' }}
+                style={{ fontFamily: 'var(--font-display)' }}
                 whileHover={index < currentStep ? { scale: 1.1 } : {}}
                 whileTap={index < currentStep ? { scale: 0.95 } : {}}
               >
@@ -168,7 +168,7 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
         >
           <h2
             className="text-2xl font-bold"
-            style={{ color: 'var(--theme-text)', fontFamily: 'var(--font-caveat), cursive', fontSize: '2rem' }}
+            style={{ color: 'var(--theme-text)', fontFamily: 'var(--font-display)', fontSize: '2rem' }}
           >
             {steps[currentStep].title}
           </h2>

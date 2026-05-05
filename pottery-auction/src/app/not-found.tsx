@@ -160,10 +160,10 @@ export default function NotFound() {
 
         {/* 404 text */}
         <motion.h1
-          className="text-8xl md:text-9xl font-bold mb-4 playful-tilt"
+          className="text-8xl md:text-9xl font-bold mb-4"
           style={{
             color: 'var(--theme-primary)',
-            fontFamily: 'var(--font-caveat), cursive'
+            fontFamily: 'var(--font-display)'
           }}
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
@@ -177,7 +177,7 @@ export default function NotFound() {
           className="text-2xl md:text-3xl font-semibold mb-4"
           style={{
             color: 'var(--theme-text)',
-            fontFamily: 'var(--font-caveat), cursive'
+            fontFamily: 'var(--font-display)'
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
