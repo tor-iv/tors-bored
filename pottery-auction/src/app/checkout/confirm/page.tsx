@@ -173,7 +173,7 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
           </div>
 
           {/* Totals */}
-          <div style={{ textAlign: 'center', fontFamily: 'var(--font-stamp)', fontSize: '0.75rem', color: 'var(--ink-muted)', margin: '8px 0', letterSpacing: '0.1em' }}>
+          <div className="receipt-stamp" style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--ink-muted)', margin: '8px 0' }}>
             *** END OF SALE ***
           </div>
           <div className="py-2 space-y-1 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)' }}>
