@@ -136,9 +136,9 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
                   w-10 h-10 rounded-full flex items-center justify-center font-medium
                   transition-all duration-300
                   ${index === currentStep
-                    ? 'bg-[var(--theme-primary)] text-[var(--theme-text-on-primary)] scale-110'
+                    ? 'bg-[var(--accent)] text-[var(--bg)] scale-110'
                     : index < currentStep
-                      ? 'bg-[var(--theme-primary-light)] text-[var(--theme-text)] cursor-pointer hover:scale-105'
+                      ? 'bg-[var(--accent-light)] text-[var(--ink)] cursor-pointer hover:scale-105'
                       : 'bg-gray-200 text-gray-400'
                   }
                 `}
@@ -151,7 +151,7 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
               {index < steps.length - 1 && (
                 <div
                   className={`h-1 w-8 sm:w-16 mx-1 rounded-full transition-colors duration-300
-                    ${index < currentStep ? 'bg-[var(--theme-primary)]' : 'bg-gray-200'}
+                    ${index < currentStep ? 'bg-[var(--accent)]' : 'bg-gray-200'}
                   `}
                 />
               )}
@@ -168,11 +168,11 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
         >
           <h2
             className="text-2xl font-bold"
-            style={{ color: 'var(--theme-text)', fontFamily: 'var(--font-display)', fontSize: '2rem' }}
+            style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)', fontSize: '2rem' }}
           >
             {steps[currentStep].title}
           </h2>
-          <p className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>
+          <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
             {steps[currentStep].subtitle}
           </p>
         </motion.div>
@@ -213,7 +213,7 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
               : 'hover:bg-gray-100'
             }
           `}
-          style={{ color: 'var(--theme-text)' }}
+          style={{ color: 'var(--ink)' }}
           whileHover={{ x: -4 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -225,7 +225,7 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
         <div className="hidden sm:block">
           <PotteryWheelDoodle
             className="w-12 h-12 opacity-20"
-            color="var(--theme-text)"
+            color="var(--ink)"
             animate={true}
           />
         </div>
@@ -235,9 +235,9 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
             onClick={handleSubmit}
             className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium"
             style={{
-              backgroundColor: 'var(--theme-primary)',
-              color: 'var(--theme-text-on-primary)',
-              boxShadow: '0 4px 0 var(--theme-primary-dark)'
+              backgroundColor: 'var(--accent)',
+              color: 'var(--bg)',
+              boxShadow: '0 4px 0 var(--accent-hover)'
             }}
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98, y: 2 }}
@@ -258,9 +258,9 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
               }
             `}
             style={{
-              backgroundColor: canProceed() ? 'var(--theme-primary)' : 'gray',
-              color: 'var(--theme-text-on-primary)',
-              boxShadow: canProceed() ? '0 4px 0 var(--theme-primary-dark)' : 'none'
+              backgroundColor: canProceed() ? 'var(--accent)' : 'gray',
+              color: 'var(--bg)',
+              boxShadow: canProceed() ? '0 4px 0 var(--accent-hover)' : 'none'
             }}
             whileHover={canProceed() ? { scale: 1.02, y: -2 } : {}}
             whileTap={canProceed() ? { scale: 0.98, y: 2 } : {}}

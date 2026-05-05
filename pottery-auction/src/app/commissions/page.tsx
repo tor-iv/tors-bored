@@ -56,7 +56,7 @@ export default function CommissionsPage() {
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
             className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ backgroundColor: 'var(--theme-primary)' }}
+            style={{ backgroundColor: 'var(--accent)' }}
           >
             <Sparkles size={40} className="text-white" />
           </motion.div>
@@ -67,7 +67,7 @@ export default function CommissionsPage() {
             transition={{ delay: 0.3 }}
             className="text-4xl font-bold mb-4"
             style={{
-              color: 'var(--theme-text)',
+              color: 'var(--ink)',
               fontFamily: 'var(--font-display)'
             }}
           >
@@ -79,18 +79,18 @@ export default function CommissionsPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
             className="mb-8"
-            style={{ color: 'var(--theme-text-muted)' }}
+            style={{ color: 'var(--ink-muted)' }}
           >
             Thank you for sharing your vision! I&apos;ll review your{' '}
-            <span className="font-medium" style={{ color: 'var(--theme-text)' }}>
+            <span className="font-medium" style={{ color: 'var(--ink)' }}>
               {submittedData.shape}
             </span>{' '}
             made with{' '}
-            <span className="font-medium" style={{ color: 'var(--theme-text)' }}>
+            <span className="font-medium" style={{ color: 'var(--ink)' }}>
               {submittedData.clay}
             </span>{' '}
             and{' '}
-            <span className="font-medium" style={{ color: 'var(--theme-text)' }}>
+            <span className="font-medium" style={{ color: 'var(--ink)' }}>
               {submittedData.glaze}
             </span>{' '}
             glaze, and get back to you within 3-5 business days.
@@ -111,7 +111,7 @@ export default function CommissionsPage() {
             <h3
               className="font-semibold mb-4"
               style={{
-                color: 'var(--theme-text)',
+                color: 'var(--ink)',
                 fontFamily: 'var(--font-display)',
                 fontSize: '1.3rem'
               }}
@@ -129,15 +129,15 @@ export default function CommissionsPage() {
                   <div
                     className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
                     style={{
-                      backgroundColor: 'var(--theme-primary-light)',
-                      color: 'var(--theme-text)',
+                      backgroundColor: 'var(--accent-light)',
+                      color: 'var(--ink)',
                       fontFamily: 'var(--font-display)',
                       fontSize: '0.9rem'
                     }}
                   >
                     {i + 1}
                   </div>
-                  <p className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>
+                  <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
                     {step}
                   </p>
                 </div>
@@ -158,9 +158,9 @@ export default function CommissionsPage() {
               }}
               className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105"
               style={{
-                backgroundColor: 'var(--theme-primary)',
-                color: 'var(--theme-text-on-primary)',
-                boxShadow: '0 4px 0 var(--theme-primary-dark)'
+                backgroundColor: 'var(--accent)',
+                color: 'var(--bg)',
+                boxShadow: '0 4px 0 var(--accent-hover)'
               }}
             >
               Submit Another Idea
@@ -169,8 +169,8 @@ export default function CommissionsPage() {
               href="/gallery"
               className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 border-2"
               style={{
-                borderColor: 'var(--theme-primary)',
-                color: 'var(--theme-text)'
+                borderColor: 'var(--accent)',
+                color: 'var(--ink)'
               }}
             >
               Browse Gallery
@@ -186,20 +186,20 @@ export default function CommissionsPage() {
     <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#F5F1EC' }}>
       {/* Background decorations */}
       <FloatingDecoration className="absolute top-20 right-10 opacity-20 hidden lg:block" delay={0}>
-        <ClayBlob className="w-48 h-48" color="var(--theme-primary)" />
+        <ClayBlob className="w-48 h-48" color="var(--accent)" />
       </FloatingDecoration>
       <FloatingDecoration className="absolute bottom-40 left-10 opacity-15 hidden lg:block" delay={2}>
         <ClayBlob className="w-32 h-32" color="var(--theme-accent)" />
       </FloatingDecoration>
 
       {/* Header */}
-      <div className="relative py-12 sm:py-16" style={{ backgroundColor: 'var(--theme-primary-light)' }}>
+      <div className="relative py-12 sm:py-16" style={{ backgroundColor: 'var(--accent-light)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Back link */}
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-sm mb-6 hover:opacity-70 transition-opacity"
-            style={{ color: 'var(--theme-text-muted)' }}
+            style={{ color: 'var(--ink-muted)' }}
           >
             <ArrowLeft size={16} />
             Back to Home
@@ -212,13 +212,13 @@ export default function CommissionsPage() {
             {/* Hands on clay illustration */}
             <HandsOnClay
               className="w-20 h-20 mx-auto mb-4"
-              color="var(--theme-text)"
+              color="var(--ink)"
             />
 
             <h1
               className="text-4xl sm:text-5xl font-bold mb-4"
               style={{
-                color: 'var(--theme-text)',
+                color: 'var(--ink)',
                 fontFamily: 'var(--font-display)'
               }}
             >
@@ -226,7 +226,7 @@ export default function CommissionsPage() {
             </h1>
             <p
               className="text-lg max-w-2xl mx-auto"
-              style={{ color: 'var(--theme-text-muted)' }}
+              style={{ color: 'var(--ink-muted)' }}
             >
               Walk through a few quick steps to tell me about your perfect pottery piece.
               I&apos;ll review your idea and we&apos;ll bring it to life together!

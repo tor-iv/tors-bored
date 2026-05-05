@@ -162,7 +162,7 @@ export default function NotFound() {
         <motion.h1
           className="text-8xl md:text-9xl font-bold mb-4"
           style={{
-            color: 'var(--theme-primary)',
+            color: 'var(--accent)',
             fontFamily: 'var(--font-display)'
           }}
           initial={{ scale: 0.8 }}
@@ -176,7 +176,7 @@ export default function NotFound() {
         <motion.h2
           className="text-2xl md:text-3xl font-semibold mb-4"
           style={{
-            color: 'var(--theme-text)',
+            color: 'var(--ink)',
             fontFamily: 'var(--font-display)'
           }}
           initial={{ opacity: 0 }}
@@ -189,7 +189,7 @@ export default function NotFound() {
         {/* Random pun */}
         <motion.p
           className="text-lg mb-8 max-w-md mx-auto"
-          style={{ color: 'var(--theme-text-muted)' }}
+          style={{ color: 'var(--ink-muted)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
@@ -208,9 +208,9 @@ export default function NotFound() {
             href="/"
             className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 hover:-translate-y-1"
             style={{
-              backgroundColor: 'var(--theme-primary)',
-              color: 'var(--theme-text-on-primary)',
-              boxShadow: '0 4px 0 var(--theme-primary-dark)'
+              backgroundColor: 'var(--accent)',
+              color: 'var(--bg)',
+              boxShadow: '0 4px 0 var(--accent-hover)'
             }}
           >
             Back to the Studio
@@ -219,8 +219,8 @@ export default function NotFound() {
             href="/gallery"
             className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 border-2"
             style={{
-              borderColor: 'var(--theme-primary)',
-              color: 'var(--theme-text)'
+              borderColor: 'var(--accent)',
+              color: 'var(--ink)'
             }}
           >
             Browse the Gallery
@@ -230,7 +230,7 @@ export default function NotFound() {
         {/* Fun footer note */}
         <motion.p
           className="mt-12 text-sm italic"
-          style={{ color: 'var(--theme-text-muted)' }}
+          style={{ color: 'var(--ink-muted)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}

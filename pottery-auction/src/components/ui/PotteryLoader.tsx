@@ -197,7 +197,7 @@ export default function PotteryLoader({
           transition={{ duration: 0.3 }}
           className="text-sm font-medium text-center"
           style={{
-            color: 'var(--theme-text-muted)',
+            color: 'var(--ink-muted)',
             fontFamily: 'var(--font-display)',
             fontSize: size === 'lg' ? '1.25rem' : size === 'md' ? '1rem' : '0.875rem'
           }}

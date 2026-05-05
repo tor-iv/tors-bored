@@ -121,7 +121,7 @@ const shapes = [
 export default function ShapeSelector({ selected, onSelect }: ShapeSelectorProps) {
   return (
     <div>
-      <p className="text-center mb-6" style={{ color: 'var(--theme-text-muted)' }}>
+      <p className="text-center mb-6" style={{ color: 'var(--ink-muted)' }}>
         Select the base shape for your custom pottery piece
       </p>
 
@@ -133,8 +133,8 @@ export default function ShapeSelector({ selected, onSelect }: ShapeSelectorProps
             className={`
               relative p-4 rounded-xl border-2 transition-all duration-200
               ${selected === shape.id
-                ? 'border-[var(--theme-primary)] bg-[var(--theme-primary-light)]'
-                : 'border-gray-200 hover:border-[var(--theme-primary)] hover:bg-gray-50'
+                ? 'border-[var(--accent)] bg-[var(--accent-light)]'
+                : 'border-gray-200 hover:border-[var(--accent)] hover:bg-gray-50'
               }
             `}
             whileHover={{ scale: 1.02, y: -4 }}
@@ -146,7 +146,7 @@ export default function ShapeSelector({ selected, onSelect }: ShapeSelectorProps
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'var(--theme-primary)' }}
+                style={{ backgroundColor: 'var(--accent)' }}
               >
                 <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -157,7 +157,7 @@ export default function ShapeSelector({ selected, onSelect }: ShapeSelectorProps
             {/* Shape illustration */}
             <div
               className="w-20 h-20 mx-auto mb-3"
-              style={{ color: selected === shape.id ? 'var(--theme-text)' : 'var(--theme-text-muted)' }}
+              style={{ color: selected === shape.id ? 'var(--ink)' : 'var(--ink-muted)' }}
             >
               {shape.svg}
             </div>
@@ -166,14 +166,14 @@ export default function ShapeSelector({ selected, onSelect }: ShapeSelectorProps
             <h3
               className="font-semibold mb-1"
               style={{
-                color: 'var(--theme-text)',
+                color: 'var(--ink)',
                 fontFamily: 'var(--font-display)',
                 fontSize: '1.25rem'
               }}
             >
               {shape.name}
             </h3>
-            <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>
+            <p className="text-xs" style={{ color: 'var(--ink-muted)' }}>
               {shape.description}
             </p>
           </motion.button>

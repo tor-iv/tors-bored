@@ -13,7 +13,22 @@ export default async function Home() {
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
 
-  if (theme === 'y2k') return <Y2KHome />;
+  if (theme === 'y2k') {
+    // Fetch data for Y2K home too
+    const supabase = await createClient();
+    const [featuredRes, activeRes, shopRes] = await Promise.all([
+      supabase.from('items').select('*').eq('featured', true).is('sold_at', null).limit(1).maybeSingle(),
+      supabase.from('items').select('*, auction:auctions(end_date, extended_end_date, status)').eq('listing_type', 'auction').is('sold_at', null).not('auction_id', 'is', null).limit(6),
+      supabase.from('items').select('*').eq('listing_type', 'buy_now').is('sold_at', null).limit(6),
+    ]);
+    const activeAuctions = ((activeRes.data ?? []) as any[])
+      .filter((i: any) => i.auction?.status === 'active')
+      .map((i: any) => ({ id: i.id, sku: i.sku ?? 'OBJ-????', title: i.title, images: i.images, currentBid: i.current_bid, startingBid: i.starting_bid, endDate: i.auction?.extended_end_date ?? i.auction?.end_date }));
+    const shopItemsMapped = ((shopRes.data ?? []) as any[]).map((i: any) => ({ id: i.id, sku: i.sku ?? 'OBJ-????', title: i.title, images: i.images, buyNowPrice: i.buy_now_price }));
+    const feat = featuredRes.data;
+    const mappedFeatured = feat ? { id: feat.id, sku: feat.sku ?? 'OBJ-????', title: feat.title, images: feat.images ?? undefined, current_bid: feat.current_bid, buy_now_price: feat.buy_now_price, listing_type: feat.listing_type ?? undefined } : null;
+    return <Y2KHome featuredItem={mappedFeatured} auctionItems={activeAuctions} shopItems={shopItemsMapped} />;
+  }
   // receipt: falls through to receipt code below
   if (theme !== 'receipt') return <HomeClient />;
 

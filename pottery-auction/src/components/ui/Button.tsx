@@ -9,7 +9,6 @@ const buttonVariants = cva(
   {
     variants: {
       theme: {
-        handdrawn: '',
         y2k: '',
         receipt: 'font-mono uppercase tracking-wide',
       },
@@ -65,42 +64,6 @@ const buttonVariants = cva(
           'bg-transparent border-none text-[var(--error)]',
           'before:content-["[_"] after:content-["_]"]',
           'hover:bg-[var(--error)] hover:text-[var(--bg)]',
-        ].join(' '),
-      },
-
-      // HAND-DRAWN primary: warm clay fill (rough border added via Rough.js in Phase 3)
-      {
-        theme: 'handdrawn',
-        intent: 'primary',
-        className: [
-          'px-6 py-3 font-semibold text-[var(--bg)]',
-          'bg-[var(--accent)] hover:bg-[var(--accent-hover)]',
-          'rounded-sm active:scale-[0.98]',
-          'font-[var(--font-display)]',
-        ].join(' '),
-      },
-      {
-        theme: 'handdrawn',
-        intent: 'secondary',
-        className: [
-          'px-6 py-3 font-semibold text-[var(--accent)]',
-          'bg-transparent border border-[var(--accent)]',
-          'rounded-sm hover:bg-[var(--accent-light)]',
-          'font-[var(--font-display)]',
-        ].join(' '),
-      },
-      {
-        theme: 'handdrawn',
-        intent: 'ghost',
-        className: 'px-0 py-1 text-[var(--ink)] underline-offset-4 hover:underline font-[var(--font-display)]',
-      },
-      {
-        theme: 'handdrawn',
-        intent: 'danger',
-        className: [
-          'px-6 py-3 font-semibold text-white',
-          'bg-[var(--error)] hover:opacity-90',
-          'rounded-sm font-[var(--font-display)]',
         ].join(' '),
       },
 

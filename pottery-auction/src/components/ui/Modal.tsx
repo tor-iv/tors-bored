@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
-import RoughBorder from '@/components/theme/handdrawn/RoughBorder';
 import Win98Modal from '@/components/theme/y2k/Win98Modal';
 
 interface ModalProps {
@@ -47,47 +46,13 @@ export default function Modal({ isOpen, onClose, title, children, className = ''
           />
 
           <motion.div
-            initial={theme === 'handdrawn' ? { opacity: 0, y: -40, rotate: -2 } : { opacity: 0, y: 8 }}
-            animate={theme === 'handdrawn' ? { opacity: 1, y: 0, rotate: 0 } : { opacity: 1, y: 0 }}
-            exit={theme === 'handdrawn' ? { opacity: 0, y: 40, rotate: 2 } : { opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            {theme === 'handdrawn' ? (
-              <RoughBorder
-                roughness={1.8}
-                strokeWidth={2}
-                className={`max-w-md w-full ${className}`}
-                style={{ boxShadow: '4px 6px 0 rgba(0,0,0,0.08)', backgroundColor: 'var(--bg)' }}
-              >
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    {title && (
-                      <h2
-                        style={{
-                          fontFamily: 'var(--font-display)',
-                          fontSize: '1.25rem',
-                          fontWeight: 600,
-                          color: 'var(--ink)',
-                        }}
-                      >
-                        {title}
-                      </h2>
-                    )}
-                    <button
-                      onClick={onClose}
-                      aria-label="Close"
-                      style={{ color: 'var(--ink-muted)', cursor: 'pointer', marginLeft: 'auto' }}
-                    >
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 2L16 16M16 2L2 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                    </button>
-                  </div>
-                  {children}
-                </div>
-              </RoughBorder>
-            ) : theme === 'receipt' ? (
+            {theme === 'receipt' ? (
               <div
                 className={`receipt-modal relative ${className}`}
                 style={{ fontFamily: 'var(--font-display, "IBM Plex Mono", monospace)' }}

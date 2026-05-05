@@ -1,5 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import Win98Window from './Win98Window';
+import Y2KSidebar from './Y2KSidebar';
 import BlinkingClock from './BlinkingClock';
 
 interface BrowseItem {
@@ -14,6 +16,7 @@ interface BrowseItem {
   soldAt?: string | null;
   techniques?: string[];
   images?: string[];
+  createdAt?: string | null;
 }
 
 interface Y2KBrowseLayoutProps {
@@ -27,72 +30,212 @@ function formatPrice(val: number | null | undefined): string {
   return `$${Number(val).toFixed(2)}`;
 }
 
+function isNew(item: BrowseItem): boolean {
+  if (!item.createdAt) return false;
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  return new Date(item.createdAt).getTime() > thirtyDaysAgo;
+}
+
 export default function Y2KBrowseLayout({ items, heading, emptyMessage }: Y2KBrowseLayoutProps) {
   const router = useRouter();
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 style={{ fontFamily: '"Comic Sans MS", cursive', color: 'var(--ink)', fontSize: '1.5rem', marginBottom: '1rem' }}>
-        {heading}
-      </h1>
-      {items.length === 0 ? (
-        <p style={{ fontFamily: 'Tahoma, sans-serif', fontSize: 11, color: 'var(--ink-muted)' }}>
-          {emptyMessage ?? 'No items found.'}
-        </p>
-      ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Tahoma, sans-serif', fontSize: 11 }}>
-          <thead>
-            <tr style={{ background: '#000080', color: '#ffffff' }}>
-              <th style={{ padding: '4px 8px', textAlign: 'left', border: '1px solid var(--border)' }}>ITEM</th>
-              <th style={{ padding: '4px 8px', textAlign: 'left', border: '1px solid var(--border)' }}>CURRENT BID/PRICE</th>
-              <th style={{ padding: '4px 8px', textAlign: 'left', border: '1px solid var(--border)' }}>TIME LEFT</th>
-              <th style={{ padding: '4px 8px', textAlign: 'left', border: '1px solid var(--border)' }}>STATUS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, i) => (
-              <tr
-                key={item.id}
-                style={{
-                  background: i % 2 === 0 ? 'var(--bg)' : 'var(--bg-well)',
-                  cursor: 'pointer',
-                }}
-                onClick={() => router.push(`/piece/${item.sku}`)}
-                tabIndex={0}
-                role="button"
-                aria-label={`View ${item.title}`}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/piece/${item.sku}`); } }}
-              >
-                <td style={{ padding: '4px 8px', border: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {item.images?.[0] && (
-                      <img
-                        src={item.images[0]}
-                        width="40"
-                        height="40"
-                        style={{ border: '1px solid var(--border)', objectFit: 'cover', flexShrink: 0 }}
-                        alt=""
-                      />
+    <div className="y2k-desktop" style={{ minHeight: 'calc(100vh - 120px)' }}>
+      <Y2KSidebar />
+
+      <div className="y2k-main">
+        <Win98Window
+          title={`📁 ${heading} — ${items.length} item${items.length !== 1 ? 's' : ''}`}
+          controls={['minimize', 'maximize', 'close']}
+        >
+          {/* Toolbar row */}
+          <div
+            style={{
+              display: 'flex',
+              gap: 6,
+              alignItems: 'center',
+              borderBottom: '1px solid var(--border)',
+              paddingBottom: 6,
+              marginBottom: 6,
+              fontFamily: 'Tahoma, sans-serif',
+              fontSize: 11,
+            }}
+          >
+            <button className="win98-btn" style={{ minWidth: 'unset', padding: '2px 8px', fontSize: 10 }}>
+              🗂️ File
+            </button>
+            <button className="win98-btn" style={{ minWidth: 'unset', padding: '2px 8px', fontSize: 10 }}>
+              ✏️ Edit
+            </button>
+            <button className="win98-btn" style={{ minWidth: 'unset', padding: '2px 8px', fontSize: 10 }}>
+              👁️ View
+            </button>
+            <div
+              style={{
+                marginLeft: 12,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '1px 6px',
+                background: '#ffffff',
+                border: '1px inset #808080',
+                flex: 1,
+              }}
+            >
+              <span style={{ color: 'var(--ink-muted)' }}>📁</span>
+              <span>C:\TorPottery\Gallery</span>
+            </div>
+          </div>
+
+          {/* Status bar: showing x items */}
+          <div
+            style={{
+              fontFamily: 'Tahoma, sans-serif',
+              fontSize: 10,
+              color: 'var(--ink-muted)',
+              marginBottom: 4,
+              paddingBottom: 4,
+              borderBottom: '1px solid var(--border)',
+            }}
+          >
+            {items.length} object{items.length !== 1 ? 's' : ''} — Double-click to view details
+          </div>
+
+          {items.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: 32 }}>
+              <div className="win98-window" style={{ maxWidth: 280, margin: '0 auto' }}>
+                <div className="win98-title-bar">
+                  <span className="win98-title-bar-text">🚧 Empty Folder</span>
+                </div>
+                <div className="win98-window-body" style={{ textAlign: 'center', padding: 24 }}>
+                  <div style={{ fontSize: 40, marginBottom: 8 }}>📂</div>
+                  <p style={{ fontFamily: '"Comic Sans MS", cursive', fontSize: 13, marginBottom: 8 }}>
+                    No items found!
+                  </p>
+                  <p style={{ fontFamily: 'Verdana, sans-serif', fontSize: 11, color: 'var(--ink-muted)' }}>
+                    {emptyMessage ?? 'Check back soon — Tor is busy at the wheel.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="y2k-icon-grid">
+              {items.map((item) => {
+                const price = item.listingType === 'auction'
+                  ? (item.currentBid ?? item.startingBid)
+                  : item.buyNowPrice;
+                const isSold = !!item.soldAt;
+                const showNew = isNew(item) && !isSold;
+
+                return (
+                  <div
+                    key={item.id}
+                    className="y2k-icon-item"
+                    onClick={() => router.push(`/piece/${item.sku}`)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Open ${item.title}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        router.push(`/piece/${item.sku}`);
+                      }
+                    }}
+                  >
+                    {showNew && <span className="y2k-new-badge">NEW!</span>}
+
+                    {/* Icon thumbnail */}
+                    <div
+                      className="win98-photo-frame"
+                      style={{ position: 'relative', marginBottom: 4 }}
+                    >
+                      {item.images?.[0] ? (
+                        <img
+                          src={item.images[0]}
+                          alt={item.title}
+                          className="y2k-icon-thumb"
+                        />
+                      ) : (
+                        <div
+                          className="y2k-icon-thumb"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 32,
+                            background: '#e0e0e0',
+                          }}
+                        >
+                          🏺
+                        </div>
+                      )}
+                      {isSold && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontFamily: '"Comic Sans MS", cursive',
+                            color: '#ff0000',
+                            fontWeight: 'bold',
+                            fontSize: 14,
+                            transform: 'rotate(-15deg)',
+                          }}
+                        >
+                          SOLD
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Label */}
+                    <span className="y2k-icon-label">{item.title}</span>
+
+                    {/* Price + type badge */}
+                    <div
+                      style={{
+                        fontFamily: '"Courier New", monospace',
+                        fontSize: 10,
+                        color: isSold ? '#808080' : item.listingType === 'auction' ? '#000080' : '#008000',
+                        fontWeight: 'bold',
+                        marginTop: 1,
+                      }}
+                    >
+                      {isSold ? 'SOLD' : (item.listingType === 'auction' ? '🔨 ' : '🛒 ') + formatPrice(price)}
+                    </div>
+
+                    {/* Countdown for auctions */}
+                    {item.listingType === 'auction' && item.endDate && !isSold && (
+                      <div style={{ fontSize: 9, fontFamily: 'Tahoma, sans-serif', color: 'var(--ink-muted)', marginTop: 1 }}>
+                        <BlinkingClock endDate={item.endDate} />
+                      </div>
                     )}
-                    <span style={{ fontWeight: 'bold', color: 'var(--accent)' }}>{item.title}</span>
                   </div>
-                </td>
-                <td style={{ padding: '4px 8px', border: '1px solid var(--border)' }}>
-                  {item.listingType === 'auction'
-                    ? formatPrice(item.currentBid ?? item.startingBid)
-                    : formatPrice(item.buyNowPrice)}
-                </td>
-                <td style={{ padding: '4px 8px', border: '1px solid var(--border)' }}>
-                  {item.endDate ? <BlinkingClock endDate={item.endDate} /> : '—'}
-                </td>
-                <td style={{ padding: '4px 8px', border: '1px solid var(--border)' }}>
-                  {item.soldAt ? 'SOLD' : item.listingType === 'auction' ? 'ACTIVE' : 'BUY NOW'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+                );
+              })}
+            </div>
+          )}
+
+          {/* Status bar */}
+          <div
+            style={{
+              marginTop: 8,
+              paddingTop: 4,
+              borderTop: '1px solid var(--border)',
+              fontFamily: 'Tahoma, sans-serif',
+              fontSize: 10,
+              color: 'var(--ink-muted)',
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span>{items.filter((i) => !i.soldAt).length} item(s) available</span>
+            <span>{items.filter((i) => i.soldAt).length} sold</span>
+          </div>
+        </Win98Window>
+      </div>
     </div>
   );
 }

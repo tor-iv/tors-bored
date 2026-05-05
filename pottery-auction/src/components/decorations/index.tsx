@@ -137,7 +137,7 @@ export function VaseSketch({
 // ============================================
 export function ClayBlob({
   className = 'w-32 h-32',
-  color = 'var(--theme-primary)',
+  color = 'var(--accent)',
   animate = true
 }: DecorationProps) {
   return (
@@ -177,7 +177,7 @@ export function ClayBlob({
 // ============================================
 export function BrushStroke({
   className = 'w-full h-4',
-  color = 'var(--theme-primary)'
+  color = 'var(--accent)'
 }: DecorationProps) {
   return (
     <svg
@@ -276,7 +276,7 @@ export function HandsOnClay({
 // ============================================
 export function ClaySplatter({
   className = 'w-8 h-8',
-  color = 'var(--theme-primary)'
+  color = 'var(--accent)'
 }: DecorationProps) {
   return (
     <svg
@@ -441,13 +441,13 @@ export function EmptyStateIllustration({
       >
         <VaseSketch
           className="w-24 h-24 mb-4"
-          color="var(--theme-text-muted)"
+          color="var(--ink-muted)"
         />
       </motion.div>
       <motion.p
         className="text-lg font-medium"
         style={{
-          color: 'var(--theme-text)',
+          color: 'var(--ink)',
           fontFamily: 'var(--font-display)'
         }}
         initial={{ opacity: 0 }}
@@ -458,7 +458,7 @@ export function EmptyStateIllustration({
       </motion.p>
       <motion.p
         className="text-sm mt-1"
-        style={{ color: 'var(--theme-text-muted)' }}
+        style={{ color: 'var(--ink-muted)' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}

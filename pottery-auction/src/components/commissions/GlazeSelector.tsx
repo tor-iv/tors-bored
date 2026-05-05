@@ -55,7 +55,7 @@ const glazeTypes = [
 export default function GlazeSelector({ selected, onSelect }: GlazeSelectorProps) {
   return (
     <div>
-      <p className="text-center mb-6" style={{ color: 'var(--theme-text-muted)' }}>
+      <p className="text-center mb-6" style={{ color: 'var(--ink-muted)' }}>
         The glaze determines the look and feel of your finished piece
       </p>
 
@@ -67,8 +67,8 @@ export default function GlazeSelector({ selected, onSelect }: GlazeSelectorProps
             className={`
               relative p-4 rounded-xl border-2 text-center transition-all duration-200
               ${selected === glaze.id
-                ? 'border-[var(--theme-primary)] bg-[var(--theme-primary-light)]'
-                : 'border-gray-200 hover:border-[var(--theme-primary)] hover:bg-gray-50'
+                ? 'border-[var(--accent)] bg-[var(--accent-light)]'
+                : 'border-gray-200 hover:border-[var(--accent)] hover:bg-gray-50'
               }
             `}
             whileHover={{ scale: 1.02, y: -4 }}
@@ -80,7 +80,7 @@ export default function GlazeSelector({ selected, onSelect }: GlazeSelectorProps
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'var(--theme-primary)' }}
+                style={{ backgroundColor: 'var(--accent)' }}
               >
                 <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -140,19 +140,19 @@ export default function GlazeSelector({ selected, onSelect }: GlazeSelectorProps
             <h3
               className="font-semibold mb-1"
               style={{
-                color: 'var(--theme-text)',
+                color: 'var(--ink)',
                 fontFamily: 'var(--font-display)',
                 fontSize: '1.2rem'
               }}
             >
               {glaze.name}
             </h3>
-            <p className="text-xs mb-1" style={{ color: 'var(--theme-text-muted)' }}>
+            <p className="text-xs mb-1" style={{ color: 'var(--ink-muted)' }}>
               {glaze.description}
             </p>
             <p
               className="text-xs italic"
-              style={{ color: 'var(--theme-text)', opacity: 0.6 }}
+              style={{ color: 'var(--ink)', opacity: 0.6 }}
             >
               {glaze.visual}
             </p>
@@ -161,7 +161,7 @@ export default function GlazeSelector({ selected, onSelect }: GlazeSelectorProps
       </div>
 
       {/* Color note */}
-      <p className="text-center text-xs mt-6" style={{ color: 'var(--theme-text-muted)' }}>
+      <p className="text-center text-xs mt-6" style={{ color: 'var(--ink-muted)' }}>
         Specific colors can be discussed - these are just examples of what&apos;s possible!
       </p>
     </div>

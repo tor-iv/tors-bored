@@ -15,7 +15,7 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
   const [brushSize, setBrushSize] = useState(3);
   const [history, setHistory] = useState<string[]>([]);
   const { theme } = useTheme();
-  const accentByTheme = { handdrawn: '#8c6e4b', y2k: '#000080', receipt: '#1a1a1a' };
+  const accentByTheme = { y2k: '#000080', receipt: '#1a1a1a' };
   const themeAccent = accentByTheme[theme];
 
   // Drawing colors
@@ -178,7 +178,7 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
 
   return (
     <div className="space-y-4">
-      <p className={`text-sm italic text-[var(--theme-text)]`}>
+      <p className={`text-sm italic text-[var(--ink)]`}>
         {placeholder}
       </p>
       
@@ -220,7 +220,7 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
 
         {/* Brush size */}
         <div className="flex items-center space-x-2">
-          <span className={`text-xs text-[var(--theme-text)]`}>Brush Size</span>
+          <span className={`text-xs text-[var(--ink)]`}>Brush Size</span>
           <input
             type="range"
             min="1"
@@ -237,14 +237,14 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
             type="button"
             onClick={undo}
             disabled={history.length <= 1}
-            className={`text-xs hover:opacity-70 transition-opacity disabled:opacity-30 text-[var(--theme-text)]`}
+            className={`text-xs hover:opacity-70 transition-opacity disabled:opacity-30 text-[var(--ink)]`}
           >
             Undo
           </button>
           <button
             type="button"
             onClick={clearCanvas}
-            className={`text-xs hover:opacity-70 transition-opacity text-[var(--theme-text)]`}
+            className={`text-xs hover:opacity-70 transition-opacity text-[var(--ink)]`}
           >
             Clear
           </button>

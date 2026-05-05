@@ -162,7 +162,7 @@ export default function AuctionsPage() {
       <div
         className="relative overflow-hidden py-16"
         style={{
-          background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%)'
+          background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)'
         }}
       >
         {/* Floating decorations */}
@@ -194,7 +194,7 @@ export default function AuctionsPage() {
             <h1
               className="text-4xl md:text-6xl font-bold mb-4"
               style={{
-                color: 'var(--theme-text-on-primary)',
+                color: 'var(--bg)',
                 fontFamily: 'var(--font-display)'
               }}
             >
@@ -202,7 +202,7 @@ export default function AuctionsPage() {
             </h1>
             <p
               className="text-xl mb-8"
-              style={{ color: 'var(--theme-text-on-primary)', opacity: 0.9 }}
+              style={{ color: 'var(--bg)', opacity: 0.9 }}
             >
               Featuring 2 exceptional items - limited collection this month
             </p>
@@ -214,11 +214,11 @@ export default function AuctionsPage() {
               <div className="h-8 w-px bg-white/20 hidden sm:block" />
 
               <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2" style={{ color: 'var(--theme-text-on-primary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--bg)' }}>
                   <Trophy size={20} />
                   <span>2 Items</span>
                 </div>
-                <div className="flex items-center gap-2" style={{ color: 'var(--theme-text-on-primary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--bg)' }}>
                   <Users size={20} />
                   <span>5 Bidders</span>
                 </div>
@@ -239,20 +239,20 @@ export default function AuctionsPage() {
             <h2
               className="text-2xl font-bold mb-2"
               style={{
-                color: 'var(--theme-text)',
+                color: 'var(--ink)',
                 fontFamily: 'var(--font-display)',
                 fontSize: '2rem'
               }}
             >
               Current Collection
             </h2>
-            <p style={{ color: 'var(--theme-text-muted)' }}>
+            <p style={{ color: 'var(--ink-muted)' }}>
               Only 2 unique items available this month - place your bids before the auction ends
             </p>
           </div>
 
           <div className="flex items-center gap-2 mt-4 sm:mt-0">
-            <Filter size={16} style={{ color: 'var(--theme-text-muted)' }} />
+            <Filter size={16} style={{ color: 'var(--ink-muted)' }} />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -260,7 +260,7 @@ export default function AuctionsPage() {
               style={{
                 border: '2px solid rgba(224, 120, 86, 0.2)',
                 backgroundColor: 'white',
-                color: 'var(--theme-text)'
+                color: 'var(--ink)'
               }}
             >
               <option value="ending-soon">Ending Soon</option>
@@ -307,21 +307,21 @@ export default function AuctionsPage() {
             <h3
               className="text-2xl font-semibold mb-2"
               style={{
-                color: 'var(--theme-text)',
+                color: 'var(--ink)',
                 fontFamily: 'var(--font-display)'
               }}
             >
               Ready to Own a Unique Piece?
             </h3>
-            <p className="mb-6" style={{ color: 'var(--theme-text-muted)' }}>
+            <p className="mb-6" style={{ color: 'var(--ink-muted)' }}>
               Sign in to place bids on these exclusive items
             </p>
             <motion.button
               className="px-6 py-3 rounded-lg font-medium"
               style={{
-                backgroundColor: 'var(--theme-primary)',
-                color: 'var(--theme-text-on-primary)',
-                boxShadow: '0 4px 0 var(--theme-primary-dark)'
+                backgroundColor: 'var(--accent)',
+                color: 'var(--bg)',
+                boxShadow: '0 4px 0 var(--accent-hover)'
               }}
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98, y: 2 }}

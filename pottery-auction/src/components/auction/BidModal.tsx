@@ -83,7 +83,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
               <div className="mb-6 p-4 bg-medium-cream rounded-lg">
                 <div className="flex items-center justify-between">
                   <span className="text-medium-dark/70">Current Bid:</span>
-                  <span className="text-xl font-bold text-[var(--theme-text-muted)] flex items-center">
+                  <span className="text-xl font-bold text-[var(--ink-muted)] flex items-center">
                     <DollarSign size={18} />
                     {piece.currentBid}
                   </span>
@@ -128,7 +128,7 @@ export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidMod
                         key={amount}
                         type="button"
                         onClick={() => setBidAmount(amount.toString())}
-                        className="p-2 border border-[var(--theme-border)] text-[var(--theme-text-muted)] rounded-lg hover:bg-[var(--theme-primary)] hover:text-white transition-colors"
+                        className="p-2 border border-[var(--border)] text-[var(--ink-muted)] rounded-lg hover:bg-[var(--accent)] hover:text-white transition-colors"
                       >
                         ${amount}
                       </button>

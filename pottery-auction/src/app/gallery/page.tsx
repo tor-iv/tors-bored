@@ -74,7 +74,7 @@ export default function GalleryPage() {
       {/* Header */}
       <div
         className="relative overflow-hidden py-16"
-        style={{ backgroundColor: 'var(--theme-primary)' }}
+        style={{ backgroundColor: 'var(--accent)' }}
       >
         {/* Floating decoration */}
         <FloatingDecoration className="absolute top-10 right-20 opacity-20 hidden lg:block" delay={0}>
@@ -90,7 +90,7 @@ export default function GalleryPage() {
             <h1
               className="text-4xl md:text-6xl font-bold mb-4"
               style={{
-                color: 'var(--theme-text-on-primary)',
+                color: 'var(--bg)',
                 fontFamily: 'var(--font-display)'
               }}
             >
@@ -98,7 +98,7 @@ export default function GalleryPage() {
             </h1>
             <p
               className="text-xl"
-              style={{ color: 'var(--theme-text-on-primary)', opacity: 0.9 }}
+              style={{ color: 'var(--bg)', opacity: 0.9 }}
             >
               Explore past pottery pieces and completed works
             </p>
@@ -119,7 +119,7 @@ export default function GalleryPage() {
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2"
                 size={20}
-                style={{ color: 'var(--theme-text-muted)' }}
+                style={{ color: 'var(--ink-muted)' }}
               />
               <input
                 type="text"
@@ -130,7 +130,7 @@ export default function GalleryPage() {
                 style={{
                   border: '2px solid rgba(224, 120, 86, 0.2)',
                   backgroundColor: 'white',
-                  color: 'var(--theme-text)'
+                  color: 'var(--ink)'
                 }}
               />
             </div>
@@ -139,7 +139,7 @@ export default function GalleryPage() {
           <div className="flex items-center gap-4">
             {/* Category filter */}
             <div className="flex items-center gap-2">
-              <Filter size={16} style={{ color: 'var(--theme-text-muted)' }} />
+              <Filter size={16} style={{ color: 'var(--ink-muted)' }} />
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
@@ -147,7 +147,7 @@ export default function GalleryPage() {
                 style={{
                   border: '2px solid rgba(224, 120, 86, 0.2)',
                   backgroundColor: 'white',
-                  color: 'var(--theme-text)'
+                  color: 'var(--ink)'
                 }}
               >
                 {categories.map(category => (
@@ -167,8 +167,8 @@ export default function GalleryPage() {
                 onClick={() => setViewMode('grid')}
                 className="p-2 transition-colors"
                 style={{
-                  backgroundColor: viewMode === 'grid' ? 'var(--theme-primary)' : 'white',
-                  color: viewMode === 'grid' ? 'var(--theme-text-on-primary)' : 'var(--theme-text-muted)'
+                  backgroundColor: viewMode === 'grid' ? 'var(--accent)' : 'white',
+                  color: viewMode === 'grid' ? 'var(--bg)' : 'var(--ink-muted)'
                 }}
               >
                 <Grid size={16} />
@@ -177,8 +177,8 @@ export default function GalleryPage() {
                 onClick={() => setViewMode('list')}
                 className="p-2 transition-colors"
                 style={{
-                  backgroundColor: viewMode === 'list' ? 'var(--theme-primary)' : 'white',
-                  color: viewMode === 'list' ? 'var(--theme-text-on-primary)' : 'var(--theme-text-muted)'
+                  backgroundColor: viewMode === 'list' ? 'var(--accent)' : 'white',
+                  color: viewMode === 'list' ? 'var(--bg)' : 'var(--ink-muted)'
                 }}
               >
                 <List size={16} />
@@ -246,7 +246,7 @@ export default function GalleryPage() {
                 <h3
                   className="text-xl font-semibold mb-2"
                   style={{
-                    color: 'var(--theme-text)',
+                    color: 'var(--ink)',
                     fontFamily: 'var(--font-display)',
                     fontSize: '1.5rem'
                   }}
@@ -254,11 +254,11 @@ export default function GalleryPage() {
                   {piece.title}
                 </h3>
 
-                <div className="flex items-center gap-4 mb-3 text-sm" style={{ color: 'var(--theme-text-muted)' }}>
+                <div className="flex items-center gap-4 mb-3 text-sm" style={{ color: 'var(--ink-muted)' }}>
                   <span className="flex items-center gap-1">
                     <span
                       className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: 'var(--theme-primary)' }}
+                      style={{ backgroundColor: 'var(--accent)' }}
                     />
                     {piece.technique}
                   </span>
@@ -267,13 +267,13 @@ export default function GalleryPage() {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>
+                    <p className="text-xs" style={{ color: 'var(--ink-muted)' }}>
                       Final Sale Price
                     </p>
                     <p
                       className="font-bold"
                       style={{
-                        color: 'var(--theme-text)',
+                        color: 'var(--ink)',
                         fontFamily: 'var(--font-display)',
                         fontSize: '1.5rem'
                       }}
@@ -296,18 +296,18 @@ export default function GalleryPage() {
           >
             <VaseSketch
               className="w-24 h-24 mx-auto mb-4"
-              color="var(--theme-text-muted)"
+              color="var(--ink-muted)"
             />
             <h3
               className="text-2xl font-semibold mb-2"
               style={{
-                color: 'var(--theme-text)',
+                color: 'var(--ink)',
                 fontFamily: 'var(--font-display)'
               }}
             >
               No pottery found
             </h3>
-            <p style={{ color: 'var(--theme-text-muted)' }}>
+            <p style={{ color: 'var(--ink-muted)' }}>
               Try adjusting your search terms or filters
             </p>
           </motion.div>

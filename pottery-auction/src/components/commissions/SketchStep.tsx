@@ -19,18 +19,18 @@ export default function SketchStep({
 }: SketchStepProps) {
   return (
     <div>
-      <p className="text-center mb-6" style={{ color: 'var(--theme-text-muted)' }}>
+      <p className="text-center mb-6" style={{ color: 'var(--ink-muted)' }}>
         Add details to help bring your vision to life (both optional)
       </p>
 
       {/* Description Section */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-3">
-          <MessageSquare size={18} style={{ color: 'var(--theme-primary)' }} />
+          <MessageSquare size={18} style={{ color: 'var(--accent)' }} />
           <label
             className="font-medium"
             style={{
-              color: 'var(--theme-text)',
+              color: 'var(--ink)',
               fontFamily: 'var(--font-display)',
               fontSize: '1.2rem'
             }}
@@ -42,14 +42,14 @@ export default function SketchStep({
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           rows={4}
-          className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:border-[var(--theme-primary)] transition-colors resize-none"
+          className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:border-[var(--accent)] transition-colors resize-none"
           style={{
             borderColor: 'rgba(0,0,0,0.1)',
             backgroundColor: 'white'
           }}
           placeholder="Tell me about your dream piece! Size preferences, special features, intended use, color ideas, decorative patterns, handles, feet, anything that helps me understand your vision..."
         />
-        <p className="text-xs mt-2" style={{ color: 'var(--theme-text-muted)' }}>
+        <p className="text-xs mt-2" style={{ color: 'var(--ink-muted)' }}>
           The more details you share, the better I can bring your idea to life
         </p>
       </div>
@@ -57,11 +57,11 @@ export default function SketchStep({
       {/* Drawing Section */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <Pencil size={18} style={{ color: 'var(--theme-primary)' }} />
+          <Pencil size={18} style={{ color: 'var(--accent)' }} />
           <label
             className="font-medium"
             style={{
-              color: 'var(--theme-text)',
+              color: 'var(--ink)',
               fontFamily: 'var(--font-display)',
               fontSize: '1.2rem'
             }}
@@ -71,8 +71,8 @@ export default function SketchStep({
           <span
             className="text-xs px-2 py-0.5 rounded-full"
             style={{
-              backgroundColor: 'var(--theme-primary-light)',
-              color: 'var(--theme-text-muted)'
+              backgroundColor: 'var(--accent-light)',
+              color: 'var(--ink-muted)'
             }}
           >
             Optional
@@ -94,7 +94,7 @@ export default function SketchStep({
           />
         </motion.div>
 
-        <p className="text-xs mt-2 text-center" style={{ color: 'var(--theme-text-muted)' }}>
+        <p className="text-xs mt-2 text-center" style={{ color: 'var(--ink-muted)' }}>
           Even simple sketches help! Don&apos;t worry about being artistic - I just want to understand your idea
         </p>
       </div>
@@ -105,19 +105,19 @@ export default function SketchStep({
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
         className="mt-8 p-4 rounded-lg"
-        style={{ backgroundColor: 'var(--theme-primary-light)' }}
+        style={{ backgroundColor: 'var(--accent-light)' }}
       >
         <h4
           className="font-medium mb-2"
           style={{
-            color: 'var(--theme-text)',
+            color: 'var(--ink)',
             fontFamily: 'var(--font-display)',
             fontSize: '1.1rem'
           }}
         >
           Ideas for what to include:
         </h4>
-        <ul className="text-sm space-y-1" style={{ color: 'var(--theme-text-muted)' }}>
+        <ul className="text-sm space-y-1" style={{ color: 'var(--ink-muted)' }}>
           <li>• Approximate size (height, width, or compared to common objects)</li>
           <li>• Special features (handles, lid, spout, feet)</li>
           <li>• Color preferences or color combinations</li>

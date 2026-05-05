@@ -3,8 +3,6 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
-import RoughBorder from '@/components/theme/handdrawn/RoughBorder';
-
 type ToastIntent = 'success' | 'error' | 'info';
 
 interface ToastProps {
@@ -70,37 +68,6 @@ export default function Toast({
                 {message}
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    );
-  }
-
-  if (theme === 'handdrawn') {
-    const rotation = 2 + (message.length % 2) * 0.5;
-    return (
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, x: 80 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 80 }}
-            className="fixed top-6 right-6 z-[100]"
-            style={{ rotate: rotation }}
-          >
-            <RoughBorder roughness={1.5} strokeWidth={1.5}>
-              <div
-                className="px-4 py-3 text-sm"
-                style={{
-                  backgroundColor: 'var(--accent-light)',
-                  fontFamily: 'var(--font-display)',
-                  color: intent === 'error' ? 'var(--error)' : intent === 'success' ? 'var(--success)' : 'var(--ink)',
-                  minWidth: 180,
-                }}
-              >
-                {message}
-              </div>
-            </RoughBorder>
           </motion.div>
         )}
       </AnimatePresence>

@@ -27,6 +27,7 @@ export default async function BrowsePage() {
     reservedUntil: i.reserved_until,
     techniques: i.techniques ?? [],
     images: i.images ?? [],
+    createdAt: i.created_at,
   }));
 
   const cookieStore = await cookies();

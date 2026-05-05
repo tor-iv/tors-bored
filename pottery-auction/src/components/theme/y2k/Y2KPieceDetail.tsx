@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Win98Window from './Win98Window';
 import BlinkingClock from './BlinkingClock';
+import Y2KSidebar from './Y2KSidebar';
 
 interface Y2KPieceDetailProps {
   item: any;
@@ -34,8 +35,10 @@ export default function Y2KPieceDetail({ item, bids, sku }: Y2KPieceDetailProps)
   const reserveMet = !auction?.reserve_price || (item.current_bid ?? 0) >= auction.reserve_price;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <Win98Window title={item.title ?? sku} icon="/y2k/info-icon.svg">
+    <div className="y2k-desktop" style={{ minHeight: 'calc(100vh - 120px)' }}>
+      <Y2KSidebar />
+      <div className="y2k-main">
+      <Win98Window title={`🏺 ${item.title ?? sku}`} icon="/y2k/info-icon.svg" controls={['minimize', 'maximize', 'close']}>
         {/* Photo */}
         {item.images?.[0] && (
           <div style={{ marginBottom: 12 }}>
@@ -175,6 +178,7 @@ export default function Y2KPieceDetail({ item, bids, sku }: Y2KPieceDetailProps)
           </Link>
         </div>
       </Win98Window>
+      </div>
     </div>
   );
 }

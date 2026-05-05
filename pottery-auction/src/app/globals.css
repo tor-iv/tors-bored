@@ -223,6 +223,169 @@
   }
 }
 
+/* Y2K Desktop layout */
+[data-theme="y2k"] .y2k-desktop {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  align-items: flex-start;
+  min-height: calc(100vh - 120px);
+}
+
+[data-theme="y2k"] .y2k-sidebar {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: Tahoma, 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+}
+
+[data-theme="y2k"] .y2k-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Starfield background for homepage */
+[data-theme="y2k"] .y2k-starfield {
+  position: relative;
+  background-color: #000040;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, #fff, transparent),
+    radial-gradient(1px 1px at 30% 70%, #fff, transparent),
+    radial-gradient(1px 1px at 50% 30%, #ccc, transparent),
+    radial-gradient(1px 1px at 70% 80%, #fff, transparent),
+    radial-gradient(1px 1px at 80% 10%, #fff, transparent),
+    radial-gradient(1px 1px at 20% 45%, #aaa, transparent),
+    radial-gradient(1px 1px at 60% 60%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 40%, #ccc, transparent),
+    radial-gradient(1px 1px at 40% 90%, #fff, transparent),
+    radial-gradient(1px 1px at 15% 85%, #aaa, transparent),
+    radial-gradient(1px 1px at 55% 5%, #fff, transparent),
+    radial-gradient(1px 1px at 75% 55%, #fff, transparent),
+    radial-gradient(2px 2px at 25% 25%, #fff, transparent),
+    radial-gradient(2px 2px at 85% 75%, #fff, transparent),
+    radial-gradient(2px 2px at 45% 50%, #ddf, transparent);
+  padding: 12px;
+  min-height: calc(100vh - 120px);
+}
+
+/* Hourglass loader */
+@keyframes y2k-hourglass-flip {
+  0%, 40%  { transform: rotate(0deg); }
+  50%, 90% { transform: rotate(180deg); }
+  100%     { transform: rotate(180deg); }
+}
+
+[data-theme="y2k"] .win98-hourglass {
+  display: inline-block;
+  font-size: 2rem;
+  animation: y2k-hourglass-flip 1.4s ease-in-out infinite;
+}
+
+/* NEW! badge */
+@keyframes y2k-new-badge-blink {
+  0%, 49%  { opacity: 1; }
+  50%, 100% { opacity: 0.6; }
+}
+
+[data-theme="y2k"] .y2k-new-badge {
+  background: #00ff00;
+  color: #000000;
+  font-family: 'Comic Sans MS', cursive;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 1px 4px;
+  border-radius: 2px;
+  display: inline-block;
+  animation: y2k-new-badge-blink 0.8s step-start infinite;
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  z-index: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+}
+
+/* Icon grid for file-manager browse */
+[data-theme="y2k"] .y2k-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 4px;
+  padding: 8px;
+}
+
+[data-theme="y2k"] .y2k-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  cursor: pointer;
+  position: relative;
+  font-family: Tahoma, 'MS Sans Serif', sans-serif;
+  font-size: 10px;
+  color: #000;
+  text-align: center;
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+
+[data-theme="y2k"] .y2k-icon-item:hover {
+  background: rgba(0, 0, 128, 0.15);
+  border-color: #000080;
+}
+
+[data-theme="y2k"] .y2k-icon-item:active,
+[data-theme="y2k"] .y2k-icon-item.selected {
+  background: #000080;
+  color: #ffffff;
+}
+
+[data-theme="y2k"] .y2k-icon-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  display: block;
+  border: 1px solid #808080;
+}
+
+[data-theme="y2k"] .y2k-icon-label {
+  max-width: 84px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+/* Rainbow rule */
+[data-theme="y2k"] .y2k-rainbow-hr {
+  border: none;
+  height: 4px;
+  background: linear-gradient(to right,
+    #ff0000, #ff7700, #ffff00, #00ff00,
+    #0000ff, #8b00ff, #ff0000);
+  margin: 6px 0;
+}
+
+/* Sidebar link style */
+[data-theme="y2k"] .y2k-sidebar-link {
+  color: var(--link);
+  text-decoration: underline;
+  font-family: Tahoma, sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+[data-theme="y2k"] .y2k-sidebar-link:visited {
+  color: var(--link-visited);
+}
+
 [data-theme="receipt"] body {
   font-family: var(--font-body);
   line-height: 1.6;

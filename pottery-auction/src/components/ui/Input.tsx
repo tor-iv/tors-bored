@@ -39,39 +39,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       );
     }
 
-    if (theme === 'handdrawn') {
-      return (
-        <div className="w-full">
-          {label && (
-            <label
-              htmlFor={id}
-              style={{
-                display: 'block',
-                marginBottom: '0.25rem',
-                fontFamily: 'var(--font-display)',
-                fontSize: '0.875rem',
-                color: 'var(--ink-muted)',
-              }}
-            >
-              {label}
-            </label>
-          )}
-          <input
-            ref={ref}
-            id={id}
-            className={`w-full bg-transparent py-2 border-b border-[var(--border)] focus:border-[var(--accent)] focus:outline-none text-[var(--ink)] ${className}`}
-            style={{ fontFamily: 'var(--font-body)', fontSize: '1rem' }}
-            {...props}
-          />
-          {error && (
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--error)', marginTop: '0.25rem' }}>
-              {error}
-            </p>
-          )}
-        </div>
-      );
-    }
-
     if (theme === 'y2k') {
       return (
         <div className="w-full">

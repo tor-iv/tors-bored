@@ -45,7 +45,7 @@ const clayTypes = [
 export default function ClaySelector({ selected, onSelect }: ClaySelectorProps) {
   return (
     <div>
-      <p className="text-center mb-6" style={{ color: 'var(--theme-text-muted)' }}>
+      <p className="text-center mb-6" style={{ color: 'var(--ink-muted)' }}>
         Each clay body has unique properties that affect the final piece
       </p>
 
@@ -57,8 +57,8 @@ export default function ClaySelector({ selected, onSelect }: ClaySelectorProps) 
             className={`
               relative p-5 rounded-xl border-2 text-left transition-all duration-200
               ${selected === clay.id
-                ? 'border-[var(--theme-primary)] bg-[var(--theme-primary-light)]'
-                : 'border-gray-200 hover:border-[var(--theme-primary)] hover:bg-gray-50'
+                ? 'border-[var(--accent)] bg-[var(--accent-light)]'
+                : 'border-gray-200 hover:border-[var(--accent)] hover:bg-gray-50'
               }
             `}
             whileHover={{ scale: 1.01, y: -2 }}
@@ -70,7 +70,7 @@ export default function ClaySelector({ selected, onSelect }: ClaySelectorProps) 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'var(--theme-primary)' }}
+                style={{ backgroundColor: 'var(--accent)' }}
               >
                 <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -101,14 +101,14 @@ export default function ClaySelector({ selected, onSelect }: ClaySelectorProps) 
                 <h3
                   className="font-semibold mb-1"
                   style={{
-                    color: 'var(--theme-text)',
+                    color: 'var(--ink)',
                     fontFamily: 'var(--font-display)',
                     fontSize: '1.3rem'
                   }}
                 >
                   {clay.name}
                 </h3>
-                <p className="text-sm mb-2" style={{ color: 'var(--theme-text-muted)' }}>
+                <p className="text-sm mb-2" style={{ color: 'var(--ink-muted)' }}>
                   {clay.description}
                 </p>
 
@@ -120,11 +120,11 @@ export default function ClaySelector({ selected, onSelect }: ClaySelectorProps) 
                       className="text-xs px-2 py-0.5 rounded-full"
                       style={{
                         backgroundColor: selected === clay.id
-                          ? 'var(--theme-primary)'
+                          ? 'var(--accent)'
                           : 'rgba(0,0,0,0.05)',
                         color: selected === clay.id
-                          ? 'var(--theme-text-on-primary)'
-                          : 'var(--theme-text-muted)'
+                          ? 'var(--bg)'
+                          : 'var(--ink-muted)'
                       }}
                     >
                       {char}
@@ -138,7 +138,7 @@ export default function ClaySelector({ selected, onSelect }: ClaySelectorProps) 
       </div>
 
       {/* Info note */}
-      <p className="text-center text-xs mt-6" style={{ color: 'var(--theme-text-muted)' }}>
+      <p className="text-center text-xs mt-6" style={{ color: 'var(--ink-muted)' }}>
         Don&apos;t worry - I&apos;ll help you choose the best clay for your specific design during review
       </p>
     </div>

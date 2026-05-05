@@ -6,7 +6,6 @@ const cardVariants = cva('', {
   variants: {
     theme: {
       receipt:  'font-mono border border-[var(--border)] bg-[var(--bg)] p-4',
-      handdrawn:'rounded-sm border border-[var(--border)] bg-[var(--bg)] p-4',
       y2k:      'border-2 border-t-white border-l-white border-b-black border-r-black bg-[var(--bg-well)] p-4',
     },
     variant: {
@@ -15,9 +14,8 @@ const cardVariants = cva('', {
     },
   },
   compoundVariants: [
-    { theme: 'receipt',   variant: 'well', className: 'bg-[var(--bg-well)]' },
-    { theme: 'handdrawn', variant: 'well', className: 'bg-[var(--bg-well)]' },
-    { theme: 'y2k',       variant: 'well', className: 'bg-[var(--bg)]' },
+    { theme: 'receipt', variant: 'well', className: 'bg-[var(--bg-well)]' },
+    { theme: 'y2k',     variant: 'well', className: 'bg-[var(--bg)]' },
   ],
   defaultVariants: { theme: 'receipt', variant: 'default' },
 });
