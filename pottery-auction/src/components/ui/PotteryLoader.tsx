@@ -198,7 +198,7 @@ export default function PotteryLoader({
           className="text-sm font-medium text-center"
           style={{
             color: 'var(--theme-text-muted)',
-            fontFamily: 'var(--font-caveat), cursive',
+            fontFamily: 'var(--font-display)',
             fontSize: size === 'lg' ? '1.25rem' : size === 'md' ? '1rem' : '0.875rem'
           }}
         >

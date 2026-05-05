@@ -22,11 +22,11 @@ export default function Footer() {
     return (
       <footer
         style={{
-          backgroundColor: 'var(--bg)',
+          backgroundColor: 'var(--bg-well)',
           fontFamily: 'var(--font-display, "IBM Plex Mono", monospace)',
         }}
       >
-        <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 16px 80px' }}>
+        <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 16px 80px' }}>
           <ReceiptDivider variant="decorative" />
           <nav className="flex flex-wrap gap-4 py-2 text-[0.6875rem]" style={{ color: 'var(--ink-muted)' }}>
             {footerLinks.map((link) => (
@@ -40,7 +40,6 @@ export default function Footer() {
               </Link>
             ))}
           </nav>
-          <ReceiptFooter />
         </div>
         <ThemeToggle />
       </footer>

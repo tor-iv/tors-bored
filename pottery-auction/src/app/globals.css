@@ -4,7 +4,7 @@
   --color-background: #FEFEFE;
   --color-foreground: #36454F;
   --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-serif: var(--font-caveat), cursive;
+  --font-serif: var(--font-display);
 
   /* Pottery brand colors */
   --color-pottery-charcoal:   #2B2B2B;
@@ -50,20 +50,6 @@
    THREE-THEME DESIGN TOKEN LAYER
    ================================================ */
 
-[data-theme="handdrawn"] {
-  --bg:           #f7f3e8;
-  --bg-well:      #ede8d8;
-  --ink:          #1b1211;
-  --ink-muted:    #3d3028;
-  --accent:       #8c6e4b;
-  --accent-hover: #7a5e3b;
-  --accent-light: #e8d9b5;
-  --border:       #c4b89a;
-  --error:        #9b3a2c;
-  --success:      #5a7a4a;
-  --font-display: 'Caveat', cursive;
-  --font-body:    'Nunito', var(--font-nunito), sans-serif;
-}
 
 [data-theme="y2k"] {
   --bg:           #c0c0c0;
@@ -101,6 +87,8 @@
   --paper-highlight: #f8f4ec;
   --font-display:    var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
   --font-body:       var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
+  --font-stamp:      var(--font-typewriter);
+  --font-caption:    var(--font-handwriting);
 }
 
 /* Apply semantic token vars as body defaults when a theme is set */
@@ -109,49 +97,6 @@
   color: var(--ink);
 }
 
-[data-theme="handdrawn"] body {
-  font-family: var(--font-body);
-  line-height: 1.7;
-}
-
-/* Dog-eared page corner — top-right */
-[data-theme="handdrawn"] body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(225deg, var(--bg) 50%, var(--border) 50%);
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  z-index: 1000;
-  pointer-events: none;
-}
-
-/* Paper texture overlay */
-[data-theme="handdrawn"] body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url(/textures/paper.svg);
-  background-repeat: repeat;
-  background-size: 200px;
-  opacity: 0.35;
-  pointer-events: none;
-  z-index: 999;
-}
-
-/* Custom pencil cursor — desktop only */
-@media (pointer: fine) {
-  [data-theme="handdrawn"] {
-    cursor: url('/cursors/pencil.svg') 4 28, auto;
-  }
-  [data-theme="handdrawn"] a,
-  [data-theme="handdrawn"] button,
-  [data-theme="handdrawn"] [role="button"] {
-    cursor: url('/cursors/pencil-pointer.svg') 12 0, pointer;
-  }
-}
 
 [data-theme="y2k"] body {
   font-family: var(--font-body);
@@ -307,14 +252,14 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-caveat), cursive;
+  font-family: var(--font-display), system-ui, sans-serif;
   line-height: 1.2;
   font-weight: 600;
   font-optical-sizing: auto;
 }
 
 .font-serif {
-  font-family: var(--font-caveat), cursive;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
 }
@@ -338,19 +283,6 @@ html {
   background-size: 60px 60px, 80px 80px;
 }
 
-.paper-texture {
-  position: relative;
-}
-
-.paper-texture::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  pointer-events: none;
-  z-index: 0;
-}
 
 .clay-dots {
   background-image:
@@ -360,62 +292,14 @@ html {
   background-size: 50px 50px, 70px 70px, 40px 40px;
 }
 
-/* Typography personality — used by HAND-DRAWN theme components */
-.hand-underline {
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-underline-offset: 4px;
-  text-decoration-thickness: 2px;
-}
-
-.playful-tilt {
-  display: inline-block;
-  transform: rotate(-2deg);
-}
-
-.playful-tilt-right {
-  display: inline-block;
-  transform: rotate(2deg);
-}
-
-.handwritten-price {
-  font-family: var(--font-caveat), cursive;
-  font-size: 1.4em;
-  font-weight: 600;
-}
-
-.hover-wobbly:hover {
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-underline-offset: 4px;
-}
-
-.pottery-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  font-family: var(--font-caveat), cursive;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 2px 6px 2px 6px;
-  transform: rotate(-2deg);
-  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
-}
 
 /* ================================================
    RECEIPT THEME — SPECIFIC STYLES
    ================================================ */
 
-/* Paper grain texture overlay */
-[data-theme="receipt"] body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url('/textures/receipt-paper.svg');
-  background-size: 150px;
-  background-repeat: repeat;
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: 999;
+/* Body: darker "desk" bg so the paper strip floats on it */
+[data-theme="receipt"] body {
+  background-color: var(--bg-well);
 }
 
 /* Type scale — 3 sizes only */
@@ -482,29 +366,90 @@ html {
   box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.15);
 }
 
-/* Main receipt column — centered, max 560px */
-.receipt-page {
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 0 16px;
-  position: relative;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+/* Outer centering wrapper */
+.receipt-strip {
+  min-height: 100vh;
+  padding: 32px 16px 64px;
+  font-family: var(--font-display, 'IBM Plex Mono', monospace);
+  color: var(--ink);
+  transform: rotate(-0.2deg);
 }
 
-/* Receipt curl shadow at bottom */
-.receipt-page::after {
-  content: '';
-  display: block;
-  height: 40px;
-  background: linear-gradient(
+/* The paper strip */
+.receipt-strip-paper {
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: var(--bg);
+  position: relative;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    0 16px 40px rgba(0, 0, 0, 0.18),
+    0 40px 80px rgba(0, 0, 0, 0.10);
+  /* Faint dot-matrix row banding */
+  background-image: repeating-linear-gradient(
     to bottom,
-    transparent 0%,
-    rgba(0, 0, 0, 0.04) 40%,
-    rgba(0, 0, 0, 0.12) 100%
+    transparent 0px,
+    transparent 1px,
+    rgba(0, 0, 0, 0.012) 1px,
+    rgba(0, 0, 0, 0.012) 2px
   );
-  border-radius: 0 0 4px 4px;
-  margin-top: -40px;
+}
+
+/* Paper grain on the strip itself */
+.receipt-strip-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/textures/receipt-paper.svg');
+  background-size: 200px;
+  background-repeat: repeat;
+  opacity: 0.28;
   pointer-events: none;
+  z-index: 0;
+}
+
+/* Fold-line shadow — barely-visible crease across the middle */
+.receipt-strip-paper::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0,0,0,0.04) 20%, rgba(0,0,0,0.04) 80%, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Content sits above grain layer */
+.receipt-strip-content {
+  position: relative;
+  z-index: 1;
+  padding: 0 20px;
+  text-shadow: 0.5px 0.3px 0 rgba(0,0,0,0.04);
+}
+
+/* Perforated punch edge — top */
+.receipt-edge-top {
+  height: 12px;
+  background: radial-gradient(circle at 50% 0%, var(--bg-well) 6px, transparent 6px);
+  background-size: 16px 12px;
+  background-repeat: repeat-x;
+  background-position: center top;
+  position: relative;
+  z-index: 2;
+}
+
+/* Perforated punch edge — bottom */
+.receipt-edge-bottom {
+  height: 12px;
+  background: radial-gradient(circle at 50% 100%, var(--bg-well) 6px, transparent 6px);
+  background-size: 16px 12px;
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  position: relative;
+  z-index: 2;
 }
 
 /* Form inputs */
@@ -545,9 +490,10 @@ html {
   width: 100%;
 }
 .receipt-polaroid-frame {
-  border: 1px solid var(--border, #888);
-  padding: 8px;
-  background: var(--paper-highlight, #f8f4ec);
+  position: relative;
+  padding: 12px 12px 40px 12px;
+  background: #fafaf5;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.18), 0 12px 24px rgba(0,0,0,0.10);
 }
 .receipt-polaroid-frame img {
   display: block;
@@ -555,14 +501,34 @@ html {
   height: auto;
 }
 .receipt-polaroid-caption {
+  font-family: var(--font-caption);
   margin-top: 8px;
-  font-family: var(--font-display, 'IBM Plex Mono', monospace);
   font-size: 0.6875rem;
-  color: var(--ink-muted, #4a4a4a);
+  color: #1a1a1a;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .receipt-polaroid-sku {
+  font-family: var(--font-display, 'IBM Plex Mono', monospace);
   font-weight: 600;
-  color: var(--ink, #1a1a1a);
+  font-size: 0.625rem;
+  color: var(--ink-muted, #4a4a4a);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Polaroid stack — one per item */
+.receipt-polaroid-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 16px auto;
+  max-width: 260px;
 }
 
 /* Blinking cursor for dot-matrix animation */
@@ -572,6 +538,45 @@ html {
 }
 .dot-matrix-cursor {
   animation: blink 0.7s step-end infinite;
+}
+
+/* Leader-dot line items */
+.receipt-line-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+.receipt-line-item .leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--ink-muted);
+  height: 0.6em;
+  min-width: 0.5rem;
+  margin-bottom: 0.15em;
+}
+.receipt-stamp {
+  font-family: var(--font-stamp);
+  letter-spacing: 0.05em;
+}
+
+/* Barcode component */
+.receipt-barcode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 12px auto;
+  width: fit-content;
+}
+.receipt-barcode-bars {
+  width: 120px;
+  height: 40px;
+}
+.receipt-barcode-label {
+  font-family: var(--font-display);
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  color: var(--ink-muted);
+  margin-top: 2px;
+  text-align: center;
 }
 
 /* ================================================
@@ -618,22 +623,6 @@ html {
    M7 POLISH — THEMED FOCUS RINGS
    ================================================ */
 
-/* HAND-DRAWN: wavy underline focus ring */
-[data-theme="handdrawn"] :focus-visible {
-  outline: none;
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-decoration-color: var(--accent);
-  text-underline-offset: 4px;
-}
-/* For non-text elements (buttons, links without visible text) */
-[data-theme="handdrawn"] button:focus-visible,
-[data-theme="handdrawn"] a:focus-visible,
-[data-theme="handdrawn"] [role="button"]:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  text-decoration: none;
-}
 
 /* Y2K: dotted Win98-style focus ring */
 [data-theme="y2k"] :focus-visible {

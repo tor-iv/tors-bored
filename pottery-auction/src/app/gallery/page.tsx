@@ -91,7 +91,7 @@ export default function GalleryPage() {
               className="text-4xl md:text-6xl font-bold mb-4"
               style={{
                 color: 'var(--theme-text-on-primary)',
-                fontFamily: 'var(--font-caveat), cursive'
+                fontFamily: 'var(--font-display)'
               }}
             >
               Gallery
@@ -233,7 +233,7 @@ export default function GalleryPage() {
                 {/* Sold badge */}
                 <div className="absolute top-3 right-3">
                   <span
-                    className="px-3 py-1 rounded-full text-xs font-medium pottery-badge"
+                    className="px-3 py-1 rounded-full text-xs font-medium"
                     style={{ transform: 'rotate(3deg)' }}
                   >
                     Sold
@@ -247,7 +247,7 @@ export default function GalleryPage() {
                   className="text-xl font-semibold mb-2"
                   style={{
                     color: 'var(--theme-text)',
-                    fontFamily: 'var(--font-caveat), cursive',
+                    fontFamily: 'var(--font-display)',
                     fontSize: '1.5rem'
                   }}
                 >
@@ -274,7 +274,7 @@ export default function GalleryPage() {
                       className="font-bold"
                       style={{
                         color: 'var(--theme-text)',
-                        fontFamily: 'var(--font-caveat), cursive',
+                        fontFamily: 'var(--font-display)',
                         fontSize: '1.5rem'
                       }}
                     >
@@ -302,7 +302,7 @@ export default function GalleryPage() {
               className="text-2xl font-semibold mb-2"
               style={{
                 color: 'var(--theme-text)',
-                fontFamily: 'var(--font-caveat), cursive'
+                fontFamily: 'var(--font-display)'
               }}
             >
               No pottery found

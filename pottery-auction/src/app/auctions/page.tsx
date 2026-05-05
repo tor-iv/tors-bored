@@ -70,7 +70,7 @@ function KilnTimer({ endTime }: { endTime: string }) {
                 text-2xl font-bold tabular-nums
                 ${isUrgent ? 'text-orange-300' : 'text-white'}
               `}
-              style={{ fontFamily: 'var(--font-caveat), cursive', fontSize: '2rem' }}
+              style={{ fontFamily: 'var(--font-display)', fontSize: '2rem' }}
             >
               {formatNumber(unit.value)}
             </motion.span>
@@ -195,7 +195,7 @@ export default function AuctionsPage() {
               className="text-4xl md:text-6xl font-bold mb-4"
               style={{
                 color: 'var(--theme-text-on-primary)',
-                fontFamily: 'var(--font-caveat), cursive'
+                fontFamily: 'var(--font-display)'
               }}
             >
               December 2024 Collection
@@ -240,7 +240,7 @@ export default function AuctionsPage() {
               className="text-2xl font-bold mb-2"
               style={{
                 color: 'var(--theme-text)',
-                fontFamily: 'var(--font-caveat), cursive',
+                fontFamily: 'var(--font-display)',
                 fontSize: '2rem'
               }}
             >
@@ -308,7 +308,7 @@ export default function AuctionsPage() {
               className="text-2xl font-semibold mb-2"
               style={{
                 color: 'var(--theme-text)',
-                fontFamily: 'var(--font-caveat), cursive'
+                fontFamily: 'var(--font-display)'
               }}
             >
               Ready to Own a Unique Piece?
