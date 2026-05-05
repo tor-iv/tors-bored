@@ -87,6 +87,8 @@
   --paper-highlight: #f8f4ec;
   --font-display:    var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
   --font-body:       var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
+  --font-stamp:      var(--font-typewriter);
+  --font-caption:    var(--font-handwriting);
 }
 
 /* Apply semantic token vars as body defaults when a theme is set */
@@ -370,6 +372,7 @@ html {
   padding: 32px 16px 64px;
   font-family: var(--font-display, 'IBM Plex Mono', monospace);
   color: var(--ink);
+  transform: rotate(-0.2deg);
 }
 
 /* The paper strip */
@@ -399,11 +402,24 @@ html {
   position: absolute;
   inset: 0;
   background-image: url('/textures/receipt-paper.svg');
-  background-size: 150px;
+  background-size: 200px;
   background-repeat: repeat;
-  opacity: 0.2;
+  opacity: 0.28;
   pointer-events: none;
   z-index: 0;
+}
+
+/* Fold-line shadow — barely-visible crease across the middle */
+.receipt-strip-paper::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0,0,0,0.04) 20%, rgba(0,0,0,0.04) 80%, transparent);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Content sits above grain layer */
@@ -411,6 +427,7 @@ html {
   position: relative;
   z-index: 1;
   padding: 0 20px;
+  text-shadow: 0.5px 0.3px 0 rgba(0,0,0,0.04);
 }
 
 /* Perforated punch edge — top */
