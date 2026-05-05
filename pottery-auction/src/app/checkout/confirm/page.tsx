@@ -86,16 +86,36 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
       ) : (
         <>
           {/* Success — full receipt */}
-          {firstItem?.images?.[0] && (
-            <div className="py-4">
-              <PolaroidPhoto
-                src={firstItem.images[0]}
-                alt={firstItem.title}
-                sku={firstItem.sku ?? undefined}
-                caption={firstItem.title}
-              />
-            </div>
-          )}
+          {/* Polaroid stack — one per item, capped at 3 */}
+          {orderItems.length > 0 && (() => {
+            const itemsWithImages = orderItems.filter((oi: any) => oi.item?.images && oi.item.images.length > 0);
+            const visibleItems = itemsWithImages.slice(0, 3);
+            const extraCount = itemsWithImages.length - visibleItems.length;
+            if (visibleItems.length === 0) return null;
+            return (
+              <div className="py-4">
+                <div className="receipt-polaroid-stack">
+                  {visibleItems.map((oi: any) => {
+                    const it = oi.item;
+                    return (
+                      <PolaroidPhoto
+                        key={oi.id}
+                        src={it.images[0]}
+                        alt={it.title ?? ''}
+                        sku={it.sku ?? undefined}
+                        caption={it.title}
+                      />
+                    );
+                  })}
+                  {extraCount > 0 && (
+                    <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.6875rem', textAlign: 'center', color: 'var(--ink-muted)', marginTop: '8px' }}>
+                      + {extraCount} MORE
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           <ReceiptDivider variant="major" />
           <div className="py-2 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)' }}>

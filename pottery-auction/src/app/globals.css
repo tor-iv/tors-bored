@@ -490,9 +490,10 @@ html {
   width: 100%;
 }
 .receipt-polaroid-frame {
-  border: 1px solid var(--border, #888);
-  padding: 8px;
-  background: var(--paper-highlight, #f8f4ec);
+  position: relative;
+  padding: 12px 12px 40px 12px;
+  background: #fafaf5;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.18), 0 12px 24px rgba(0,0,0,0.10);
 }
 .receipt-polaroid-frame img {
   display: block;
@@ -501,13 +502,32 @@ html {
 }
 .receipt-polaroid-caption {
   margin-top: 8px;
-  font-family: var(--font-display, 'IBM Plex Mono', monospace);
   font-size: 0.6875rem;
-  color: var(--ink-muted, #4a4a4a);
+  color: #1a1a1a;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .receipt-polaroid-sku {
+  font-family: var(--font-display, 'IBM Plex Mono', monospace);
   font-weight: 600;
-  color: var(--ink, #1a1a1a);
+  font-size: 0.625rem;
+  color: var(--ink-muted, #4a4a4a);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Polaroid stack — one per item */
+.receipt-polaroid-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 16px auto;
+  max-width: 260px;
 }
 
 /* Blinking cursor for dot-matrix animation */
