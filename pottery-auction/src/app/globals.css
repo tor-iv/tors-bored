@@ -540,6 +540,45 @@ html {
   animation: blink 0.7s step-end infinite;
 }
 
+/* Leader-dot line items */
+.receipt-line-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+.receipt-line-item .leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--ink-muted);
+  height: 0.6em;
+  min-width: 0.5rem;
+  margin-bottom: 0.15em;
+}
+.receipt-stamp {
+  font-family: var(--font-stamp);
+  letter-spacing: 0.05em;
+}
+
+/* Barcode component */
+.receipt-barcode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 12px auto;
+  width: fit-content;
+}
+.receipt-barcode-bars {
+  width: 120px;
+  height: 40px;
+}
+.receipt-barcode-label {
+  font-family: var(--font-display);
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  color: var(--ink-muted);
+  margin-top: 2px;
+  text-align: center;
+}
+
 /* ================================================
    DESIGN PREVIEW PAGE UTILITIES (not customer-facing)
    ================================================ */
