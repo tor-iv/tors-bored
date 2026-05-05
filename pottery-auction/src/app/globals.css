@@ -501,6 +501,7 @@ html {
   height: auto;
 }
 .receipt-polaroid-caption {
+  font-family: var(--font-caption);
   margin-top: 8px;
   font-size: 0.6875rem;
   color: #1a1a1a;

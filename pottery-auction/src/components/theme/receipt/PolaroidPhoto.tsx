@@ -102,7 +102,7 @@ export default function PolaroidPhoto({
       {(sku || caption) && (
         <div style={{ transform: `rotate(var(--polaroid-tilt, -1.5deg))`, ['--polaroid-tilt' as string]: `${tiltDeg}deg` } as React.CSSProperties}>
           <div className="receipt-polaroid-caption">
-            {caption && <div style={{ fontFamily: 'var(--font-caption)' }}>{caption}</div>}
+            {caption && <div>{caption}</div>}
             {sku && <div className="receipt-polaroid-sku">{sku}</div>}
           </div>
         </div>
