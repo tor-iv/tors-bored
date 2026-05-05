@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import HomeClient from './HomeClient';
-import HanddrawnHome from '@/components/theme/handdrawn/HanddrawnHome';
 import Y2KHome from '@/components/theme/y2k/Y2KHome';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
@@ -14,7 +13,6 @@ export default async function Home() {
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
 
-  if (theme === 'handdrawn') return <HanddrawnHome />;
   if (theme === 'y2k') return <Y2KHome />;
   // receipt: falls through to receipt code below
   if (theme !== 'receipt') return <HomeClient />;

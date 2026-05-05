@@ -3,9 +3,8 @@
 import { useTheme, type Theme } from '@/contexts/ThemeContext';
 
 const NEXT_THEME_LABEL: Record<Theme, string> = {
-  handdrawn: 'Y2K',
   y2k: 'RECEIPT',
-  receipt: 'HAND-DRAWN',
+  receipt: 'Y2K',
 };
 
 export default function ThemeToggle() {
@@ -19,18 +18,6 @@ export default function ThemeToggle() {
         className="fixed bottom-6 right-6 z-50 font-mono text-[0.6875rem] uppercase tracking-wide text-[var(--ink-muted)] before:content-['[_'] after:content-['_]'] hover:bg-[var(--ink)] hover:text-[var(--bg)] px-2 py-1 transition-colors"
       >
         SWITCH THEME
-      </button>
-    );
-  }
-
-  if (theme === 'handdrawn') {
-    return (
-      <button
-        onClick={cycleTheme}
-        title={`Switch to ${NEXT_THEME_LABEL[theme]} theme`}
-        className="fixed bottom-6 right-6 z-50 text-sm font-[var(--font-display)] text-[var(--accent)] hover:text-[var(--accent-hover)] px-3 py-2 border border-[var(--border)] rounded-sm hover:bg-[var(--accent-light)] transition-colors"
-      >
-        ✦ themes
       </button>
     );
   }

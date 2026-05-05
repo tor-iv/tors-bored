@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Caveat, Nunito, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import "./globals.css";
 import Header from "@/components/layout/Header";
@@ -8,23 +8,11 @@ import { ThemeProvider, type Theme } from "@/contexts/ThemeContext";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import CursorTrail from "@/components/theme/y2k/CursorTrail";
 
-const VALID_THEMES: Theme[] = ['handdrawn', 'y2k', 'receipt'];
+const VALID_THEMES: Theme[] = ['y2k', 'receipt'];
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-});
-
-const caveat = Caveat({
-  variable: "--font-caveat",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const nunito = Nunito({
-  variable: "--font-nunito",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -56,7 +44,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" data-theme={theme}>
-      <body className={`${inter.variable} ${caveat.variable} ${nunito.variable} ${ibmPlexMono.variable} antialiased`}>
+      <body className={`${inter.variable} ${ibmPlexMono.variable} antialiased`}>
         <QueryProvider>
           <ThemeProvider initialTheme={theme}>
             <Header />

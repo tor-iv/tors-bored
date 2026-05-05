@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const VALID_THEMES = ['handdrawn', 'y2k', 'receipt'] as const;
+const VALID_THEMES = ['y2k', 'receipt'] as const;
 type Theme = typeof VALID_THEMES[number];
 
 export function middleware(request: NextRequest) {

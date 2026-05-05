@@ -2,9 +2,9 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 
-export type Theme = 'handdrawn' | 'y2k' | 'receipt';
+export type Theme = 'y2k' | 'receipt';
 
-const THEMES: Theme[] = ['handdrawn', 'y2k', 'receipt'];
+const THEMES: Theme[] = ['y2k', 'receipt'];
 
 interface ThemeContextType {
   theme: Theme;

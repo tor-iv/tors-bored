@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { formatReceiptTimestamp, formatReceiptDate } from '@/lib/format/receipt-timestamp';
-import HanddrawnAccountPage from '@/components/theme/handdrawn/HanddrawnAccountPage';
 import Y2KAccountPage from '@/components/theme/y2k/Y2KAccountPage';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
@@ -63,18 +62,6 @@ export default async function AccountPage() {
 
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
-
-  if (theme === 'handdrawn') {
-    return (
-      <HanddrawnAccountPage
-        user={user}
-        activeBids={activeBids}
-        orders={orders}
-        wonBids={wonBids}
-        outbidBids={outbidBids}
-      />
-    );
-  }
 
   if (theme === 'y2k') {
     return (

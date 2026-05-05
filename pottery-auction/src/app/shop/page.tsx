@@ -1,6 +1,5 @@
 import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
-import HanddrawnBrowseLayout from '@/components/theme/handdrawn/HanddrawnBrowseLayout';
 import Y2KBrowseLayout from '@/components/theme/y2k/Y2KBrowseLayout';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
@@ -30,16 +29,6 @@ export default async function ShopPage() {
 
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
-
-  if (theme === 'handdrawn') {
-    return (
-      <HanddrawnBrowseLayout
-        items={items}
-        heading="Shop — Buy Now"
-        emptyMessage="No buy-now pieces available right now. Check back soon."
-      />
-    );
-  }
 
   if (theme === 'y2k') {
     return <Y2KBrowseLayout items={items} heading="Shop — Buy Now" emptyMessage="No buy-now pieces available." />;
