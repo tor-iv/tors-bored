@@ -1,5 +1,7 @@
 import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
+import { db } from '@/db';
+import { items } from '@/db/schema';
+import { eq, desc } from 'drizzle-orm';
 import Y2KBrowseLayout from '@/components/theme/y2k/Y2KBrowseLayout';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
@@ -7,39 +9,37 @@ import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
 import ReceiptBrowseLayout from '@/components/theme/receipt/ReceiptBrowseLayout';
 
 export default async function ShopPage() {
-  const supabase = await createClient();
+  const rawRows = await db
+    .select()
+    .from(items)
+    .where(eq(items.listing_type, 'buy_now'))
+    .orderBy(desc(items.created_at));
 
-  const { data: rawItems } = await supabase
-    .from('items')
-    .select('*')
-    .eq('listing_type', 'buy_now')
-    .order('created_at', { ascending: false });
-
-  const items = (rawItems ?? []).map((i: any) => ({
-    id: i.id,
-    sku: i.sku ?? 'OBJ-????',
-    title: i.title,
+  const mappedItems = rawRows.map((r) => ({
+    id: r.id,
+    sku: r.sku ?? 'OBJ-????',
+    title: r.title,
     listingType: 'buy_now' as const,
-    buyNowPrice: i.buy_now_price,
-    soldAt: i.sold_at,
-    reservedUntil: i.reserved_until,
-    techniques: i.techniques ?? [],
-    images: i.images ?? [],
+    buyNowPrice: r.buy_now_price ?? undefined,
+    soldAt: r.sold_at ? r.sold_at.toISOString() : null,
+    reservedUntil: r.reserved_until ? r.reserved_until.toISOString() : null,
+    techniques: r.techniques ?? [],
+    images: r.images ?? [],
   }));
 
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
 
   if (theme === 'y2k') {
-    return <Y2KBrowseLayout items={items} heading="Shop — Buy Now" emptyMessage="No buy-now pieces available." />;
+    return <Y2KBrowseLayout items={mappedItems} heading="Shop — Buy Now" emptyMessage="No buy-now pieces available." />;
   }
 
   return (
     <ReceiptPage>
       <ReceiptHeader ticket="SHOP-BUY-NOW" />
       <ReceiptBrowseLayout
-        items={items}
-        totalCount={items.length}
+        items={mappedItems}
+        totalCount={mappedItems.length}
         sortLabel="NEWEST FIRST"
         filterLabel="BUY NOW"
         emptyMessage="No items available for purchase right now. Check back soon."

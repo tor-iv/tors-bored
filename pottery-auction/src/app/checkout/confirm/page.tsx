@@ -1,6 +1,9 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
+import { db } from '@/db';
+import { orders, order_items, items } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
 import { formatReceiptTimestamp } from '@/lib/format/receipt-timestamp';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
@@ -26,30 +29,44 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
 
   if (!order_id) redirect('/');
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/');
 
-  const { data: order } = await supabase
-    .from('orders')
-    .select(`
-      id, status, subtotal_cents, shipping_cents, tax_cents, total_cents,
-      created_at,
-      shipping_name, shipping_line1, shipping_line2, shipping_city,
-      shipping_state, shipping_postal_code, shipping_country,
-      order_items(
-        id, price_cents, source,
-        item:items(id, sku, title, images)
-      )
-    `)
-    .eq('id', order_id)
-    .eq('user_id', user.id)
-    .maybeSingle();
+  // Ownership gate: admin can view any order, regular user only their own
+  const orderWhere = user.isAdmin
+    ? eq(orders.id, order_id)
+    : and(eq(orders.id, order_id), eq(orders.user_id, user.id));
 
-  if (!order) notFound();
+  const [orderRow] = await db
+    .select()
+    .from(orders)
+    .where(orderWhere)
+    .limit(1);
 
-  const orderItems = order.order_items ?? [];
-  const firstItem = orderItems[0]?.item as any;
+  if (!orderRow) notFound();
+
+  // Fetch order_items with item join
+  const oiRows = await db
+    .select({ oi: order_items, i: items })
+    .from(order_items)
+    .leftJoin(items, eq(order_items.item_id, items.id))
+    .where(eq(order_items.order_id, order_id));
+
+  const orderItemsMapped = oiRows.map((r) => ({
+    id: r.oi.id,
+    price_cents: r.oi.price_cents,
+    source: r.oi.source,
+    item: r.i
+      ? {
+          id: r.i.id,
+          sku: r.i.sku,
+          title: r.i.title,
+          images: r.i.images,
+        }
+      : null,
+  }));
+
+  const order = { ...orderRow, order_items: orderItemsMapped };
   const now = new Date();
 
   // Deterministic codes from order ID — no randomness, stable on refresh
@@ -81,9 +98,9 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
             </div>
           </div>
           <ReceiptDivider variant="major" />
-          {firstItem?.sku && (
+          {orderItemsMapped[0]?.item?.sku && (
             <div className="py-3">
-              <Link href={`/checkout?sku=${firstItem.sku}`}>
+              <Link href={`/checkout?sku=${orderItemsMapped[0].item.sku}`}>
                 <Button intent="primary">[ TRY AGAIN ]</Button>
               </Link>
             </div>
@@ -94,23 +111,23 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
         <>
           {/* Success — full receipt */}
           {/* Polaroid stack — one per item, capped at 3 */}
-          {orderItems.length > 0 && (() => {
-            const itemsWithImages = orderItems.filter((oi: any) => oi.item?.images && oi.item.images.length > 0);
+          {orderItemsMapped.length > 0 && (() => {
+            const itemsWithImages = orderItemsMapped.filter((oi) => oi.item?.images && oi.item.images.length > 0);
             const visibleItems = itemsWithImages.slice(0, 3);
             const extraCount = itemsWithImages.length - visibleItems.length;
             if (visibleItems.length === 0) return null;
             return (
               <div className="py-4">
                 <div className="receipt-polaroid-stack">
-                  {visibleItems.map((oi: any) => {
-                    const it = oi.item;
+                  {visibleItems.map((oi) => {
+                    const it = oi.item!;
                     return (
                       <PolaroidPhoto
                         key={oi.id}
-                        src={it.images[0]}
+                        src={it.images![0]}
                         alt={it.title ?? ''}
                         sku={it.sku ?? undefined}
-                        caption={it.title}
+                        caption={it.title ?? undefined}
                       />
                     );
                   })}
@@ -160,7 +177,7 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
           {/* Items */}
           <ReceiptDivider variant="major" />
           <div className="py-2 space-y-1 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)' }}>
-            {orderItems.map((oi: any) => {
+            {orderItemsMapped.map((oi) => {
               const it = oi.item;
               return (
                 <div key={oi.id} className="receipt-line-item" style={{ fontFamily: 'var(--font-display)', fontSize: '0.875rem' }}>

@@ -1,5 +1,8 @@
 import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
+import { db } from '@/db';
+import { items } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
 import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
@@ -16,13 +19,6 @@ interface Props {
 function formatPrice(val: number | null | undefined): string {
   if (val == null) return '—';
   return `$${Number(val).toFixed(2)}`;
-}
-
-function isCurrentlyReservedByOther(item: any, userId: string | undefined): boolean {
-  if (!item.reserved_until || new Date(item.reserved_until) <= new Date()) return false;
-  if (item.sold_at) return false;
-  // If we don't have userId info on item, assume reserved by someone else
-  return true;
 }
 
 export default async function CheckoutPage({ searchParams }: Props) {
@@ -45,18 +41,27 @@ export default async function CheckoutPage({ searchParams }: Props) {
     );
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return <SignInGate sku={sku} />;
   }
 
-  const { data: item } = await supabase
-    .from('items')
-    .select('id, sku, title, listing_type, buy_now_price, sold_at, reserved_until, reserved_order_id, images')
-    .eq('sku', sku)
-    .maybeSingle();
+  const [item] = await db
+    .select({
+      id: items.id,
+      sku: items.sku,
+      title: items.title,
+      listing_type: items.listing_type,
+      buy_now_price: items.buy_now_price,
+      sold_at: items.sold_at,
+      reserved_until: items.reserved_until,
+      reserved_order_id: items.reserved_order_id,
+      images: items.images,
+    })
+    .from(items)
+    .where(eq(items.sku, sku))
+    .limit(1);
 
   if (!item) {
     return (

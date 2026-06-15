@@ -19,9 +19,8 @@ export function ThemeProvider({ children, initialTheme }: { children: ReactNode;
 
 
   const setTheme = useCallback((newTheme: Theme) => {
-    setThemeState(newTheme);
-    document.documentElement.dataset.theme = newTheme;
     document.cookie = `theme=${newTheme}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    window.location.reload();
   }, []);
 
   const cycleTheme = useCallback(() => {

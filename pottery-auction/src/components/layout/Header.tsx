@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { logoutAction } from '@/actions/auth';
 import { useAuth } from '@/hooks/useAuth';
+import { useAuthStore } from '@/store/auth';
 import { useTheme } from '@/contexts/ThemeContext';
 import AuthModal from '../auth/AuthModal';
 import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
@@ -18,14 +19,15 @@ const navItems = [
 ];
 
 export default function Header() {
-  const { userProfile, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const { logout } = useAuthStore();
   const { theme } = useTheme();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut().catch(console.error);
+    await logoutAction().catch(console.error);
+    logout();
   };
 
   if (theme === 'receipt') {
@@ -65,7 +67,7 @@ export default function Header() {
               <div className="text-[0.6875rem] flex gap-3">
                 {isAuthenticated ? (
                   <>
-                    {userProfile?.isAdmin && (
+                    {user?.isAdmin && (
                       <Link href="/admin" className="hover:underline uppercase" style={{ color: 'var(--ink-muted)' }}>
                         [ADMIN]
                       </Link>
@@ -130,7 +132,7 @@ export default function Header() {
             <div style={{ flex: 1 }} />
             {isAuthenticated ? (
               <>
-                {userProfile?.isAdmin && (
+                {user?.isAdmin && (
                   <Link href="/admin" style={{ color: '#ffffff', fontFamily: 'Tahoma, sans-serif', fontSize: 11, textDecoration: 'none' }}>Admin</Link>
                 )}
                 <Link href="/account" style={{ color: '#ffffff', fontFamily: 'Tahoma, sans-serif', fontSize: 11, textDecoration: 'none' }}>Account</Link>
@@ -182,7 +184,7 @@ export default function Header() {
               {/* Auth */}
               {isAuthenticated ? (
                 <div className="flex items-center gap-4">
-                  {userProfile?.isAdmin && (
+                  {user?.isAdmin && (
                     <Link href="/admin" className="text-sm hover:opacity-70" style={{ color: 'var(--ink)' }}>
                       Admin
                     </Link>

@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
+import { db } from '@/db';
+import { items, auctions, bids } from '@/db/schema';
+import { eq, desc } from 'drizzle-orm';
 import { formatReceiptTimestamp } from '@/lib/format/receipt-timestamp';
 import Y2KPieceDetail from '@/components/theme/y2k/Y2KPieceDetail';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
@@ -21,9 +23,9 @@ function formatPrice(val: number | null | undefined): string {
   return `$${Number(val).toFixed(2)}`;
 }
 
-function getRemainingTime(endDateStr: string | null | undefined): string {
-  if (!endDateStr) return '—';
-  const diff = new Date(endDateStr).getTime() - Date.now();
+function getRemainingTime(endDate: Date | string | null | undefined): string {
+  if (!endDate) return '—';
+  const diff = new Date(endDate).getTime() - Date.now();
   if (diff <= 0) return 'ENDED';
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
@@ -31,27 +33,38 @@ function getRemainingTime(endDateStr: string | null | undefined): string {
   return `${h}H ${String(m).padStart(2, '0')}M ${String(s).padStart(2, '0')}S`;
 }
 
-function isCurrentlyReserved(item: any): boolean {
-  return item.reserved_until && new Date(item.reserved_until) > new Date() && !item.sold_at;
+function isCurrentlyReserved(item: { reserved_until: Date | null; sold_at: Date | null }): boolean {
+  return !!item.reserved_until && new Date(item.reserved_until) > new Date() && !item.sold_at;
 }
 
 export default async function PiecePage({ params }: Props) {
   const { sku } = await params;
-  const supabase = await createClient();
 
-  const { data: item } = await supabase
-    .from('items')
-    .select('*, auction:auctions(id, end_date, extended_end_date, status, reserve_price)')
-    .eq('sku', sku)
-    .maybeSingle();
+  // Fetch item with auction join
+  const [itemRow] = await db
+    .select({ i: items, a: auctions })
+    .from(items)
+    .leftJoin(auctions, eq(items.auction_id, auctions.id))
+    .where(eq(items.sku, sku))
+    .limit(1);
 
-  if (!item) notFound();
+  if (!itemRow) notFound();
 
-  const { data: bids } = await supabase
-    .from('bids')
-    .select('id, amount, status, created_at, user_id')
-    .eq('item_id', item.id)
-    .order('created_at', { ascending: false })
+  const item = itemRow.i;
+  const auction = itemRow.a ?? null;
+
+  // Fetch bid history
+  const bidRows = await db
+    .select({
+      id: bids.id,
+      amount: bids.amount,
+      status: bids.status,
+      created_at: bids.created_at,
+      user_id: bids.user_id,
+    })
+    .from(bids)
+    .where(eq(bids.item_id, item.id))
+    .orderBy(desc(bids.created_at))
     .limit(20);
 
   const cookieStore = await cookies();
@@ -61,14 +74,15 @@ export default async function PiecePage({ params }: Props) {
   const isReserved = isCurrentlyReserved(item);
   const isAuction = item.listing_type === 'auction';
   const isBuyNow = item.listing_type === 'buy_now';
-  const auction = item.auction;
   const auctionActive = auction?.status === 'active';
   const endDate = auction?.extended_end_date ?? auction?.end_date;
   const reserveMet = !auction?.reserve_price || (item.current_bid ?? 0) >= auction.reserve_price;
   const now = new Date();
 
   if (theme === 'y2k') {
-    return <Y2KPieceDetail item={item} bids={bids ?? []} sku={sku} />;
+    // Reconstruct nested shape expected by Y2KPieceDetail
+    const itemWithAuction = { ...item, auction };
+    return <Y2KPieceDetail item={itemWithAuction} bids={bidRows} sku={sku} />;
   }
 
   return (
@@ -116,7 +130,7 @@ export default async function PiecePage({ params }: Props) {
             <span className="uppercase">{item.techniques.join(', ')}</span>
           </div>
         )}
-        {item.dimensions && typeof item.dimensions === 'object' && !Array.isArray(item.dimensions) && (
+        {Boolean(item.dimensions) && typeof item.dimensions === 'object' && !Array.isArray(item.dimensions) && (
           <div className="flex gap-3">
             <span className="text-[0.6875rem] w-28 shrink-0" style={{ color: 'var(--ink-muted)' }}>DIMENSIONS</span>
             <span className="uppercase">
@@ -166,7 +180,7 @@ export default async function PiecePage({ params }: Props) {
             )}
             <div className="flex justify-between">
               <span className="uppercase" style={{ color: 'var(--ink-muted)' }}>BIDS PLACED</span>
-              <span style={{ color: 'var(--ink)' }}>{bids?.length ?? 0}</span>
+              <span style={{ color: 'var(--ink)' }}>{bidRows?.length ?? 0}</span>
             </div>
           </>
         ) : (
@@ -228,14 +242,14 @@ export default async function PiecePage({ params }: Props) {
       <ReceiptDivider variant="major" />
 
       {/* Bid history */}
-      {isAuction && bids && bids.length > 0 && (
+      {isAuction && bidRows && bidRows.length > 0 && (
         <>
           <div className="py-2 text-[0.875rem] font-bold uppercase" style={{ color: 'var(--ink)' }}>
             BID HISTORY — {sku}
           </div>
           <ReceiptDivider variant="major" />
           <div className="space-y-0.5 py-2 text-[0.6875rem]" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}>
-            {bids.map((bid, i) => {
+            {bidRows.map((bid, i) => {
               const isTopBid = i === 0;
               const badgeIntent = isTopBid ? 'current' : 'outbid';
               const label = isTopBid ? 'CURRENT' : 'OUTBID';
@@ -250,7 +264,7 @@ export default async function PiecePage({ params }: Props) {
           </div>
           <ReceiptDivider variant="major" />
           <div className="py-1 text-[0.6875rem]" style={{ color: 'var(--ink-muted)' }}>
-            {bids.length} {bids.length === 1 ? 'BID' : 'BIDS'} PLACED
+            {bidRows.length} {bidRows.length === 1 ? 'BID' : 'BIDS'} PLACED
           </div>
           <ReceiptDivider variant="major" />
         </>

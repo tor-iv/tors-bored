@@ -1,5 +1,7 @@
 import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
+import { db } from '@/db';
+import { items, auctions } from '@/db/schema';
+import { eq, desc } from 'drizzle-orm';
 import Y2KBrowseLayout from '@/components/theme/y2k/Y2KBrowseLayout';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
 import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
@@ -7,42 +9,44 @@ import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
 import ReceiptBrowseLayout from '@/components/theme/receipt/ReceiptBrowseLayout';
 
 export default async function BrowsePage() {
-  const supabase = await createClient();
+  const rawRows = await db
+    .select({ i: items, a: auctions })
+    .from(items)
+    .leftJoin(auctions, eq(items.auction_id, auctions.id))
+    .orderBy(desc(items.created_at));
 
-  const { data: rawItems } = await supabase
-    .from('items')
-    .select('*, auction:auctions(end_date, extended_end_date, status)')
-    .order('created_at', { ascending: false });
-
-  const items = (rawItems ?? []).map((i: any) => ({
-    id: i.id,
-    sku: i.sku ?? 'OBJ-????',
-    title: i.title,
-    listingType: i.listing_type as 'auction' | 'buy_now',
-    buyNowPrice: i.buy_now_price,
-    currentBid: i.current_bid,
-    startingBid: i.starting_bid,
-    endDate: i.auction?.extended_end_date ?? i.auction?.end_date,
-    soldAt: i.sold_at,
-    reservedUntil: i.reserved_until,
-    techniques: i.techniques ?? [],
-    images: i.images ?? [],
-    createdAt: i.created_at,
-  }));
+  const mappedItems = rawRows.map((r) => {
+    const endDateRaw = r.a?.extended_end_date ?? r.a?.end_date;
+    return {
+      id: r.i.id,
+      sku: r.i.sku ?? 'OBJ-????',
+      title: r.i.title,
+      listingType: r.i.listing_type as 'auction' | 'buy_now',
+      buyNowPrice: r.i.buy_now_price ?? undefined,
+      currentBid: r.i.current_bid ?? undefined,
+      startingBid: r.i.starting_bid ?? undefined,
+      endDate: endDateRaw ? endDateRaw.toISOString() : undefined,
+      soldAt: r.i.sold_at ? r.i.sold_at.toISOString() : null,
+      reservedUntil: r.i.reserved_until ? r.i.reserved_until.toISOString() : null,
+      techniques: r.i.techniques ?? [],
+      images: r.i.images ?? [],
+      createdAt: r.i.created_at ? r.i.created_at.toISOString() : null,
+    };
+  });
 
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
 
   if (theme === 'y2k') {
-    return <Y2KBrowseLayout items={items} heading="Browse All Pieces" />;
+    return <Y2KBrowseLayout items={mappedItems} heading="Browse All Pieces" />;
   }
 
   return (
     <ReceiptPage>
       <ReceiptHeader ticket="BROWSE-ALL" />
       <ReceiptBrowseLayout
-        items={items}
-        totalCount={items.length}
+        items={mappedItems}
+        totalCount={mappedItems.length}
         sortLabel="NEWEST FIRST"
         filterLabel="ALL"
       />

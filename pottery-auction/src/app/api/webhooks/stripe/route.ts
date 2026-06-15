@@ -1,110 +1,129 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
-import { stripe } from '@/lib/stripe/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
+import { eq, sql } from "drizzle-orm";
+import { stripe } from "@/lib/stripe/server";
+import { db } from "@/db";
+import { orders, profiles, stripe_events } from "@/db/schema";
 
-// Node.js runtime required for stripe.webhooks.constructEvent (uses Node crypto)
-export const runtime = 'nodejs';
+// Node.js runtime required for stripe.webhooks.constructEvent (uses Node crypto).
+export const runtime = "nodejs";
 
-async function dedup(admin: ReturnType<typeof createAdminClient>, eventId: string, eventType: string): Promise<boolean> {
-  const { error } = await admin
-    .from('stripe_events')
-    .insert({ id: eventId, type: eventType })
-    .select();
-
-  // Unique constraint violation means we've seen this event before
-  return !error;
+// Insert the event id; the unique PK makes a re-delivery a no-op. Returns true
+// if this is the first time we've seen the event.
+async function dedup(eventId: string, eventType: string): Promise<boolean> {
+  const inserted = await db
+    .insert(stripe_events)
+    .values({ id: eventId, type: eventType })
+    .onConflictDoNothing()
+    .returning({ id: stripe_events.id });
+  return inserted.length > 0;
 }
 
-async function handlePaymentIntentSucceeded(admin: ReturnType<typeof createAdminClient>, pi: Stripe.PaymentIntent) {
+async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
   const orderId = pi.metadata?.order_id;
   if (!orderId) return;
 
-  // Update order status and mark item sold
-  await admin.rpc('mark_order_paid', { p_order_id: orderId });
+  await db.execute(sql`SELECT mark_order_paid(${orderId}::uuid)`);
 
-  // Persist shipping address from PaymentIntent if available
   const shipping = pi.shipping;
   if (shipping) {
-    await admin
-      .from('orders')
-      .update({
-        shipping_name: shipping.name,
-        shipping_line1: shipping.address?.line1,
-        shipping_line2: shipping.address?.line2,
-        shipping_city: shipping.address?.city,
-        shipping_state: shipping.address?.state,
-        shipping_postal_code: shipping.address?.postal_code,
-        shipping_country: shipping.address?.country ?? 'US',
+    await db
+      .update(orders)
+      .set({
+        shipping_name: shipping.name ?? null,
+        shipping_line1: shipping.address?.line1 ?? null,
+        shipping_line2: shipping.address?.line2 ?? null,
+        shipping_city: shipping.address?.city ?? null,
+        shipping_state: shipping.address?.state ?? null,
+        shipping_postal_code: shipping.address?.postal_code ?? null,
+        shipping_country: shipping.address?.country ?? "US",
       })
-      .eq('id', orderId);
+      .where(eq(orders.id, orderId));
   }
 }
 
-async function handlePaymentIntentFailed(admin: ReturnType<typeof createAdminClient>, pi: Stripe.PaymentIntent) {
+async function handlePaymentIntentFailed(pi: Stripe.PaymentIntent) {
   const orderId = pi.metadata?.order_id;
   if (!orderId) return;
-  await admin.rpc('mark_order_cancelled', { p_order_id: orderId });
+  await db.execute(sql`SELECT mark_order_cancelled(${orderId}::uuid)`);
 }
 
-async function handleChargeRefunded(admin: ReturnType<typeof createAdminClient>, charge: Stripe.Charge) {
-  if (!charge.payment_intent) return;
-  const piId = typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.payment_intent.id;
+// Save-card flow: persist the saved payment method + customer on the profile so
+// the user can bid and be charged off-session when they win.
+async function handleSetupIntentSucceeded(si: Stripe.SetupIntent) {
+  const userId = si.metadata?.user_id;
+  const paymentMethod = typeof si.payment_method === "string" ? si.payment_method : si.payment_method?.id;
+  const customerId = typeof si.customer === "string" ? si.customer : si.customer?.id;
+  if (!userId || !paymentMethod) return;
 
-  const { data: order } = await admin
-    .from('orders')
-    .select('id')
-    .eq('stripe_payment_intent_id', piId)
-    .maybeSingle();
+  await db
+    .update(profiles)
+    .set({
+      default_payment_method: paymentMethod,
+      ...(customerId ? { stripe_customer_id: customerId } : {}),
+      updated_at: new Date(),
+    })
+    .where(eq(profiles.id, userId));
+}
+
+async function handleChargeRefunded(charge: Stripe.Charge) {
+  if (!charge.payment_intent) return;
+  const piId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent.id;
+
+  const [order] = await db
+    .select({ id: orders.id })
+    .from(orders)
+    .where(eq(orders.stripe_payment_intent_id, piId))
+    .limit(1);
 
   if (order) {
-    await admin.rpc('mark_order_cancelled', { p_order_id: order.id });
+    await db.execute(sql`SELECT mark_order_cancelled(${order.id}::uuid)`);
   }
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const signature = request.headers.get('stripe-signature');
+  const signature = request.headers.get("stripe-signature");
 
   if (!signature) {
-    return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 });
+    return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 });
   }
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
+    return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
 
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
+    const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: `Webhook signature verification failed: ${message}` }, { status: 400 });
   }
 
-  const admin = createAdminClient();
-  const isNew = await dedup(admin, event.id, event.type);
+  const isNew = await dedup(event.id, event.type);
   if (!isNew) {
-    // Already processed — ack silently
     return NextResponse.json({ received: true });
   }
 
   try {
     switch (event.type) {
-      case 'payment_intent.succeeded':
-        await handlePaymentIntentSucceeded(admin, event.data.object as Stripe.PaymentIntent);
+      case "payment_intent.succeeded":
+        await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);
         break;
-      case 'payment_intent.payment_failed':
-      case 'payment_intent.canceled':
-        await handlePaymentIntentFailed(admin, event.data.object as Stripe.PaymentIntent);
+      case "payment_intent.payment_failed":
+      case "payment_intent.canceled":
+        await handlePaymentIntentFailed(event.data.object as Stripe.PaymentIntent);
         break;
-      case 'charge.refunded':
-        await handleChargeRefunded(admin, event.data.object as Stripe.Charge);
+      case "setup_intent.succeeded":
+        await handleSetupIntentSucceeded(event.data.object as Stripe.SetupIntent);
+        break;
+      case "charge.refunded":
+        await handleChargeRefunded(event.data.object as Stripe.Charge);
         break;
     }
   } catch (err) {
-    // Log but still return 200 — Stripe will retry if we 5xx, creating duplicate-processing risk
     console.error(`Webhook handler error for ${event.type}:`, err);
   }
 

@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
 
 interface ImageUploadProps {
   images: string[];
@@ -20,26 +19,20 @@ export default function ImageUpload({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Uploads to the local-volume storage endpoint (sharp-optimized server-side),
+  // which returns a served /api/media/... URL. Replaces Supabase Storage.
   const uploadImage = useCallback(async (file: File) => {
-    const supabase = createClient();
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('bucket', bucket);
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, file);
-
-    if (uploadError) {
-      throw uploadError;
+    const res = await fetch('/api/uploads', { method: 'POST', body: formData });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ error: 'Upload failed' }));
+      throw new Error(body.error || 'Upload failed');
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(filePath);
-
-    return publicUrl;
+    const { url } = (await res.json()) as { url: string };
+    return url;
   }, [bucket]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {

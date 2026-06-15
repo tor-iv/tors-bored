@@ -1,55 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { auctions } from "@/db/schema";
+import { getCurrentUser } from "@/lib/auth";
 
 type Params = Promise<{ id: string }>;
 
 /**
  * GET /api/auctions/[id]
- * Get a single auction by ID
+ * Get a single auction by ID.
  */
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Params }
+  _request: NextRequest,
+  { params }: { params: Params },
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
 
-    const { data, error } = await supabase
-      .from('auctions')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const [auction] = await db
+      .select()
+      .from(auctions)
+      .where(eq(auctions.id, id))
+      .limit(1);
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Auction not found' },
-          { status: 404 }
-        );
-      }
-
-      console.error('Error fetching auction:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch auction', details: error.message },
-        { status: 500 }
-      );
+    if (!auction) {
+      return NextResponse.json({ error: "Auction not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ auction: data });
+    return NextResponse.json({ auction });
   } catch (error) {
-    console.error('Unexpected error in GET /api/auctions/[id]:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in GET /api/auctions/[id]:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
 /**
  * PATCH /api/auctions/[id]
- * Update an auction (admin only)
+ * Update an auction (admin only).
  *
  * Body (all fields optional):
  * - title: string
@@ -61,187 +48,140 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Params }
+  { params }: { params: Params },
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
 
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
 
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized - please login' },
-        { status: 401 }
+        { error: "Unauthorized - please login" },
+        { status: 401 },
       );
     }
 
-    // Check if user is admin
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile?.is_admin) {
+    if (!user.isAdmin) {
       return NextResponse.json(
-        { error: 'Forbidden - admin access required' },
-        { status: 403 }
+        { error: "Forbidden - admin access required" },
+        { status: 403 },
       );
     }
 
-    // Parse request body
     const body = await request.json();
     const { title, description, start_date, end_date, status, featured_image } = body;
 
-    // Build update object with only provided fields
-    const updates: Record<string, unknown> = {};
+    type AuctionUpdate = {
+      title?: string;
+      description?: string | null;
+      start_date?: Date;
+      end_date?: Date;
+      status?: "upcoming" | "active" | "closing" | "ended";
+      featured_image?: string | null;
+      updated_at?: Date;
+    };
+
+    const updates: AuctionUpdate = {};
 
     if (title !== undefined) updates.title = title;
     if (description !== undefined) updates.description = description;
-    if (start_date !== undefined) updates.start_date = start_date;
-    if (end_date !== undefined) updates.end_date = end_date;
     if (status !== undefined) {
-      if (!['upcoming', 'active', 'ended'].includes(status)) {
+      if (!["upcoming", "active", "ended"].includes(status)) {
         return NextResponse.json(
-          { error: 'Invalid status. Must be: upcoming, active, or ended' },
-          { status: 400 }
+          { error: "Invalid status. Must be: upcoming, active, or ended" },
+          { status: 400 },
         );
       }
-      updates.status = status;
+      updates.status = status as "upcoming" | "active" | "closing" | "ended";
     }
     if (featured_image !== undefined) updates.featured_image = featured_image;
 
-    // Validate dates if both are being updated
-    if (updates.start_date && updates.end_date) {
-      const startDate = new Date(updates.start_date as string);
-      const endDate = new Date(updates.end_date as string);
+    // Parse and validate dates
+    if (start_date !== undefined || end_date !== undefined) {
+      const parsedStart = start_date !== undefined ? new Date(start_date) : undefined;
+      const parsedEnd = end_date !== undefined ? new Date(end_date) : undefined;
 
-      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      if (parsedStart && isNaN(parsedStart.getTime())) {
         return NextResponse.json(
-          { error: 'Invalid date format. Use ISO 8601 format' },
-          { status: 400 }
+          { error: "Invalid date format. Use ISO 8601 format" },
+          { status: 400 },
+        );
+      }
+      if (parsedEnd && isNaN(parsedEnd.getTime())) {
+        return NextResponse.json(
+          { error: "Invalid date format. Use ISO 8601 format" },
+          { status: 400 },
+        );
+      }
+      if (parsedStart && parsedEnd && parsedEnd <= parsedStart) {
+        return NextResponse.json(
+          { error: "End date must be after start date" },
+          { status: 400 },
         );
       }
 
-      if (endDate <= startDate) {
-        return NextResponse.json(
-          { error: 'End date must be after start date' },
-          { status: 400 }
-        );
-      }
+      if (parsedStart) updates.start_date = parsedStart;
+      if (parsedEnd) updates.end_date = parsedEnd;
     }
 
     if (Object.keys(updates).length === 0) {
-      return NextResponse.json(
-        { error: 'No fields to update' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
     }
 
-    // Use admin client to bypass RLS for update
-    const adminClient = createAdminClient();
+    updates.updated_at = new Date();
 
-    const { data, error } = await adminClient
-      .from('auctions')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
+    const [auction] = await db
+      .update(auctions)
+      .set(updates)
+      .where(eq(auctions.id, id))
+      .returning();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Auction not found' },
-          { status: 404 }
-        );
-      }
-
-      console.error('Error updating auction:', error);
-      return NextResponse.json(
-        { error: 'Failed to update auction', details: error.message },
-        { status: 500 }
-      );
+    if (!auction) {
+      return NextResponse.json({ error: "Auction not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ auction: data });
+    return NextResponse.json({ auction });
   } catch (error) {
-    console.error('Unexpected error in PATCH /api/auctions/[id]:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in PATCH /api/auctions/[id]:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
 /**
  * DELETE /api/auctions/[id]
- * Delete an auction (admin only)
+ * Delete an auction (admin only).
  *
- * Note: This will cascade delete all items in the auction due to foreign key constraint
+ * Note: This will cascade delete all items in the auction due to foreign key constraint.
  */
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Params }
+  _request: NextRequest,
+  { params }: { params: Params },
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
 
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
 
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized - please login' },
-        { status: 401 }
+        { error: "Unauthorized - please login" },
+        { status: 401 },
       );
     }
 
-    // Check if user is admin
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile?.is_admin) {
+    if (!user.isAdmin) {
       return NextResponse.json(
-        { error: 'Forbidden - admin access required' },
-        { status: 403 }
+        { error: "Forbidden - admin access required" },
+        { status: 403 },
       );
     }
 
-    // Use admin client to bypass RLS for delete
-    const adminClient = createAdminClient();
-
-    const { error } = await adminClient
-      .from('auctions')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Auction not found' },
-          { status: 404 }
-        );
-      }
-
-      console.error('Error deleting auction:', error);
-      return NextResponse.json(
-        { error: 'Failed to delete auction', details: error.message },
-        { status: 500 }
-      );
-    }
+    await db.delete(auctions).where(eq(auctions.id, id));
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error('Unexpected error in DELETE /api/auctions/[id]:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in DELETE /api/auctions/[id]:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

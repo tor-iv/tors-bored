@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
+import { db } from '@/db';
+import { bids, items, auctions, orders, order_items, profiles } from '@/db/schema';
+import { eq, desc, inArray } from 'drizzle-orm';
 import { formatReceiptTimestamp, formatReceiptDate } from '@/lib/format/receipt-timestamp';
 import Y2KAccountPage from '@/components/theme/y2k/Y2KAccountPage';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
@@ -31,34 +34,96 @@ function getOrderStatusBadgeIntent(status: string): 'current' | 'outbid' | 'erro
 }
 
 export default async function AccountPage() {
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/');
+
+  // Fetch profile created_at separately (getCurrentUser doesn't include it)
+  const [profileRow] = await db
+    .select({ created_at: profiles.created_at })
+    .from(profiles)
+    .where(eq(profiles.id, user.id))
+    .limit(1);
+  const profileCreatedAt = profileRow?.created_at ?? new Date();
 
   const now = new Date();
 
-  const [bidsResult, ordersResult] = await Promise.all([
-    supabase
-      .from('bids')
-      .select('id, amount, status, created_at, item_id, item:items(id, sku, title, listing_type, auction_id, auction:auctions(end_date, extended_end_date, status))')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(20),
-    supabase
-      .from('orders')
-      .select('id, status, subtotal_cents, shipping_cents, tax_cents, total_cents, created_at, order_items(id, price_cents, source, item:items(id, sku, title))')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(10),
-  ]);
+  // Fetch bids with item+auction join
+  const bidRows = await db
+    .select({ b: bids, i: items, a: auctions })
+    .from(bids)
+    .leftJoin(items, eq(bids.item_id, items.id))
+    .leftJoin(auctions, eq(items.auction_id, auctions.id))
+    .where(eq(bids.user_id, user.id))
+    .orderBy(desc(bids.created_at))
+    .limit(20);
 
-  const bids = bidsResult.data ?? [];
-  const orders = ordersResult.data ?? [];
+  // Reconstruct nested bid shape: bid.item.auction
+  const allBids = bidRows.map((r) => ({
+    id: r.b.id,
+    amount: r.b.amount,
+    status: r.b.status,
+    created_at: r.b.created_at,
+    item_id: r.b.item_id,
+    item: r.i
+      ? {
+          id: r.i.id,
+          sku: r.i.sku,
+          title: r.i.title,
+          listing_type: r.i.listing_type,
+          auction_id: r.i.auction_id,
+          auction: r.a
+            ? {
+                end_date: r.a.end_date,
+                extended_end_date: r.a.extended_end_date,
+                status: r.a.status,
+              }
+            : null,
+        }
+      : null,
+  }));
 
-  const activeBids = bids.filter((b: any) => b.status === 'pending' || b.status === 'confirmed');
-  const wonBids = bids.filter((b: any) => b.status === 'won');
-  const outbidBids = bids.filter((b: any) => b.status === 'outbid').slice(0, 5);
+  // Fetch orders (no items yet — fetch separately to avoid duplicates)
+  const orderRows = await db
+    .select()
+    .from(orders)
+    .where(eq(orders.user_id, user.id))
+    .orderBy(desc(orders.created_at))
+    .limit(10);
+
+  // Fetch order_items with items join for all fetched orders
+  const allOrders = await (async () => {
+    if (orderRows.length === 0) return [];
+    const orderIds = orderRows.map((o) => o.id);
+    const oiRows = await db
+      .select({ oi: order_items, i: items })
+      .from(order_items)
+      .leftJoin(items, eq(order_items.item_id, items.id))
+      .where(inArray(order_items.order_id, orderIds));
+
+    // Group order_items by order_id
+    const oiByOrder = new Map<string, typeof oiRows>();
+    for (const row of oiRows) {
+      const list = oiByOrder.get(row.oi.order_id) ?? [];
+      list.push(row);
+      oiByOrder.set(row.oi.order_id, list);
+    }
+
+    return orderRows.map((o) => ({
+      ...o,
+      order_items: (oiByOrder.get(o.id) ?? []).map((r) => ({
+        id: r.oi.id,
+        price_cents: r.oi.price_cents,
+        source: r.oi.source,
+        item: r.i
+          ? { id: r.i.id, sku: r.i.sku, title: r.i.title }
+          : null,
+      })),
+    }));
+  })();
+
+  const activeBids = allBids.filter((b) => b.status === 'pending' || b.status === 'confirmed');
+  const wonBids = allBids.filter((b) => b.status === 'won');
+  const outbidBids = allBids.filter((b) => b.status === 'outbid').slice(0, 5);
 
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
@@ -66,11 +131,11 @@ export default async function AccountPage() {
   if (theme === 'y2k') {
     return (
       <Y2KAccountPage
-        user={{ email: user.email, created_at: user.created_at }}
+        user={{ email: user.email, created_at: profileCreatedAt.toISOString() }}
         activeBids={activeBids}
         wonBids={wonBids}
         outbidBids={outbidBids}
-        orders={orders}
+        orders={allOrders}
       />
     );
   }
@@ -92,11 +157,11 @@ export default async function AccountPage() {
         </div>
         <div className="flex gap-3">
           <span className="text-[0.6875rem] w-28 shrink-0" style={{ color: 'var(--ink-muted)' }}>MEMBER SINCE</span>
-          <span>{formatReceiptDate(user.created_at)}</span>
+          <span>{formatReceiptDate(profileCreatedAt)}</span>
         </div>
         <div className="flex gap-3">
           <span className="text-[0.6875rem] w-28 shrink-0" style={{ color: 'var(--ink-muted)' }}>ORDERS</span>
-          <span>{orders.length}</span>
+          <span>{allOrders.length}</span>
         </div>
         <div className="flex gap-3">
           <span className="text-[0.6875rem] w-28 shrink-0" style={{ color: 'var(--ink-muted)' }}>ACTIVE BIDS</span>
@@ -113,7 +178,7 @@ export default async function AccountPage() {
           </div>
           <ReceiptDivider variant="major" />
           <div className="space-y-0.5 py-2" style={{ fontFamily: 'var(--font-display)' }}>
-            {activeBids.map((bid: any) => {
+            {activeBids.map((bid) => {
               const item = bid.item;
               const auctionEnded = item?.auction?.status !== 'active';
               return (
@@ -146,7 +211,7 @@ export default async function AccountPage() {
           </div>
           <ReceiptDivider variant="major" />
           <div className="space-y-0.5 py-2" style={{ fontFamily: 'var(--font-display)' }}>
-            {wonBids.map((bid: any) => {
+            {wonBids.map((bid) => {
               const item = bid.item;
               return (
                 <div key={bid.id} className="py-1">
@@ -177,7 +242,7 @@ export default async function AccountPage() {
           </div>
           <ReceiptDivider variant="minor" />
           <div className="space-y-0.5 py-2" style={{ fontFamily: 'var(--font-display)' }}>
-            {outbidBids.map((bid: any) => {
+            {outbidBids.map((bid) => {
               const item = bid.item;
               return (
                 <div key={bid.id} className="flex gap-2 justify-between items-baseline py-0.5 text-[0.6875rem]" style={{ color: 'var(--ink-muted)' }}>
@@ -199,13 +264,13 @@ export default async function AccountPage() {
       </div>
       <ReceiptDivider variant="major" />
 
-      {orders.length === 0 ? (
+      {allOrders.length === 0 ? (
         <div className="py-4 text-[0.875rem] text-center uppercase" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}>
           NO ORDERS YET
         </div>
       ) : (
         <div className="py-2 space-y-0 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)' }}>
-          {orders.map((order: any, i: number) => {
+          {allOrders.map((order, i) => {
             const firstItem = order.order_items?.[0]?.item;
             return (
               <div key={order.id}>
@@ -234,7 +299,7 @@ export default async function AccountPage() {
 
       <ReceiptDivider variant="major" />
       <div className="py-2 text-[0.6875rem] text-center uppercase" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}>
-        {orders.length} {orders.length === 1 ? 'ORDER' : 'ORDERS'} ON FILE
+        {allOrders.length} {allOrders.length === 1 ? 'ORDER' : 'ORDERS'} ON FILE
       </div>
 
       <ReceiptDivider variant="major" />

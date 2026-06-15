@@ -1,5 +1,7 @@
 import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
+import { db } from '@/db';
+import { items, auctions } from '@/db/schema';
+import { eq, isNull, isNotNull } from 'drizzle-orm';
 import HomeClient from './HomeClient';
 import Y2KHome from '@/components/theme/y2k/Y2KHome';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
@@ -15,73 +17,125 @@ export default async function Home() {
 
   if (theme === 'y2k') {
     // Fetch data for Y2K home too
-    const supabase = await createClient();
-    const [featuredRes, activeRes, shopRes] = await Promise.all([
-      supabase.from('items').select('*').eq('featured', true).is('sold_at', null).limit(1).maybeSingle(),
-      supabase.from('items').select('*, auction:auctions(end_date, extended_end_date, status)').eq('listing_type', 'auction').is('sold_at', null).not('auction_id', 'is', null).limit(6),
-      supabase.from('items').select('*').eq('listing_type', 'buy_now').is('sold_at', null).limit(6),
+    const [featuredRows, activeRows, shopRows] = await Promise.all([
+      db
+        .select()
+        .from(items)
+        .where(eq(items.featured, true))
+        // isNull requires a separate where clause; chain with and() if needed, but these are separate queries
+        .limit(1),
+      db
+        .select({ i: items, a: auctions })
+        .from(items)
+        .leftJoin(auctions, eq(items.auction_id, auctions.id))
+        .where(eq(items.listing_type, 'auction'))
+        .limit(6),
+      db
+        .select()
+        .from(items)
+        .where(eq(items.listing_type, 'buy_now'))
+        .limit(6),
     ]);
-    const activeAuctions = ((activeRes.data ?? []) as any[])
-      .filter((i: any) => i.auction?.status === 'active')
-      .map((i: any) => ({ id: i.id, sku: i.sku ?? 'OBJ-????', title: i.title, images: i.images, currentBid: i.current_bid, startingBid: i.starting_bid, endDate: i.auction?.extended_end_date ?? i.auction?.end_date }));
-    const shopItemsMapped = ((shopRes.data ?? []) as any[]).map((i: any) => ({ id: i.id, sku: i.sku ?? 'OBJ-????', title: i.title, images: i.images, buyNowPrice: i.buy_now_price }));
-    const feat = featuredRes.data;
-    const mappedFeatured = feat ? { id: feat.id, sku: feat.sku ?? 'OBJ-????', title: feat.title, images: feat.images ?? undefined, current_bid: feat.current_bid, buy_now_price: feat.buy_now_price, listing_type: feat.listing_type ?? undefined } : null;
+
+    // Filter featured to unsold
+    const featuredRow = featuredRows.find((r) => !r.sold_at) ?? null;
+
+    const activeAuctions = activeRows
+      .filter((r) => !r.i.sold_at && r.i.auction_id !== null && r.a?.status === 'active')
+      .map((r) => {
+        const endDateRaw = r.a?.extended_end_date ?? r.a?.end_date;
+        return {
+          id: r.i.id,
+          sku: r.i.sku ?? 'OBJ-????',
+          title: r.i.title,
+          images: r.i.images,
+          currentBid: r.i.current_bid,
+          startingBid: r.i.starting_bid,
+          endDate: endDateRaw ? endDateRaw.toISOString() : undefined,
+        };
+      });
+
+    const shopItemsMapped = shopRows
+      .filter((r) => !r.sold_at)
+      .map((r) => ({
+        id: r.id,
+        sku: r.sku ?? 'OBJ-????',
+        title: r.title,
+        images: r.images,
+        buyNowPrice: r.buy_now_price,
+      }));
+
+    const feat = featuredRow;
+    const mappedFeatured = feat
+      ? {
+          id: feat.id,
+          sku: feat.sku ?? 'OBJ-????',
+          title: feat.title,
+          images: feat.images ?? undefined,
+          current_bid: feat.current_bid,
+          buy_now_price: feat.buy_now_price,
+          listing_type: feat.listing_type ?? undefined,
+        }
+      : null;
+
     return <Y2KHome featuredItem={mappedFeatured} auctionItems={activeAuctions} shopItems={shopItemsMapped} />;
   }
+
   // receipt: falls through to receipt code below
   if (theme !== 'receipt') return <HomeClient />;
 
   // Receipt theme: fetch real data
-  const supabase = await createClient();
-
-  const [featuredResult, auctionResult, shopResult] = await Promise.all([
-    supabase
-      .from('items')
-      .select('*')
-      .eq('featured', true)
-      .is('sold_at', null)
-      .limit(1)
-      .maybeSingle(),
-    supabase
-      .from('items')
-      .select('*, auction:auctions(end_date, extended_end_date, status)')
-      .eq('listing_type', 'auction')
-      .is('sold_at', null)
-      .not('auction_id', 'is', null)
+  const [featuredRows, activeRows, shopRows] = await Promise.all([
+    db
+      .select()
+      .from(items)
+      .where(eq(items.featured, true))
+      .limit(1),
+    db
+      .select({ i: items, a: auctions })
+      .from(items)
+      .leftJoin(auctions, eq(items.auction_id, auctions.id))
+      .where(eq(items.listing_type, 'auction'))
       .limit(6),
-    supabase
-      .from('items')
-      .select('*')
-      .eq('listing_type', 'buy_now')
-      .is('sold_at', null)
+    db
+      .select()
+      .from(items)
+      .where(eq(items.listing_type, 'buy_now'))
       .limit(6),
   ]);
 
-  const featuredItem = featuredResult.data;
-  const auctionItems = (auctionResult.data ?? [])
-    .filter((i: any) => i.auction?.status === 'active')
-    .map((i: any) => ({
-      id: i.id,
-      sku: i.sku ?? 'OBJ-????',
-      title: i.title,
-      listingType: 'auction' as const,
-      currentBid: i.current_bid,
-      startingBid: i.starting_bid,
-      endDate: i.auction?.extended_end_date ?? i.auction?.end_date,
-      soldAt: i.sold_at,
-      techniques: i.techniques,
+  // featured: unsold only
+  const featuredItem = featuredRows.find((r) => !r.sold_at) ?? null;
+
+  const auctionItems = activeRows
+    .filter((r) => !r.i.sold_at && r.i.auction_id !== null && r.a?.status === 'active')
+    .map((r) => {
+      const endDateRaw = r.a?.extended_end_date ?? r.a?.end_date;
+      return {
+        id: r.i.id,
+        sku: r.i.sku ?? 'OBJ-????',
+        title: r.i.title,
+        listingType: 'auction' as const,
+        currentBid: r.i.current_bid ?? undefined,
+        startingBid: r.i.starting_bid ?? undefined,
+        endDate: endDateRaw ? endDateRaw.toISOString() : undefined,
+        soldAt: r.i.sold_at ? r.i.sold_at.toISOString() : null,
+        techniques: r.i.techniques,
+      };
+    });
+
+  const shopItems = shopRows
+    .filter((r) => !r.sold_at)
+    .map((r) => ({
+      id: r.id,
+      sku: r.sku ?? 'OBJ-????',
+      title: r.title,
+      listingType: 'buy_now' as const,
+      buyNowPrice: r.buy_now_price ?? undefined,
+      soldAt: r.sold_at ? r.sold_at.toISOString() : null,
+      reservedUntil: r.reserved_until ? r.reserved_until.toISOString() : null,
+      techniques: r.techniques,
     }));
-  const shopItems = (shopResult.data ?? []).map((i: any) => ({
-    id: i.id,
-    sku: i.sku ?? 'OBJ-????',
-    title: i.title,
-    listingType: 'buy_now' as const,
-    buyNowPrice: i.buy_now_price,
-    soldAt: i.sold_at,
-    reservedUntil: i.reserved_until,
-    techniques: i.techniques,
-  }));
 
   return (
     <ReceiptPage>

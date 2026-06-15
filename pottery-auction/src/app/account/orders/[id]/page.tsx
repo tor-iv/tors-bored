@@ -1,7 +1,10 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
+import { db } from '@/db';
+import { orders, order_items, items } from '@/db/schema';
+import { eq, and, inArray } from 'drizzle-orm';
 import { formatReceiptTimestamp, formatReceiptDate } from '@/lib/format/receipt-timestamp';
 import Y2KOrderDetail from '@/components/theme/y2k/Y2KOrderDetail';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
@@ -33,33 +36,52 @@ function getStatusBadgeIntent(status: string): 'current' | 'outbid' | 'error' | 
 
 export default async function OrderDetailPage({ params }: Props) {
   const { id } = await params;
-  const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/');
 
-  const { data: order } = await supabase
-    .from('orders')
-    .select(`
-      id, status, subtotal_cents, shipping_cents, tax_cents, total_cents,
-      created_at, updated_at, user_id,
-      shipping_name, shipping_line1, shipping_line2, shipping_city,
-      shipping_state, shipping_postal_code, shipping_country,
-      stripe_payment_intent_id,
-      order_items(
-        id, price_cents, source,
-        item:items(id, sku, title, images, techniques, dimensions, weight)
-      )
-    `)
-    .eq('id', id)
-    .eq('user_id', user.id)
-    .maybeSingle();
+  // Ownership gate: admin can view any order, regular user only their own
+  const orderWhere = user.isAdmin
+    ? eq(orders.id, id)
+    : and(eq(orders.id, id), eq(orders.user_id, user.id));
 
-  if (!order) notFound();
+  const [orderRow] = await db
+    .select()
+    .from(orders)
+    .where(orderWhere)
+    .limit(1);
+
+  if (!orderRow) notFound();
+
+  // Fetch order_items with item join
+  const oiRows = await db
+    .select({ oi: order_items, i: items })
+    .from(order_items)
+    .leftJoin(items, eq(order_items.item_id, items.id))
+    .where(eq(order_items.order_id, id));
+
+  const orderItemsMapped = oiRows.map((r) => ({
+    id: r.oi.id,
+    price_cents: r.oi.price_cents,
+    source: r.oi.source,
+    item: r.i
+      ? {
+          id: r.i.id,
+          sku: r.i.sku,
+          title: r.i.title,
+          images: r.i.images,
+          techniques: r.i.techniques,
+          dimensions: r.i.dimensions,
+          weight: r.i.weight,
+        }
+      : null,
+  }));
+
+  // Reconstruct nested order shape
+  const order = { ...orderRow, order_items: orderItemsMapped };
 
   const now = new Date();
-  const orderItems = order.order_items ?? [];
-  const firstItem = orderItems[0]?.item as any;
+  const firstItem = orderItemsMapped[0]?.item ?? null;
 
   const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? 'receipt';
@@ -115,7 +137,7 @@ export default async function OrderDetailPage({ params }: Props) {
       </div>
       <ReceiptDivider variant="major" />
       <div className="py-2 space-y-2 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)' }}>
-        {orderItems.map((oi: any) => {
+        {orderItemsMapped.map((oi) => {
           const item = oi.item;
           return (
             <div key={oi.id}>

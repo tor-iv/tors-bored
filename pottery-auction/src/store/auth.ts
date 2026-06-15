@@ -1,23 +1,26 @@
 import { create } from 'zustand';
-import { User as SupabaseUser } from '@supabase/supabase-js';
-import { User } from '@/types';
+
+export type AuthUser = {
+  id: string;
+  email: string;
+  displayName: string | null;
+  isAdmin: boolean;
+  notifications?: boolean;
+  hasSavedCard?: boolean;
+};
 
 interface AuthState {
-  user: SupabaseUser | null;
-  userProfile: User | null;
+  user: AuthUser | null;
   isLoading: boolean;
-  setUser: (user: SupabaseUser | null) => void;
-  setUserProfile: (profile: User | null) => void;
+  setUser: (user: AuthUser | null) => void;
   setLoading: (loading: boolean) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  userProfile: null,
   isLoading: true,
   setUser: (user) => set({ user }),
-  setUserProfile: (userProfile) => set({ userProfile }),
   setLoading: (isLoading) => set({ isLoading }),
-  logout: () => set({ user: null, userProfile: null }),
+  logout: () => set({ user: null }),
 }));
