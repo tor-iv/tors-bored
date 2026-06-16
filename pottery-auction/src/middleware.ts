@@ -11,17 +11,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(browseUrl, { status: 301 });
   }
 
+  // Default to the "receipt" aesthetic, but honor a valid theme cookie so the
+  // Y2K / Win98 theme stays available as a fallback via the theme toggle.
   const cookieTheme = request.cookies.get('theme')?.value as Theme | undefined;
   const isValidTheme = cookieTheme && (VALID_THEMES as readonly string[]).includes(cookieTheme);
 
-  if (isValidTheme) {
-    return NextResponse.next();
-  }
+  const theme: Theme = isValidTheme ? cookieTheme : 'receipt';
 
-  // First visit or invalid cookie: pick random theme
-  const theme = VALID_THEMES[Math.floor(Math.random() * VALID_THEMES.length)];
-
-  // Forward the chosen theme to the RSC layout via a request header
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-theme', theme);
 
@@ -29,12 +25,13 @@ export function middleware(request: NextRequest) {
     request: { headers: requestHeaders },
   });
 
-  // Set the cookie on the response so subsequent requests have it
-  response.cookies.set('theme', theme, {
-    path: '/',
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: 'lax',
-  });
+  if (!isValidTheme) {
+    response.cookies.set('theme', theme, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: 'lax',
+    });
+  }
 
   return response;
 }

@@ -36,11 +36,19 @@ export default function Header() {
         <header
           className="sticky top-0 z-40"
           style={{
-            backgroundColor: 'var(--bg)',
+            backgroundColor: 'var(--bg-well)',
             fontFamily: 'var(--font-display, "IBM Plex Mono", monospace)',
           }}
         >
-          <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 16px' }}>
+          <div
+            style={{
+              maxWidth: 560,
+              margin: '0 auto',
+              padding: '0 16px 4px',
+              backgroundColor: 'var(--bg)',
+              boxShadow: '0 8px 20px rgba(0,0,0,0.35)',
+            }}
+          >
             {/* Store name */}
             <div
               className="py-2 text-center text-[1.125rem] font-bold uppercase tracking-wide"

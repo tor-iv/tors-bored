@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, IBM_Plex_Mono, Special_Elite, Permanent_Marker } from "next/font/google";
+import { Inter, IBM_Plex_Mono, Special_Elite, Permanent_Marker, VT323 } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import "./globals.css";
 import Header from "@/components/layout/Header";
@@ -23,6 +23,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 const specialElite = Special_Elite({ variable: '--font-typewriter', subsets: ['latin'], weight: '400' });
 const permanentMarker = Permanent_Marker({ variable: '--font-handwriting', subsets: ['latin'], weight: '400' });
+const vt323 = VT323({ variable: '--font-vt323', subsets: ['latin'], weight: '400' });
 
 export const metadata: Metadata = {
   title: "Tor's Pottery - Handmade Ceramics",
@@ -47,7 +48,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" data-theme={theme}>
-      <body className={`${inter.variable} ${ibmPlexMono.variable} ${specialElite.variable} ${permanentMarker.variable} antialiased`}>
+      <body className={`${inter.variable} ${ibmPlexMono.variable} ${specialElite.variable} ${permanentMarker.variable} ${vt323.variable} antialiased`}>
         <QueryProvider>
           <ThemeProvider initialTheme={theme}>
             <Header />
