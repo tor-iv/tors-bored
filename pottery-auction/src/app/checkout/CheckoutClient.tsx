@@ -3,11 +3,9 @@
 import { useState, useEffect } from 'react';
 import { Elements, PaymentElement, AddressElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import type { Appearance } from '@stripe/stripe-js';
-import { useRouter } from 'next/navigation';
 import { getStripe } from '@/lib/stripe/client';
 import type { OrderTotals } from '@/lib/stripe/pricing';
 import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
-import Button from '@/components/ui/Button';
 
 // Hardcoded hex values — Stripe Elements does not accept CSS var() strings
 const receiptAppearance: Appearance = {
@@ -60,43 +58,91 @@ function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+// ─── Leader-dot line row ──────────────────────────────────────────────────────
+
+function LineRow({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: React.ReactNode;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className="receipt-line-item"
+      style={{
+        fontFamily: 'var(--font-display)',
+        fontSize: accent ? '0.875rem' : '0.75rem',
+        color: 'var(--ink-muted)',
+      }}
+    >
+      <span className="uppercase whitespace-nowrap">{label}</span>
+      <span className="leader" aria-hidden="true" />
+      <span style={{ color: 'var(--ink)', fontFamily: accent ? 'var(--font-thermal)' : undefined, fontSize: accent ? '1rem' : undefined }}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+// ─── Order summary block ──────────────────────────────────────────────────────
+
 function OrderSummary({ item, amounts }: { item: CheckoutItemData; amounts: OrderTotals }) {
   return (
-    <div className="py-2 space-y-1 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)' }}>
-      <div className="flex justify-between">
-        <span className="uppercase" style={{ color: 'var(--ink-muted)' }}>ITEM</span>
-        <span style={{ color: 'var(--ink)' }}>{item.title}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="uppercase" style={{ color: 'var(--ink-muted)' }}>SKU</span>
-        <span style={{ color: 'var(--ink)' }}>{item.sku}</span>
-      </div>
+    <div className="py-2 space-y-1">
+      <LineRow label="ITEM" value={item.title} />
+      <LineRow label="SKU" value={item.sku} />
       <ReceiptDivider variant="minor" />
-      <div className="flex justify-between">
-        <span className="uppercase" style={{ color: 'var(--ink-muted)' }}>SUBTOTAL</span>
-        <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(amounts.subtotalCents)}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="uppercase" style={{ color: 'var(--ink-muted)' }}>SHIPPING</span>
-        <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(amounts.shippingCents)}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="uppercase" style={{ color: 'var(--ink-muted)' }}>TAX (NY 8.875%)</span>
-        <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(amounts.taxCents)}</span>
-      </div>
+      <LineRow
+        label="SUBTOTAL"
+        value={
+          <span className="receipt-price">{formatCents(amounts.subtotalCents)}</span>
+        }
+      />
+      <LineRow
+        label="SHIPPING"
+        value={
+          <span className="receipt-price">{formatCents(amounts.shippingCents)}</span>
+        }
+      />
+      <LineRow
+        label="TAX (NY 8.875%)"
+        value={
+          <span className="receipt-price">{formatCents(amounts.taxCents)}</span>
+        }
+      />
       <ReceiptDivider variant="minor" />
-      <div className="flex justify-between text-[1rem] font-bold">
-        <span className="uppercase" style={{ color: 'var(--ink)' }}>TOTAL</span>
-        <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(amounts.totalCents)}</span>
+      {/* Big VT323 TOTAL */}
+      <div
+        className="receipt-line-item"
+        style={{ fontFamily: 'var(--font-display)', fontSize: '0.875rem', color: 'var(--ink-muted)' }}
+      >
+        <span className="uppercase whitespace-nowrap font-bold" style={{ color: 'var(--ink)' }}>TOTAL</span>
+        <span className="leader" aria-hidden="true" />
+        <span
+          className="receipt-price"
+          style={{
+            fontFamily: 'var(--font-thermal)',
+            fontSize: '2rem',
+            lineHeight: 1,
+            color: 'var(--ink)',
+            letterSpacing: '0.05em',
+          }}
+        >
+          {formatCents(amounts.totalCents)}
+        </span>
       </div>
     </div>
   );
 }
 
+// ─── Stripe payment form ──────────────────────────────────────────────────────
+
 function CheckoutForm({ orderId }: { orderId: string }) {
   const stripe = useStripe();
   const elements = useElements();
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -123,44 +169,86 @@ function CheckoutForm({ orderId }: { orderId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Shipping address */}
       <div>
-        <div className="py-1 text-[0.875rem] font-bold uppercase mb-2" style={{ color: 'var(--ink)' }}>
-          SHIPPING ADDRESS
+        <div
+          className="py-1 text-[0.625rem] uppercase tracking-widest mb-2"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+        >
+          SHIP TO
         </div>
-        <AddressElement options={{ mode: 'shipping', defaultValues: { address: { country: 'US' } } }} />
+        <ReceiptDivider variant="minor" />
+        <div className="py-2">
+          <AddressElement options={{ mode: 'shipping', defaultValues: { address: { country: 'US' } } }} />
+        </div>
       </div>
 
       <ReceiptDivider variant="major" />
 
+      {/* Payment */}
       <div>
-        <div className="py-1 text-[0.875rem] font-bold uppercase mb-2" style={{ color: 'var(--ink)' }}>
-          PAYMENT
+        <div
+          className="py-1 text-[0.625rem] uppercase tracking-widest mb-2"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+        >
+          PAYMENT METHOD
         </div>
-        <PaymentElement />
+        <ReceiptDivider variant="minor" />
+        <div className="py-2">
+          <PaymentElement />
+        </div>
       </div>
 
       {errorMessage && (
-        <div className="py-2 text-[0.875rem] uppercase" style={{ color: 'var(--error)', fontFamily: 'var(--font-display)' }}>
-          ERROR: {errorMessage}
+        <div className="py-2 text-[0.75rem] uppercase" style={{ color: 'var(--error)', fontFamily: 'var(--font-display)' }}>
+          *** ERROR: {errorMessage} ***
         </div>
       )}
 
       <ReceiptDivider variant="major" />
-      <Button
-        type="submit"
-        intent="primary"
-        disabled={!stripe || !elements || isSubmitting}
-        isLoading={isSubmitting}
-        className="w-full"
+
+      {/* Stamped PAY NOW button */}
+      <div className="flex justify-center py-2">
+        <button
+          type="submit"
+          disabled={!stripe || !elements || isSubmitting}
+          className="receipt-stamp uppercase tracking-widest px-8 py-2.5 text-[0.9rem] border border-current"
+          style={{
+            fontFamily: 'var(--font-stamp)',
+            color: isSubmitting ? 'var(--ink-muted)' : 'var(--ink)',
+            transform: 'rotate(-0.5deg)',
+            boxShadow: isSubmitting ? '1px 1px 0 var(--ink-muted)' : '3px 3px 0 var(--ink)',
+            transition: 'box-shadow 0.1s, transform 0.1s',
+            cursor: isSubmitting ? 'wait' : 'pointer',
+            opacity: (!stripe || !elements || isSubmitting) ? 0.6 : 1,
+          }}
+          onMouseEnter={(e) => {
+            if (!isSubmitting) {
+              e.currentTarget.style.boxShadow = '1px 1px 0 var(--ink)';
+              e.currentTarget.style.transform = 'rotate(-0.5deg) translate(2px, 2px)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isSubmitting) {
+              e.currentTarget.style.boxShadow = '3px 3px 0 var(--ink)';
+              e.currentTarget.style.transform = 'rotate(-0.5deg)';
+            }
+          }}
+        >
+          {isSubmitting ? '[ PROCESSING... ]' : '[ PAY NOW ]'}
+        </button>
+      </div>
+      <div
+        className="text-[0.5rem] text-center uppercase tracking-widest"
+        style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
       >
-        {isSubmitting ? '[ PROCESSING... ]' : '[ COMPLETE PURCHASE ]'}
-      </Button>
-      <div className="text-[0.6875rem] text-center uppercase pt-1" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}>
-        PAYMENTS SECURED BY STRIPE
+        ● PAYMENTS SECURED BY STRIPE ●
       </div>
     </form>
   );
 }
+
+// ─── Main export ──────────────────────────────────────────────────────────────
 
 export default function CheckoutClient({ item }: CheckoutClientProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -196,20 +284,24 @@ export default function CheckoutClient({ item }: CheckoutClientProps) {
 
   if (isLoading) {
     return (
-      <div className="py-8 text-center text-[0.875rem] uppercase" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}>
-        PREPARING CHECKOUT...
+      <div
+        className="py-8 text-center text-[0.75rem] uppercase tracking-widest"
+        style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
+      >
+        <span className="receipt-loader-dots">PREPARING INVOICE</span>
+        <span className="dot-matrix-cursor">_</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="py-4 space-y-3 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)' }}>
+      <div className="py-4 space-y-3" style={{ fontFamily: 'var(--font-display)' }}>
         <ReceiptDivider variant="major" />
-        <div className="uppercase font-bold" style={{ color: 'var(--error)' }}>
+        <div className="text-[0.875rem] uppercase font-bold text-center" style={{ color: 'var(--error)' }}>
           CHECKOUT UNAVAILABLE
         </div>
-        <div className="uppercase text-[0.6875rem]" style={{ color: 'var(--ink-muted)' }}>{error}</div>
+        <div className="text-[0.6875rem] uppercase text-center" style={{ color: 'var(--ink-muted)' }}>{error}</div>
         <ReceiptDivider variant="major" />
       </div>
     );
@@ -220,16 +312,28 @@ export default function CheckoutClient({ item }: CheckoutClientProps) {
   return (
     <>
       <ReceiptDivider variant="major" />
-      <div className="py-1 text-[0.875rem] font-bold uppercase" style={{ color: 'var(--ink)' }}>
+
+      {/* ── ORDER SUMMARY ── */}
+      <div
+        className="text-[0.625rem] uppercase tracking-widest pb-1"
+        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+      >
         ORDER SUMMARY
       </div>
-      <ReceiptDivider variant="major" />
+      <ReceiptDivider variant="minor" />
       <OrderSummary item={item} amounts={amounts} />
+
       <ReceiptDivider variant="major" />
-      <div className="py-1 text-[0.875rem] font-bold uppercase" style={{ color: 'var(--ink)' }}>
-        CHECKOUT
+
+      {/* ── CHECKOUT FORM ── */}
+      <div
+        className="text-[0.625rem] uppercase tracking-widest pb-1"
+        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+      >
+        INVOICE · PAYMENT DUE NOW
       </div>
-      <ReceiptDivider variant="major" />
+      <ReceiptDivider variant="minor" />
+
       <div className="py-3">
         <Elements
           stripe={getStripe()}

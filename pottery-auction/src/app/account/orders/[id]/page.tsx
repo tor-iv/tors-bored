@@ -4,15 +4,12 @@ import { cookies } from 'next/headers';
 import { getCurrentUser } from '@/lib/auth';
 import { db } from '@/db';
 import { orders, order_items, items } from '@/db/schema';
-import { eq, and, inArray } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { formatReceiptTimestamp, formatReceiptDate } from '@/lib/format/receipt-timestamp';
 import Y2KOrderDetail from '@/components/theme/y2k/Y2KOrderDetail';
-import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
-import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
-import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
 import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
 import PolaroidPhoto from '@/components/theme/receipt/PolaroidPhoto';
-import Badge from '@/components/ui/Badge';
+import Barcode from '@/components/theme/receipt/Barcode';
 import Button from '@/components/ui/Button';
 
 interface Props {
@@ -24,13 +21,13 @@ function formatCents(cents: number | null | undefined): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-function getStatusBadgeIntent(status: string): 'current' | 'outbid' | 'error' | 'won' {
+function getStatusColor(status: string): string {
   switch (status) {
-    case 'paid': return 'current';
-    case 'shipped': return 'won';
-    case 'delivered': return 'won';
-    case 'cancelled': return 'error';
-    default: return 'outbid';
+    case 'paid':      return '#335a7a';
+    case 'shipped':   return '#2e7d32';
+    case 'delivered': return '#2e7d32';
+    case 'cancelled': return 'var(--error)';
+    default:          return 'var(--ink-muted)';
   }
 }
 
@@ -90,163 +87,362 @@ export default async function OrderDetailPage({ params }: Props) {
     return <Y2KOrderDetail order={order} />;
   }
 
+  const dateStr = now.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
+  const statusColor = getStatusColor(order.status);
+  const statusLabel = order.status.toUpperCase();
+
   return (
-    <ReceiptPage>
-      <ReceiptHeader
-        ticket={`ORDER-${id.slice(0, 8).toUpperCase()}`}
-        date={now}
-      />
+    <div style={{ backgroundColor: 'var(--bg-well)', minHeight: '100vh', padding: '32px 16px 80px' }}>
+      <div
+        className="receipt-strip-paper"
+        style={{ maxWidth: 520, margin: '0 auto', position: 'relative' }}
+      >
+        {/* Top-right stamp: order status */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: 62,
+            right: 16,
+            zIndex: 3,
+            fontFamily: 'var(--font-stamp)',
+            color: statusColor,
+            border: `2.5px solid ${statusColor}`,
+            borderRadius: 3,
+            padding: '3px 10px 2px',
+            fontSize: '0.95rem',
+            fontWeight: 700,
+            letterSpacing: '0.14em',
+            lineHeight: 1.1,
+            textAlign: 'center',
+            mixBlendMode: 'multiply',
+            pointerEvents: 'none',
+            opacity: 0.85,
+          }}
+        >
+          {statusLabel}
+          <div style={{ fontSize: '0.4rem', letterSpacing: '0.22em', marginTop: 2 }}>● ORDER STATUS ●</div>
+        </div>
 
-      {/* Item photo */}
-      {firstItem?.images?.[0] && (
-        <div className="py-4">
-          <PolaroidPhoto
-            src={firstItem.images[0]}
-            alt={firstItem.title}
-            sku={firstItem.sku ?? undefined}
-            caption={firstItem.title}
-          />
-        </div>
-      )}
-
-      {/* Order summary */}
-      <ReceiptDivider variant="major" />
-      <div className="py-1 text-[0.875rem] font-bold uppercase" style={{ color: 'var(--ink)' }}>
-        ORDER SUMMARY
-      </div>
-      <ReceiptDivider variant="major" />
-      <div className="py-2 space-y-0.5 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}>
-        <div className="flex gap-3">
-          <span className="text-[0.6875rem] w-28 shrink-0" style={{ color: 'var(--ink-muted)' }}>ORDER ID</span>
-          <span className="font-semibold">{id.slice(0, 8).toUpperCase()}</span>
-        </div>
-        <div className="flex gap-3">
-          <span className="text-[0.6875rem] w-28 shrink-0" style={{ color: 'var(--ink-muted)' }}>DATE</span>
-          <span>{formatReceiptTimestamp(order.created_at)}</span>
-        </div>
-        <div className="flex gap-3">
-          <span className="text-[0.6875rem] w-28 shrink-0" style={{ color: 'var(--ink-muted)' }}>STATUS</span>
-          <Badge intent={getStatusBadgeIntent(order.status)}>{order.status.toUpperCase()}</Badge>
-        </div>
-      </div>
-
-      {/* Items */}
-      <ReceiptDivider variant="major" />
-      <div className="py-1 text-[0.875rem] font-bold uppercase" style={{ color: 'var(--ink)' }}>
-        ITEMS
-      </div>
-      <ReceiptDivider variant="major" />
-      <div className="py-2 space-y-2 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)' }}>
-        {orderItemsMapped.map((oi) => {
-          const item = oi.item;
-          return (
-            <div key={oi.id}>
-              <div className="flex justify-between items-baseline">
-                <Link href={`/piece/${item?.sku}`} className="font-semibold hover:underline" style={{ color: 'var(--ink)' }}>
-                  {item?.title ?? 'ITEM'}
-                </Link>
-                <span className="receipt-price font-bold" style={{ color: 'var(--ink)' }}>{formatCents(oi.price_cents)}</span>
-              </div>
-              <div className="text-[0.6875rem] uppercase" style={{ color: 'var(--ink-muted)' }}>
-                {item?.sku} · {oi.source === 'auction_win' ? 'AUCTION WIN' : 'BUY NOW'}
-              </div>
+        {/* Top-left circular date stamp */}
+        <div
+          aria-hidden
+          className="receipt-date-stamp"
+          style={{
+            position: 'absolute',
+            top: 58,
+            left: 14,
+            zIndex: 3,
+            pointerEvents: 'none',
+            opacity: 0.52,
+            transform: 'rotate(8deg)',
+          }}
+        >
+          <div style={{ fontSize: '0.38rem', letterSpacing: '0.1em', lineHeight: 1.4 }}>
+            <div>RECEIVED</div>
+            <div style={{ fontSize: '0.52rem', letterSpacing: '0.06em', fontWeight: 'bold' }}>
+              {dateStr}
             </div>
-          );
-        })}
-      </div>
+            <div>STUDIO</div>
+          </div>
+        </div>
 
-      {/* Pricing breakdown */}
-      <ReceiptDivider variant="major" />
-      <div className="py-2 space-y-1 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)' }}>
-        <div className="flex justify-between">
-          <span className="uppercase" style={{ color: 'var(--ink-muted)' }}>SUBTOTAL</span>
-          <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(order.subtotal_cents)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="uppercase" style={{ color: 'var(--ink-muted)' }}>SHIPPING</span>
-          <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(order.shipping_cents)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="uppercase" style={{ color: 'var(--ink-muted)' }}>TAX (NY 8.875%)</span>
-          <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(order.tax_cents)}</span>
-        </div>
-        <ReceiptDivider variant="minor" />
-        <div className="flex justify-between text-[1.125rem] font-bold">
-          <span className="uppercase" style={{ color: 'var(--ink)' }}>TOTAL</span>
-          <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(order.total_cents)}</span>
-        </div>
-      </div>
+        <div className="receipt-edge-top" />
+        <div className="receipt-strip-content py-6">
 
-      {/* Shipping address */}
-      {order.shipping_name && (
-        <>
+          {/* ── HEADER BLOCK ── */}
+          <div className="text-center pb-3" style={{ lineHeight: 1.45 }}>
+            <div
+              className="text-[0.625rem] uppercase tracking-[0.3em]"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+            >
+              TOR&apos;S BORED POTTERY CO.
+            </div>
+            <div
+              className="text-[0.5rem] uppercase tracking-widest"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+            >
+              ★ EST. BROOKLYN, NY ★
+            </div>
+            <div
+              className="text-[0.5rem] uppercase tracking-widest mt-0.5"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+            >
+              CASHIER: TOR &nbsp;·&nbsp; REG #04 &nbsp;·&nbsp; MEMBER: ✓
+            </div>
+
+            <ReceiptDivider variant="decorative" />
+
+            <div
+              className="receipt-stamp text-[1.15rem] uppercase tracking-wide py-1"
+              style={{ fontFamily: 'var(--font-stamp)', color: 'var(--ink)' }}
+            >
+              ★ ORDER RECORD ★
+            </div>
+            <div
+              className="text-[0.5rem] uppercase tracking-[0.2em]"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+            >
+              ★★★ HANDMADE POTTERY ★★★
+            </div>
+
+            <ReceiptDivider variant="decorative" />
+
+            <div
+              className="text-[0.6875rem] mt-1"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+            >
+              ORDER: {id.slice(0, 8).toUpperCase()}
+            </div>
+            <div
+              className="text-[0.6875rem]"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+            >
+              DATE: {formatReceiptDate(order.created_at)}
+            </div>
+          </div>
+
+          {/* Item photo */}
+          {firstItem?.images?.[0] && (
+            <div className="py-4">
+              <PolaroidPhoto
+                src={firstItem.images[0]}
+                alt={firstItem.title}
+                sku={firstItem.sku ?? undefined}
+                caption={firstItem.title}
+              />
+            </div>
+          )}
+
+          {/* Order summary — leader-dot rows */}
           <ReceiptDivider variant="major" />
-          <div className="py-1 text-[0.875rem] font-bold uppercase" style={{ color: 'var(--ink)' }}>
-            SHIP TO
+          <div
+            className="text-[0.625rem] uppercase tracking-widest pb-1"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            ORDER SUMMARY
+          </div>
+          <ReceiptDivider variant="minor" />
+          <div className="py-2 space-y-1">
+            <div
+              className="receipt-line-item"
+              style={{ fontFamily: 'var(--font-display)', fontSize: '0.75rem', color: 'var(--ink-muted)' }}
+            >
+              <span className="uppercase whitespace-nowrap">ORDER ID</span>
+              <span className="leader" aria-hidden="true" />
+              <span style={{ color: 'var(--ink)' }}>{id.slice(0, 8).toUpperCase()}</span>
+            </div>
+            <div
+              className="receipt-line-item"
+              style={{ fontFamily: 'var(--font-display)', fontSize: '0.75rem', color: 'var(--ink-muted)' }}
+            >
+              <span className="uppercase whitespace-nowrap">DATE</span>
+              <span className="leader" aria-hidden="true" />
+              <span style={{ color: 'var(--ink)' }}>{formatReceiptTimestamp(order.created_at)}</span>
+            </div>
+            <div
+              className="receipt-line-item"
+              style={{ fontFamily: 'var(--font-display)', fontSize: '0.75rem', color: 'var(--ink-muted)' }}
+            >
+              <span className="uppercase whitespace-nowrap">STATUS</span>
+              <span className="leader" aria-hidden="true" />
+              <span
+                style={{
+                  fontFamily: 'var(--font-stamp)',
+                  color: statusColor,
+                  border: `1.5px solid ${statusColor}`,
+                  borderRadius: 2,
+                  padding: '0px 6px',
+                  fontSize: '0.7rem',
+                  letterSpacing: '0.1em',
+                  mixBlendMode: 'multiply',
+                  opacity: 0.85,
+                }}
+              >
+                {statusLabel}
+              </span>
+            </div>
+          </div>
+
+          {/* Items */}
+          <ReceiptDivider variant="major" />
+          <div
+            className="text-[0.625rem] uppercase tracking-widest pb-1"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            ITEMS
+          </div>
+          <ReceiptDivider variant="minor" />
+          <div className="py-2 space-y-2" style={{ fontFamily: 'var(--font-display)' }}>
+            {orderItemsMapped.map((oi) => {
+              const item = oi.item;
+              return (
+                <div key={oi.id}>
+                  <div
+                    className="receipt-line-item"
+                    style={{ fontSize: '0.875rem', color: 'var(--ink-muted)' }}
+                  >
+                    <Link href={`/piece/${item?.sku}`} className="font-semibold hover:underline" style={{ color: 'var(--ink)' }}>
+                      {item?.title ?? 'ITEM'}
+                    </Link>
+                    <span className="leader" aria-hidden="true" />
+                    <span
+                      className="receipt-price"
+                      style={{ color: 'var(--ink)', whiteSpace: 'nowrap', fontFamily: 'var(--font-thermal)', fontSize: '1rem' }}
+                    >
+                      {formatCents(oi.price_cents)}
+                    </span>
+                  </div>
+                  <div className="text-[0.6875rem] uppercase" style={{ color: 'var(--ink-muted)' }}>
+                    {item?.sku} · {oi.source === 'auction_win' ? 'AUCTION WIN' : 'BUY NOW'}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Pricing breakdown — leader-dot rows */}
+          <ReceiptDivider variant="major" />
+          <div className="py-2 space-y-1" style={{ fontFamily: 'var(--font-display)' }}>
+            <div
+              className="receipt-line-item"
+              style={{ fontSize: '0.75rem', color: 'var(--ink-muted)' }}
+            >
+              <span className="uppercase">SUBTOTAL</span>
+              <span className="leader" aria-hidden="true" />
+              <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(order.subtotal_cents)}</span>
+            </div>
+            <div
+              className="receipt-line-item"
+              style={{ fontSize: '0.75rem', color: 'var(--ink-muted)' }}
+            >
+              <span className="uppercase">SHIPPING</span>
+              <span className="leader" aria-hidden="true" />
+              <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(order.shipping_cents)}</span>
+            </div>
+            <div
+              className="receipt-line-item"
+              style={{ fontSize: '0.75rem', color: 'var(--ink-muted)' }}
+            >
+              <span className="uppercase">TAX (NY 8.875%)</span>
+              <span className="leader" aria-hidden="true" />
+              <span className="receipt-price" style={{ color: 'var(--ink)' }}>{formatCents(order.tax_cents)}</span>
+            </div>
+            <ReceiptDivider variant="minor" />
+            {/* Big VT323 TOTAL */}
+            <div
+              className="receipt-line-item"
+              style={{ fontSize: '0.875rem', color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
+            >
+              <span className="uppercase font-bold" style={{ color: 'var(--ink)' }}>TOTAL</span>
+              <span className="leader" aria-hidden="true" />
+              <span
+                className="receipt-price"
+                style={{
+                  fontFamily: 'var(--font-thermal)',
+                  fontSize: '2rem',
+                  lineHeight: 1,
+                  color: 'var(--ink)',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {formatCents(order.total_cents)}
+              </span>
+            </div>
+          </div>
+
+          {/* Shipping address */}
+          {order.shipping_name && (
+            <>
+              <ReceiptDivider variant="major" />
+              <div
+                className="text-[0.625rem] uppercase tracking-widest pb-1"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+              >
+                SHIP TO
+              </div>
+              <ReceiptDivider variant="minor" />
+              <div
+                className="py-2 space-y-0.5 text-[0.875rem]"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}
+              >
+                <div>{order.shipping_name}</div>
+                <div>{order.shipping_line1}</div>
+                {order.shipping_line2 && <div>{order.shipping_line2}</div>}
+                <div>{order.shipping_city}, {order.shipping_state} {order.shipping_postal_code}</div>
+                <div className="uppercase">{order.shipping_country}</div>
+              </div>
+            </>
+          )}
+
+          {/* Shipping status message */}
+          <ReceiptDivider variant="major" />
+          <div className="py-2 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}>
+            {order.status === 'paid' && (
+              <div>
+                <div className="font-bold uppercase" style={{ color: 'var(--ink)' }}>PROCESSING YOUR ORDER</div>
+                <div className="mt-0.5">We&apos;ll email you when your piece ships.</div>
+              </div>
+            )}
+            {order.status === 'shipped' && (
+              <div>
+                <div className="font-bold uppercase" style={{ color: 'var(--ink)' }}>YOUR PIECE IS ON ITS WAY</div>
+                <div className="mt-0.5">Tracking information will be sent to your email.</div>
+              </div>
+            )}
+            {order.status === 'delivered' && (
+              <div>
+                <div className="font-bold uppercase" style={{ color: 'var(--ink)' }}>DELIVERED</div>
+                <div className="mt-0.5">Enjoy your handmade piece!</div>
+              </div>
+            )}
+            {order.status === 'cancelled' && (
+              <div>
+                <div className="font-bold uppercase" style={{ color: 'var(--error)' }}>ORDER CANCELLED</div>
+                <div className="mt-0.5">If you have questions, please reach out.</div>
+              </div>
+            )}
+            {order.status === 'pending' && (
+              <div>
+                <div className="font-bold uppercase">PAYMENT PENDING</div>
+                <div className="mt-0.5">Your payment is being processed.</div>
+              </div>
+            )}
+          </div>
+
+          {/* Receipt tear */}
+          <div className="receipt-tear" />
+
+          <div
+            className="py-2 text-center text-[0.625rem] uppercase tracking-widest"
+            style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
+          >
+            ★ KEEP THIS RECEIPT ★
+          </div>
+
+          <ReceiptDivider variant="major" />
+          <Barcode seed={order.id} className="mx-auto mt-2" />
+
+          {/* Actions */}
+          <div className="py-3 flex gap-4 flex-wrap items-center">
+            <Link href="/account">
+              <Button intent="secondary">{'< MY ACCOUNT >'}</Button>
+            </Link>
+            <Link href="/browse">
+              <Button intent="secondary">{'[ BROWSE MORE ]'}</Button>
+            </Link>
           </div>
           <ReceiptDivider variant="major" />
-          <div className="py-2 space-y-0.5 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}>
-            <div>{order.shipping_name}</div>
-            <div>{order.shipping_line1}</div>
-            {order.shipping_line2 && <div>{order.shipping_line2}</div>}
-            <div>{order.shipping_city}, {order.shipping_state} {order.shipping_postal_code}</div>
-            <div className="uppercase">{order.shipping_country}</div>
-          </div>
-        </>
-      )}
 
-      {/* Shipping status */}
-      <ReceiptDivider variant="major" />
-      <div className="py-2 text-[0.875rem]" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}>
-        {order.status === 'paid' && (
-          <div>
-            <div className="font-bold uppercase" style={{ color: 'var(--ink)' }}>PROCESSING YOUR ORDER</div>
-            <div className="mt-0.5">We&apos;ll email you when your piece ships.</div>
+          <div
+            className="text-[0.45rem] text-center uppercase tracking-widest pb-2"
+            style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
+          >
+            © TOR&apos;S BORED POTTERY CO. · BROOKLYN, NY
           </div>
-        )}
-        {order.status === 'shipped' && (
-          <div>
-            <div className="font-bold uppercase" style={{ color: 'var(--ink)' }}>YOUR PIECE IS ON ITS WAY</div>
-            <div className="mt-0.5">Tracking information will be sent to your email.</div>
-          </div>
-        )}
-        {order.status === 'delivered' && (
-          <div>
-            <div className="font-bold uppercase" style={{ color: 'var(--ink)' }}>DELIVERED</div>
-            <div className="mt-0.5">Enjoy your handmade piece!</div>
-          </div>
-        )}
-        {order.status === 'cancelled' && (
-          <div>
-            <div className="font-bold uppercase" style={{ color: 'var(--error)' }}>ORDER CANCELLED</div>
-            <div className="mt-0.5">If you have questions, please reach out.</div>
-          </div>
-        )}
-        {order.status === 'pending' && (
-          <div>
-            <div className="font-bold uppercase">PAYMENT PENDING</div>
-            <div className="mt-0.5">Your payment is being processed.</div>
-          </div>
-        )}
+        </div>
+        <div className="receipt-edge-bottom" />
       </div>
-
-      {/* Actions */}
-      <ReceiptDivider variant="major" />
-      <div className="py-3 flex gap-4 flex-wrap items-center">
-        <Link href="/account">
-          <Button intent="secondary">{'< MY ACCOUNT >'}</Button>
-        </Link>
-        <Link href="/browse">
-          <Button intent="secondary">{'[ BROWSE MORE ]'}</Button>
-        </Link>
-      </div>
-      <ReceiptDivider variant="major" />
-
-      <div className="py-2 text-[0.6875rem] text-center uppercase" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}>
-        KEEP YOUR RECEIPT
-      </div>
-
-      <ReceiptFooter />
-    </ReceiptPage>
+    </div>
   );
 }

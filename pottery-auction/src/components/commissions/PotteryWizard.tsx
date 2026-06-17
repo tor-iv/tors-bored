@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import ShapeSelector from './ShapeSelector';
 import ClaySelector from './ClaySelector';
 import GlazeSelector from './GlazeSelector';
 import SketchStep from './SketchStep';
 import ReviewStep from './ReviewStep';
-import { PotteryWheelDoodle } from '@/components/decorations';
+import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
 
 export interface WizardData {
   shape: string | null;
@@ -26,16 +25,26 @@ interface PotteryWizardProps {
   initialEmail?: string;
 }
 
-const steps = [
-  { id: 'shape', title: 'Choose Shape', subtitle: 'What are we making?' },
-  { id: 'clay', title: 'Pick Clay', subtitle: 'The foundation' },
-  { id: 'glaze', title: 'Select Glaze', subtitle: 'The finishing touch' },
-  { id: 'sketch', title: 'Add Details', subtitle: 'Your vision' },
-  { id: 'review', title: 'Review', subtitle: 'Almost there!' },
+const STEPS = [
+  { id: 'shape',  section: 'A', label: 'SHAPE / FORM',      sublabel: 'WHAT ARE WE MAKING?' },
+  { id: 'clay',   section: 'B', label: 'CLAY BODY',         sublabel: 'THE FOUNDATION' },
+  { id: 'glaze',  section: 'C', label: 'GLAZE FINISH',      sublabel: 'THE FINISHING TOUCH' },
+  { id: 'sketch', section: 'D', label: 'SKETCH + DETAILS',  sublabel: 'YOUR VISION (OPTIONAL)' },
+  { id: 'review', section: 'E', label: 'REVIEW + CONTACT',  sublabel: 'CONFIRM & SUBMIT' },
 ];
+
+// Step slide variants: forward = slide right-to-left, back = left-to-right
+function slideVariants(direction: 1 | -1) {
+  return {
+    initial:  { opacity: 0, x: direction * 40 },
+    animate:  { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 120, damping: 18 } },
+    exit:     { opacity: 0, x: direction * -40, transition: { duration: 0.18 } },
+  };
+}
 
 export default function PotteryWizard({ onComplete, initialName = '', initialEmail = '' }: PotteryWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
   const [wizardData, setWizardData] = useState<WizardData>({
     shape: null,
     clay: null,
@@ -55,221 +64,271 @@ export default function PotteryWizard({ onComplete, initialName = '', initialEma
       case 0: return wizardData.shape !== null;
       case 1: return wizardData.clay !== null;
       case 2: return wizardData.glaze !== null;
-      case 3: return true; // Sketch is optional
-      case 4: return true; // Review step
+      case 3: return true;
+      case 4: return !!(wizardData.name.trim() && wizardData.email.trim());
       default: return false;
     }
   };
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1 && canProceed()) {
+    if (currentStep < STEPS.length - 1 && canProceed()) {
+      setDirection(1);
       setCurrentStep(prev => prev + 1);
     }
   };
 
   const prevStep = () => {
     if (currentStep > 0) {
+      setDirection(-1);
       setCurrentStep(prev => prev - 1);
     }
   };
 
+  const goToStep = (index: number) => {
+    if (index < currentStep) {
+      setDirection(-1);
+      setCurrentStep(index);
+    }
+  };
+
   const handleSubmit = () => {
-    onComplete(wizardData);
+    if (canProceed()) onComplete(wizardData);
   };
 
   const renderStep = () => {
     switch (currentStep) {
-      case 0:
-        return (
-          <ShapeSelector
-            selected={wizardData.shape}
-            onSelect={(shape) => updateData('shape', shape)}
-          />
-        );
-      case 1:
-        return (
-          <ClaySelector
-            selected={wizardData.clay}
-            onSelect={(clay) => updateData('clay', clay)}
-          />
-        );
-      case 2:
-        return (
-          <GlazeSelector
-            selected={wizardData.glaze}
-            onSelect={(glaze) => updateData('glaze', glaze)}
-          />
-        );
-      case 3:
-        return (
-          <SketchStep
-            drawing={wizardData.drawing}
-            description={wizardData.description}
-            onDrawingChange={(drawing) => updateData('drawing', drawing)}
-            onDescriptionChange={(desc) => updateData('description', desc)}
-          />
-        );
-      case 4:
-        return (
-          <ReviewStep
-            data={wizardData}
-            onDataChange={updateData}
-          />
-        );
-      default:
-        return null;
+      case 0: return <ShapeSelector selected={wizardData.shape} onSelect={(s) => updateData('shape', s)} />;
+      case 1: return <ClaySelector  selected={wizardData.clay}  onSelect={(c) => updateData('clay', c)} />;
+      case 2: return <GlazeSelector selected={wizardData.glaze} onSelect={(g) => updateData('glaze', g)} />;
+      case 3: return (
+        <SketchStep
+          drawing={wizardData.drawing}
+          description={wizardData.description}
+          onDrawingChange={(d) => updateData('drawing', d)}
+          onDescriptionChange={(desc) => updateData('description', desc)}
+        />
+      );
+      case 4: return <ReviewStep data={wizardData} onDataChange={updateData} />;
+      default: return null;
     }
   };
 
+  const vars = slideVariants(direction);
+
   return (
-    <div className="max-w-3xl mx-auto">
-      {/* Progress Header */}
-      <div className="mb-8">
-        {/* Step indicators */}
-        <div className="flex items-center justify-between mb-4">
-          {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center">
-              <motion.button
-                onClick={() => index < currentStep && setCurrentStep(index)}
-                disabled={index > currentStep}
-                className={`
-                  w-10 h-10 rounded-full flex items-center justify-center font-medium
-                  transition-all duration-300
-                  ${index === currentStep
-                    ? 'bg-[var(--accent)] text-[var(--bg)] scale-110'
-                    : index < currentStep
-                      ? 'bg-[var(--accent-light)] text-[var(--ink)] cursor-pointer hover:scale-105'
-                      : 'bg-gray-200 text-gray-400'
-                  }
-                `}
-                style={{ fontFamily: 'var(--font-display)' }}
-                whileHover={index < currentStep ? { scale: 1.1 } : {}}
-                whileTap={index < currentStep ? { scale: 0.95 } : {}}
-              >
-                {index + 1}
-              </motion.button>
-              {index < steps.length - 1 && (
-                <div
-                  className={`h-1 w-8 sm:w-16 mx-1 rounded-full transition-colors duration-300
-                    ${index < currentStep ? 'bg-[var(--accent)]' : 'bg-gray-200'}
-                  `}
-                />
-              )}
-            </div>
-          ))}
+    <div>
+      {/* ── DOT-MATRIX PROGRESS INDICATOR ── */}
+      <div className="mb-4">
+        {/* Step tracker row */}
+        <div className="flex items-center gap-0 mb-2" aria-label="Progress">
+          {STEPS.map((step, i) => {
+            const isDone    = i < currentStep;
+            const isCurrent = i === currentStep;
+            return (
+              <div key={step.id} className="flex items-center" style={{ flex: i < STEPS.length - 1 ? 1 : 0 }}>
+                <button
+                  onClick={() => goToStep(i)}
+                  disabled={i > currentStep}
+                  aria-current={isCurrent ? 'step' : undefined}
+                  className="flex flex-col items-center"
+                  style={{
+                    cursor: isDone ? 'pointer' : 'default',
+                    opacity: i > currentStep ? 0.35 : 1,
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    minWidth: 28,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 24,
+                      height: 24,
+                      border: `1.5px solid ${isCurrent ? 'var(--ink)' : isDone ? 'var(--ink-muted)' : 'var(--ink-muted)'}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'var(--font-thermal)',
+                      fontSize: '0.8rem',
+                      color: isCurrent ? 'var(--ink)' : isDone ? 'var(--ink-muted)' : 'var(--ink-muted)',
+                      backgroundColor: isCurrent ? 'var(--paper-highlight, rgba(255,255,255,0.15))' : 'transparent',
+                    }}
+                  >
+                    {isDone ? '✓' : step.section}
+                  </div>
+                </button>
+                {i < STEPS.length - 1 && (
+                  <div
+                    style={{
+                      flex: 1,
+                      height: 1,
+                      borderTop: `1px ${isDone ? 'solid' : 'dashed'} var(--ink-muted)`,
+                      opacity: 0.4,
+                      margin: '0 2px',
+                    }}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Current step title */}
-        <motion.div
-          key={currentStep}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <h2
-            className="text-2xl font-bold"
-            style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)', fontSize: '2rem' }}
+        {/* Section label */}
+        <div className="text-center" style={{ lineHeight: 1.3 }}>
+          <div
+            className="text-[0.5rem] uppercase tracking-widest"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
           >
-            {steps[currentStep].title}
-          </h2>
-          <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
-            {steps[currentStep].subtitle}
-          </p>
-        </motion.div>
+            STEP {currentStep + 1} OF {STEPS.length} &nbsp;·&nbsp; SECTION {STEPS[currentStep].section}
+          </div>
+          <div
+            className="text-[0.875rem] uppercase tracking-wide"
+            style={{ fontFamily: 'var(--font-stamp)', color: 'var(--ink)' }}
+          >
+            {STEPS[currentStep].label}
+          </div>
+          <div
+            className="text-[0.5625rem] uppercase"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            {STEPS[currentStep].sublabel}
+          </div>
+        </div>
       </div>
 
-      {/* Step Content */}
-      <div
-        className="rounded-xl p-6 sm:p-8 mb-6"
-        style={{
-          background: 'linear-gradient(135deg, #FFFFFF 0%, #FAF8F5 100%)',
-          border: '1px solid rgba(224, 120, 86, 0.15)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
-        }}
-      >
-        <AnimatePresence mode="wait">
+      <ReceiptDivider variant="minor" />
+
+      {/* ── STEP CONTENT ── */}
+      <div className="py-4 overflow-hidden">
+        <AnimatePresence mode="wait" initial={false} custom={direction}>
           <motion.div
             key={currentStep}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
+            variants={vars}
+            initial="initial"
+            animate="animate"
+            exit="exit"
           >
             {renderStep()}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between">
-        <motion.button
+      <ReceiptDivider variant="minor" />
+
+      {/* ── NAVIGATION ── */}
+      <div className="flex items-center justify-between pt-3 gap-4">
+        {/* Back button */}
+        <button
           onClick={prevStep}
           disabled={currentStep === 0}
-          className={`
-            flex items-center gap-2 px-4 py-2 rounded-lg font-medium
-            transition-all duration-200
-            ${currentStep === 0
-              ? 'opacity-0 pointer-events-none'
-              : 'hover:bg-gray-100'
-            }
-          `}
-          style={{ color: 'var(--ink)' }}
-          whileHover={{ x: -4 }}
-          whileTap={{ scale: 0.95 }}
+          className="receipt-stamp uppercase tracking-widest px-5 py-2 text-[0.8rem] border border-current"
+          style={{
+            fontFamily: 'var(--font-stamp)',
+            color: currentStep === 0 ? 'var(--ink-muted)' : 'var(--ink)',
+            opacity: currentStep === 0 ? 0.3 : 1,
+            cursor: currentStep === 0 ? 'default' : 'pointer',
+            boxShadow: currentStep === 0 ? 'none' : '2px 2px 0 var(--ink)',
+            transition: 'box-shadow 0.1s, transform 0.1s',
+          }}
+          onMouseEnter={(e) => {
+            if (currentStep === 0) return;
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '1px 1px 0 var(--ink)';
+            (e.currentTarget as HTMLButtonElement).style.transform = 'translate(1px, 1px)';
+          }}
+          onMouseLeave={(e) => {
+            if (currentStep === 0) return;
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '2px 2px 0 var(--ink)';
+            (e.currentTarget as HTMLButtonElement).style.transform = '';
+          }}
         >
-          <ChevronLeft size={20} />
-          Back
-        </motion.button>
+          ← BACK
+        </button>
 
-        {/* Pottery wheel animation in center */}
-        <div className="hidden sm:block">
-          <PotteryWheelDoodle
-            className="w-12 h-12 opacity-20"
-            color="var(--ink)"
-            animate={true}
-          />
+        {/* Step progress (center) */}
+        <div
+          className="text-[0.5625rem] uppercase text-center"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)', letterSpacing: '0.1em' }}
+        >
+          {Array.from({ length: STEPS.length }, (_, i) => (
+            <span key={i} style={{ color: i <= currentStep ? 'var(--ink)' : undefined }}>
+              {i <= currentStep ? '█' : '░'}
+            </span>
+          ))}
         </div>
 
-        {currentStep === steps.length - 1 ? (
-          <motion.button
+        {/* Next / Submit button */}
+        {currentStep === STEPS.length - 1 ? (
+          <button
             onClick={handleSubmit}
-            className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium"
+            disabled={!canProceed()}
+            className="receipt-stamp uppercase tracking-widest px-5 py-2 text-[0.8rem] border border-current"
             style={{
-              backgroundColor: 'var(--accent)',
-              color: 'var(--bg)',
-              boxShadow: '0 4px 0 var(--accent-hover)'
+              fontFamily: 'var(--font-stamp)',
+              color: canProceed() ? 'var(--ink)' : 'var(--ink-muted)',
+              opacity: canProceed() ? 1 : 0.45,
+              cursor: canProceed() ? 'pointer' : 'default',
+              boxShadow: canProceed() ? '2px 2px 0 var(--ink)' : 'none',
+              transition: 'box-shadow 0.1s, transform 0.1s',
             }}
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98, y: 2 }}
+            onMouseEnter={(e) => {
+              if (!canProceed()) return;
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '1px 1px 0 var(--ink)';
+              (e.currentTarget as HTMLButtonElement).style.transform = 'translate(1px, 1px)';
+            }}
+            onMouseLeave={(e) => {
+              if (!canProceed()) return;
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '2px 2px 0 var(--ink)';
+              (e.currentTarget as HTMLButtonElement).style.transform = '';
+            }}
           >
-            <Sparkles size={20} />
-            Submit My Dream Pot
-          </motion.button>
+            [ SUBMIT WORK ORDER ]
+          </button>
         ) : (
-          <motion.button
+          <button
             onClick={nextStep}
             disabled={!canProceed()}
-            className={`
-              flex items-center gap-2 px-6 py-3 rounded-lg font-medium
-              transition-all duration-200
-              ${canProceed()
-                ? ''
-                : 'opacity-50 cursor-not-allowed'
-              }
-            `}
+            className="receipt-stamp uppercase tracking-widest px-5 py-2 text-[0.8rem] border border-current"
             style={{
-              backgroundColor: canProceed() ? 'var(--accent)' : 'gray',
-              color: 'var(--bg)',
-              boxShadow: canProceed() ? '0 4px 0 var(--accent-hover)' : 'none'
+              fontFamily: 'var(--font-stamp)',
+              color: canProceed() ? 'var(--ink)' : 'var(--ink-muted)',
+              opacity: canProceed() ? 1 : 0.45,
+              cursor: canProceed() ? 'pointer' : 'default',
+              boxShadow: canProceed() ? '2px 2px 0 var(--ink)' : 'none',
+              transition: 'box-shadow 0.1s, transform 0.1s',
             }}
-            whileHover={canProceed() ? { scale: 1.02, y: -2 } : {}}
-            whileTap={canProceed() ? { scale: 0.98, y: 2 } : {}}
+            onMouseEnter={(e) => {
+              if (!canProceed()) return;
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '1px 1px 0 var(--ink)';
+              (e.currentTarget as HTMLButtonElement).style.transform = 'translate(1px, 1px)';
+            }}
+            onMouseLeave={(e) => {
+              if (!canProceed()) return;
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '2px 2px 0 var(--ink)';
+              (e.currentTarget as HTMLButtonElement).style.transform = '';
+            }}
           >
-            Next
-            <ChevronRight size={20} />
-          </motion.button>
+            NEXT →
+          </button>
         )}
       </div>
+
+      {/* Instruction note when can't proceed */}
+      {!canProceed() && currentStep < 3 && (
+        <div
+          className="text-center text-[0.5625rem] uppercase tracking-wider mt-2"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+        >
+          * SELECT AN OPTION ABOVE TO CONTINUE *
+        </div>
+      )}
+      {!canProceed() && currentStep === 4 && (
+        <div
+          className="text-center text-[0.5625rem] uppercase tracking-wider mt-2"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+        >
+          * NAME + EMAIL REQUIRED TO SUBMIT *
+        </div>
+      )}
     </div>
   );
 }
