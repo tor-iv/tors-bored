@@ -52,7 +52,8 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${ibmPlexMono.variable} ${specialElite.variable} ${permanentMarker.variable} ${vt323.variable} ${spaceMono.variable} antialiased`}>
         <QueryProvider>
           <ThemeProvider initialTheme={theme}>
-            <Header />
+            {/* Receipt theme prints its nav inside the paper (ReceiptChrome) */}
+            {theme !== 'receipt' && <Header />}
             <main>{children}</main>
             <Footer />
             {theme === 'y2k' && <CursorTrail />}
