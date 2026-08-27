@@ -52,39 +52,44 @@
 
 
 [data-theme="y2k"] {
-  --bg:           #c0c0c0;
-  --bg-well:      #d4d0c8;
+  --bg:           #d4d4d4;
+  --bg-well:      #ececec;
   --ink:          #000000;
   --ink-muted:    #444444;
-  --accent:       #000080;
-  --accent-hover: #0000aa;
-  --accent-light: #d0d0ff;
-  --border:       #808080;
+  --accent:       #0066ff;
+  --accent-hover: #0052cc;
+  --accent-light: #d0e0ff;
+  --border:       #a0a0a0;
   --error:        #ff0000;
   --success:      #008000;
-  --font-display: 'Comic Sans MS', cursive;
-  --font-body:    Verdana, Geneva, Tahoma, sans-serif;
-  --font-ui:      Tahoma, 'MS Sans Serif', sans-serif;
-  --font-mono:    'Courier New', monospace;
+  --win95-face:        #d4d4d4;
+  --win95-highlight:   #ffffff;
+  --win95-shadow:      #a0a0a0;
+  --win95-dark-shadow: #606060;
+  --win95-light:       #ececec;
+  --font-display: var(--font-space-mono), 'Space Mono', 'Courier New', monospace;
+  --font-body:    var(--font-space-mono), 'Space Mono', 'Courier New', monospace;
+  --font-ui:      var(--font-space-mono), 'Space Mono', 'Courier New', monospace;
+  --font-mono:    var(--font-space-mono), 'Space Mono', 'Courier New', monospace;
   --teal:         #008080;
-  --link:         #0000ff;
+  --link:         #0066ff;
   --link-visited: #800080;
   --badge-new:    #00ff00;
   --blink-red:    #ff0000;
 }
 
 [data-theme="receipt"] {
-  --bg:              #e7d8b8;
-  --bg-well:         #2e2820;
-  --ink:             #2a2018;
-  --ink-muted:       #6f6048;
-  --accent:          #2a2018;
+  --bg:              #ede9e0;
+  --bg-well:         #302d28;
+  --ink:             #27201b;
+  --ink-muted:       #706656;
+  --accent:          #27201b;
   --accent-hover:    #1a1208;
-  --accent-light:    #d8c99a;
-  --border:          #b09a72;
+  --accent-light:    #d4cfbc;
+  --border:          #a99f8d;
   --error:           #b0392c;
   --success:         #4a6b3a;
-  --paper-highlight: #f1e6cc;
+  --paper-highlight: #ece8e0;
   --stamp-blue:      #335a7a;
   --font-display:    var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
   --font-body:       var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
@@ -110,41 +115,55 @@
    ================================================ */
 
 [data-theme="y2k"] .win98-btn {
-  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
-  background: #c0c0c0;
+  box-shadow: inset -1px -1px var(--win95-dark-shadow), inset 1px 1px var(--win95-highlight), inset -2px -2px var(--win95-shadow), inset 2px 2px var(--win95-light);
+  background: var(--win95-face);
   border: none;
+  border-radius: 0;
   padding: 4px 12px;
-  font-family: Tahoma, 'MS Sans Serif', sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   cursor: pointer;
   min-width: 75px;
 }
+[data-theme="y2k"] .win98-btn:hover {
+  background: var(--win95-light);
+}
 [data-theme="y2k"] .win98-btn:active {
-  box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  box-shadow: inset 2px 2px var(--win95-dark-shadow), inset -2px -2px var(--win95-highlight);
+  background: var(--win95-shadow);
 }
 
 [data-theme="y2k"] .win98-text-field {
-  box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  box-shadow: inset 1px 1px var(--win95-dark-shadow), inset -1px -1px var(--win95-highlight), inset 2px 2px var(--win95-shadow), inset -2px -2px var(--win95-light);
   background: #ffffff;
   border: none;
+  border-radius: 0;
   padding: 2px 4px;
-  font-family: Tahoma, sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
   outline: none;
 }
 
 [data-theme="y2k"] .win98-window {
-  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
-  background: #c0c0c0;
+  box-shadow:
+    inset -1px -1px var(--win95-dark-shadow), inset 1px 1px var(--win95-highlight),
+    inset -2px -2px var(--win95-shadow), inset 2px 2px var(--win95-light),
+    3px 3px 10px rgba(0, 0, 0, 0.35);
+  background: var(--win95-face);
+  border-radius: 0;
   padding: 3px;
 }
 
 [data-theme="y2k"] .win98-title-bar {
-  background: linear-gradient(to right, #000080, #1084d0);
+  background: var(--accent);
   color: #ffffff;
-  font-family: Tahoma, 'MS Sans Serif', sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
   font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   padding: 3px 4px;
   display: flex;
   align-items: center;
@@ -162,14 +181,15 @@
 }
 
 [data-theme="y2k"] .win98-title-bar-controls button {
-  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
-  background: #c0c0c0;
+  box-shadow: inset -1px -1px var(--win95-dark-shadow), inset 1px 1px var(--win95-highlight), inset -2px -2px var(--win95-shadow), inset 2px 2px var(--win95-light);
+  background: var(--win95-face);
   color: #000000;
   border: none;
+  border-radius: 0;
   width: 16px;
   height: 14px;
   font-size: 9px;
-  font-family: 'Marlett', Tahoma, sans-serif;
+  font-family: var(--font-ui);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -179,17 +199,18 @@
 }
 
 [data-theme="y2k"] .win98-title-bar-controls button:active {
-  box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  box-shadow: inset 1px 1px var(--win95-dark-shadow), inset -1px -1px var(--win95-highlight), inset 2px 2px var(--win95-shadow), inset -2px -2px var(--win95-light);
 }
 
 [data-theme="y2k"] .win98-window-body {
   padding: 8px;
-  background: #c0c0c0;
+  background: var(--win95-face);
 }
 
 [data-theme="y2k"] .win98-photo-frame {
-  box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  box-shadow: inset 1px 1px var(--win95-dark-shadow), inset -1px -1px var(--win95-highlight), inset 2px 2px var(--win95-shadow), inset -2px -2px var(--win95-light);
   background: #ffffff;
+  border-radius: 0;
   padding: 2px;
   display: inline-block;
 }
@@ -240,7 +261,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-family: Tahoma, 'MS Sans Serif', sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
 }
 
@@ -298,7 +319,7 @@
 [data-theme="y2k"] .y2k-new-badge {
   background: #00ff00;
   color: #000000;
-  font-family: 'Comic Sans MS', cursive;
+  font-family: var(--font-ui);
   font-size: 9px;
   font-weight: bold;
   padding: 1px 4px;
@@ -330,22 +351,22 @@
   padding: 6px 4px;
   cursor: pointer;
   position: relative;
-  font-family: Tahoma, 'MS Sans Serif', sans-serif;
+  font-family: var(--font-ui);
   font-size: 10px;
   color: #000;
   text-align: center;
   border: 1px solid transparent;
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 [data-theme="y2k"] .y2k-icon-item:hover {
-  background: rgba(0, 0, 128, 0.15);
-  border-color: #000080;
+  background: rgba(0, 102, 255, 0.15);
+  border-color: var(--accent);
 }
 
 [data-theme="y2k"] .y2k-icon-item:active,
 [data-theme="y2k"] .y2k-icon-item.selected {
-  background: #000080;
+  background: var(--accent);
   color: #ffffff;
 }
 
@@ -354,7 +375,7 @@
   height: 72px;
   object-fit: cover;
   display: block;
-  border: 1px solid #808080;
+  border: 1px solid var(--win95-shadow);
 }
 
 [data-theme="y2k"] .y2k-icon-label {
@@ -379,7 +400,7 @@
 [data-theme="y2k"] .y2k-sidebar-link {
   color: var(--link);
   text-decoration: underline;
-  font-family: Tahoma, sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
   cursor: pointer;
 }
@@ -525,8 +546,8 @@ html {
 
 /* Receipt modal slip */
 .receipt-modal {
-  background: var(--bg, #e7d8b8);
-  border: 1px solid var(--border, #b09a72);
+  background: var(--bg, #ede9e0);
+  border: 1px solid var(--border, #a99f8d);
   max-width: 360px;
   width: 100%;
   padding: 24px;
@@ -549,7 +570,7 @@ html {
   /* Real lightened paper photo, tiled vertically so a long receipt stays
      legible; a warm gradient is multiplied over it for aged depth. */
   background-image:
-    linear-gradient(to bottom, rgba(241,230,204,0.35) 0%, rgba(220,201,162,0.45) 100%),
+    linear-gradient(to bottom, rgba(236,232,224,0.35) 0%, rgba(213,207,194,0.45) 100%),
     url('/textures/paper-soft.webp');
   background-size: 100% auto, 520px auto;
   background-repeat: no-repeat, repeat-y;
@@ -668,7 +689,7 @@ html {
 .receipt-polaroid-frame {
   position: relative;
   padding: 12px 12px 40px 12px;
-  background: #f1e6cc;
+  background: var(--paper-highlight, #ece8e0);
   box-shadow: 2px 4px 8px rgba(0,0,0,0.22), 0 12px 24px rgba(0,0,0,0.14), inset 0 0 20px rgba(80,50,10,0.06);
 }
 .receipt-polaroid-frame img {
@@ -680,7 +701,7 @@ html {
   font-family: var(--font-caption);
   margin-top: 8px;
   font-size: 0.6875rem;
-  color: #2a2018;
+  color: var(--ink, #27201b);
   letter-spacing: 0.02em;
   line-height: 1.3;
   overflow: hidden;
