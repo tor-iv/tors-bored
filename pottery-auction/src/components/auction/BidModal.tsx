@@ -27,9 +27,11 @@ interface BidModalProps {
   item: RawItem | null;
   onSubmitBid: (amount: number) => Promise<void>;
   bidError?: string | null;
+  /** Pre-fill from the bid slip's inline amount input. */
+  prefillAmount?: number | null;
 }
 
-export default function BidModal({ isOpen, onClose, item, onSubmitBid, bidError }: BidModalProps) {
+export default function BidModal({ isOpen, onClose, item, onSubmitBid, bidError, prefillAmount }: BidModalProps) {
   const [bidAmount, setBidAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -37,10 +39,10 @@ export default function BidModal({ isOpen, onClose, item, onSubmitBid, bidError 
   // Reset state when item changes or modal opens
   useEffect(() => {
     if (isOpen) {
-      setBidAmount('');
+      setBidAmount(prefillAmount != null ? String(prefillAmount) : '');
       setError('');
     }
-  }, [isOpen, item?.id]);
+  }, [isOpen, item?.id, prefillAmount]);
 
   // Propagate external bid errors (e.g. 400 with minimum_bid)
   useEffect(() => {
