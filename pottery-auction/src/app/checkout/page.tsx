@@ -4,7 +4,10 @@ import { db } from '@/db';
 import { items } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
-import PolaroidPhoto from '@/components/theme/receipt/PolaroidPhoto';
+import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
+import ReceiptChrome from '@/components/theme/receipt/ReceiptChrome';
+import ReceiptFooterChrome from '@/components/theme/receipt/ReceiptFooterChrome';
+import ReceiptPhotoFrame from '@/components/theme/receipt/ReceiptPhotoFrame';
 import CheckoutClient from './CheckoutClient';
 import SignInGate from './SignInGate';
 
@@ -31,137 +34,24 @@ function ReceiptShell({
   children: React.ReactNode;
 }) {
   return (
-    <div style={{ backgroundColor: 'var(--bg-well)', minHeight: '100vh', padding: '32px 16px 80px' }}>
-      <div
-        className="receipt-strip-paper"
-        style={{ maxWidth: 520, margin: '0 auto', position: 'relative' }}
-      >
-        {/* Top-right stamp: INVOICE */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            top: 62,
-            right: 16,
-            zIndex: 3,
-            fontFamily: 'var(--font-stamp)',
-            color: '#335a7a',
-            border: '2.5px solid #335a7a',
-            borderRadius: 3,
-            padding: '3px 10px 2px',
-            fontSize: '0.95rem',
-            fontWeight: 700,
-            letterSpacing: '0.14em',
-            lineHeight: 1.1,
-            textAlign: 'center',
-            mixBlendMode: 'multiply',
-            pointerEvents: 'none',
-            opacity: 0.85,
-          }}
-        >
-          INVOICE
-          <div style={{ fontSize: '0.4rem', letterSpacing: '0.22em', marginTop: 2 }}>● PURCHASE ORDER ●</div>
-        </div>
-
-        {/* Top-left stamp: circular date stamp */}
-        <div
-          aria-hidden
-          className="receipt-date-stamp"
-          style={{
-            position: 'absolute',
-            top: 58,
-            left: 14,
-            zIndex: 3,
-            pointerEvents: 'none',
-            opacity: 0.52,
-            transform: 'rotate(8deg)',
-          }}
-        >
-          <div style={{ fontSize: '0.38rem', letterSpacing: '0.1em', lineHeight: 1.4 }}>
-            <div>RECEIVED</div>
-            <div style={{ fontSize: '0.52rem', letterSpacing: '0.06em', fontWeight: 'bold' }}>
-              {dateStr}
-            </div>
-            <div>STUDIO</div>
-          </div>
-        </div>
-
-        <div className="receipt-edge-top" />
-        <div className="receipt-strip-content py-6">
-
-          {/* ── HEADER BLOCK ── */}
-          <div className="text-center pb-3" style={{ lineHeight: 1.45 }}>
-            <div
-              className="text-[0.625rem] uppercase tracking-[0.3em]"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              TOR&apos;S BORED POTTERY CO.
-            </div>
-            <div
-              className="text-[0.5rem] uppercase tracking-widest"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              ★ EST. BROOKLYN, NY ★
-            </div>
-            <div
-              className="text-[0.5rem] uppercase tracking-widest mt-0.5"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              CASHIER: TOR &nbsp;·&nbsp; REG #04 &nbsp;·&nbsp; MEMBER: ✓
-            </div>
-
-            <ReceiptDivider variant="decorative" />
-
-            <div
-              className="receipt-stamp text-[1.15rem] uppercase tracking-wide py-1"
-              style={{ fontFamily: 'var(--font-stamp)', color: 'var(--ink)' }}
-            >
-              ★ PURCHASE RECEIPT ★
-            </div>
-            <div
-              className="text-[0.5rem] uppercase tracking-[0.2em]"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              ★★★ HANDMADE POTTERY ★★★
-            </div>
-
-            <ReceiptDivider variant="decorative" />
-
-            <div
-              className="text-[0.6875rem] mt-1"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              <span>TICKET: {ticketCode}</span>
-              {sku && <span> &nbsp;·&nbsp; SKU: {sku}</span>}
-            </div>
-            <div
-              className="text-[0.6875rem]"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              DATE: {dateStr}
-            </div>
-          </div>
-
-          {children}
-
-          {/* Receipt tear + footer */}
-          <div className="receipt-tear" />
-          <div className="py-2 space-y-0.5 text-center" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}>
-            <div className="text-[0.625rem] uppercase tracking-widest">★ THANK YOU ★</div>
-            <div className="text-[0.5rem] uppercase tracking-widest">ALL SALES FINAL · HANDMADE WITH CARE</div>
-            <div className="text-[0.5rem] uppercase tracking-widest">RESERVATION HELD FOR 15 MINUTES</div>
-          </div>
-          <ReceiptDivider variant="decorative" />
-          <div
-            className="text-[0.45rem] text-center uppercase tracking-widest pb-2"
-            style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
-          >
-            © TOR&apos;S BORED POTTERY CO. · BROOKLYN, NY
-          </div>
-        </div>
-        <div className="receipt-edge-bottom" />
+    <ReceiptPage>
+      <ReceiptChrome />
+      <div className="receipt-section-bar" style={{ margin: '18px 0 4px' }}>
+        <span>PURCHASE RECEIPT</span>
+        <span className="receipt-section-bar-count">{sku ? sku.toUpperCase() : 'CHECKOUT'}</span>
       </div>
-    </div>
+      <div
+        className="flex flex-wrap justify-between"
+        style={{ gap: '2px 12px', fontSize: 10, letterSpacing: 1.5, color: 'var(--ink-muted)', padding: '6px 0 10px' }}
+      >
+        <span>TICKET: {ticketCode}</span>
+        <span>DATE: {dateStr} · RESERVATION HELD 15 MIN</span>
+      </div>
+
+      {children}
+
+      <ReceiptFooterChrome barcodeSeed={ticketCode} />
+    </ReceiptPage>
   );
 }
 
@@ -236,31 +126,17 @@ export default async function CheckoutPage({ searchParams }: Props) {
   if (isSold || isReservedByOther) {
     return (
       <ReceiptShell dateStr={dateStr} ticketCode={ticketCode} sku={sku}>
-        {item.images?.[0] && (
-          <div className="py-4">
-            <PolaroidPhoto src={item.images[0]} alt={item.title} sku={item.sku ?? undefined} caption={item.title} />
-          </div>
-        )}
+        <div className="py-4">
+          <ReceiptPhotoFrame
+            src={item.images?.[0]}
+            alt={item.title}
+            title={item.title}
+            size="lg"
+            stamp={{ label: isSold ? 'SOLD' : 'RESERVED', variant: 'red', rotate: -4 }}
+          />
+        </div>
         <ReceiptDivider variant="major" />
         <div className="py-3 text-center space-y-2" style={{ fontFamily: 'var(--font-display)' }}>
-          {/* Inline stamp — SOLD or RESERVED */}
-          <div
-            style={{
-              display: 'inline-block',
-              fontFamily: 'var(--font-stamp)',
-              color: isSold ? 'var(--error)' : 'var(--ink)',
-              border: `2.5px solid ${isSold ? 'var(--error)' : 'var(--ink)'}`,
-              borderRadius: 3,
-              padding: '4px 14px 3px',
-              fontSize: '1.3rem',
-              letterSpacing: '0.12em',
-              transform: 'rotate(-2deg)',
-              mixBlendMode: 'multiply',
-              opacity: 0.85,
-            }}
-          >
-            {isSold ? 'SOLD' : 'RESERVED'}
-          </div>
           <div className="text-[0.875rem] font-bold uppercase" style={{ color: isSold ? 'var(--error)' : 'var(--ink)' }}>
             {isSold ? 'ITEM SOLD' : 'TEMPORARILY UNAVAILABLE'}
           </div>
@@ -298,27 +174,15 @@ export default async function CheckoutPage({ searchParams }: Props) {
 
   return (
     <ReceiptShell dateStr={dateStr} ticketCode={ticketCode} sku={sku}>
-      {/* Item polaroid */}
-      {item.images?.[0] && (
-        <div className="py-4">
-          <PolaroidPhoto
-            src={item.images[0]}
-            alt={item.title}
-            sku={item.sku ?? undefined}
-            caption={item.title}
-          />
-        </div>
-      )}
+      {/* Item photo */}
+      <div className="py-4">
+        <ReceiptPhotoFrame src={item.images?.[0]} alt={item.title} title={item.title} size="lg" />
+      </div>
 
       {/* Item header — leader-dot rows */}
-      <ReceiptDivider variant="major" />
-      <div
-        className="text-[0.625rem] uppercase tracking-widest pb-1"
-        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-      >
-        ITEM DETAIL
+      <div className="receipt-section-bar" style={{ margin: '4px 0 8px' }}>
+        <span>ITEM DETAIL</span>
       </div>
-      <ReceiptDivider variant="minor" />
       <div className="py-2 space-y-1">
         <div
           className="receipt-line-item"

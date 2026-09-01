@@ -67,13 +67,15 @@ async function seedCatalog() {
       })
       .returning({ id: auctions.id });
 
-    // SKUs via the Postgres generate_sku() function.
+    // SKUs via the Postgres generate_sku() function. It counts existing rows
+    // per prefix, so items must be inserted ONE AT A TIME — batching would
+    // hand every vase the same VAS-…-001.
     async function skuFor(code: string): Promise<string> {
       const rows = await tx.execute(sql`SELECT generate_sku(${code}) AS sku`);
       return (rows as unknown as Array<{ sku: string }>)[0].sku;
     }
 
-    await tx.insert(items).values([
+    const catalog = [
       // Featured buy-now piece — exactly one item carries featured: true.
       {
         title: "Tomato-Shaped Lidded Jar",
@@ -82,7 +84,7 @@ async function seedCatalog() {
         images: ["/pieces/tomato.webp"],
         listing_type: "buy_now" as const,
         buy_now_price: 68,
-        sku: await skuFor("POT"),
+        skuCode: "POT",
         techniques: ["hand-built", "underglaze", "food-safe glaze"],
         featured: true,
       },
@@ -95,7 +97,7 @@ async function seedCatalog() {
         starting_bid: 65,
         current_bid: null,
         listing_type: "auction" as const,
-        sku: await skuFor("VAS"),
+        skuCode: "VAS",
         techniques: ["wheel-thrown", "carved relief", "matte glaze"],
         featured: false,
       },
@@ -108,7 +110,7 @@ async function seedCatalog() {
         starting_bid: 85,
         current_bid: null,
         listing_type: "auction" as const,
-        sku: await skuFor("VAS"),
+        skuCode: "VAS",
         techniques: ["wheel-thrown", "underglaze color-block", "hand-painted"],
         featured: false,
       },
@@ -121,7 +123,7 @@ async function seedCatalog() {
         starting_bid: 50,
         current_bid: null,
         listing_type: "auction" as const,
-        sku: await skuFor("VAS"),
+        skuCode: "VAS",
         techniques: ["wheel-thrown", "hand-painted florals"],
         featured: false,
       },
@@ -132,11 +134,15 @@ async function seedCatalog() {
         images: ["/pieces/white-rib-vase.webp"],
         listing_type: "buy_now" as const,
         buy_now_price: 42,
-        sku: await skuFor("VAS"),
+        skuCode: "VAS",
         techniques: ["wheel-thrown", "ribbed texture", "speckle glaze"],
         featured: false,
       },
-    ]);
+    ];
+
+    for (const { skuCode, ...row } of catalog) {
+      await tx.insert(items).values({ ...row, sku: await skuFor(skuCode) });
+    }
   });
 
   console.log("✓ seeded catalog: 1 auction + 5 items (3 auction lots, 2 buy-now)");

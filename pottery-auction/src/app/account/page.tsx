@@ -8,6 +8,9 @@ import { eq, desc, inArray } from 'drizzle-orm';
 import { formatReceiptTimestamp, formatReceiptDate } from '@/lib/format/receipt-timestamp';
 import Y2KAccountPage from '@/components/theme/y2k/Y2KAccountPage';
 import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
+import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
+import ReceiptChrome from '@/components/theme/receipt/ReceiptChrome';
+import ReceiptFooterChrome from '@/components/theme/receipt/ReceiptFooterChrome';
 import Barcode from '@/components/theme/receipt/Barcode';
 
 function formatPrice(val: number | null | undefined): string {
@@ -167,125 +170,24 @@ export default async function AccountPage() {
   const accountNo = user.id.slice(0, 8).toUpperCase();
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-well)', minHeight: '100vh', padding: '32px 16px 80px' }}>
+    <ReceiptPage>
+      <ReceiptChrome />
+      <div className="receipt-section-bar" style={{ margin: '18px 0 4px' }}>
+        <span>CUSTOMER LEDGER</span>
+        <span className="receipt-section-bar-count">ACCT {accountNo}</span>
+      </div>
       <div
-        className="receipt-strip-paper"
-        style={{ maxWidth: 520, margin: '0 auto', position: 'relative' }}
+        className="flex flex-wrap justify-between"
+        style={{ gap: '2px 12px', fontSize: 10, letterSpacing: 1.5, color: 'var(--ink-muted)', padding: '6px 0 10px' }}
       >
-        {/* Top-right stamp: LEDGER */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            top: 62,
-            right: 16,
-            zIndex: 3,
-            fontFamily: 'var(--font-stamp)',
-            color: '#335a7a',
-            border: '2.5px solid #335a7a',
-            borderRadius: 3,
-            padding: '3px 10px 2px',
-            fontSize: '0.95rem',
-            fontWeight: 700,
-            letterSpacing: '0.14em',
-            lineHeight: 1.1,
-            textAlign: 'center',
-            mixBlendMode: 'multiply',
-            pointerEvents: 'none',
-            opacity: 0.85,
-          }}
-        >
-          LEDGER
-          <div style={{ fontSize: '0.4rem', letterSpacing: '0.22em', marginTop: 2 }}>● ACCOUNT FILE ●</div>
-        </div>
-
-        {/* Top-left circular date stamp */}
-        <div
-          aria-hidden
-          className="receipt-date-stamp"
-          style={{
-            position: 'absolute',
-            top: 58,
-            left: 14,
-            zIndex: 3,
-            pointerEvents: 'none',
-            opacity: 0.52,
-            transform: 'rotate(8deg)',
-          }}
-        >
-          <div style={{ fontSize: '0.38rem', letterSpacing: '0.1em', lineHeight: 1.4 }}>
-            <div>RECEIVED</div>
-            <div style={{ fontSize: '0.52rem', letterSpacing: '0.06em', fontWeight: 'bold' }}>
-              {dateStr}
-            </div>
-            <div>STUDIO</div>
-          </div>
-        </div>
-
-        <div className="receipt-edge-top" />
-        <div className="receipt-strip-content py-6">
-
-          {/* ── HEADER BLOCK ── */}
-          <div className="text-center pb-3" style={{ lineHeight: 1.45 }}>
-            <div
-              className="text-[0.625rem] uppercase tracking-[0.3em]"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              TOR&apos;S BORED POTTERY CO.
-            </div>
-            <div
-              className="text-[0.5rem] uppercase tracking-widest"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              ★ EST. BROOKLYN, NY ★
-            </div>
-            <div
-              className="text-[0.5rem] uppercase tracking-widest mt-0.5"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              CASHIER: TOR &nbsp;·&nbsp; REG #04 &nbsp;·&nbsp; MEMBER: ✓
-            </div>
-
-            <ReceiptDivider variant="decorative" />
-
-            <div
-              className="receipt-stamp text-[1.15rem] uppercase tracking-wide py-1"
-              style={{ fontFamily: 'var(--font-stamp)', color: 'var(--ink)' }}
-            >
-              ★ CUSTOMER LEDGER ★
-            </div>
-            <div
-              className="text-[0.5rem] uppercase tracking-[0.2em]"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              ★★★ ACCOUNT RECORD ★★★
-            </div>
-
-            <ReceiptDivider variant="decorative" />
-
-            <div
-              className="text-[0.6875rem] mt-1"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              ACCT: {accountNo}
-            </div>
-            <div
-              className="text-[0.6875rem]"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              DATE: {dateStr}
-            </div>
-          </div>
+        <span>ACCOUNT RECORD</span>
+        <span>DATE: {dateStr}</span>
+      </div>
 
           {/* ── ACCOUNT INFO ── */}
-          <ReceiptDivider variant="major" />
-          <div
-            className="text-[0.625rem] uppercase tracking-widest pb-1"
-            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-          >
-            ACCOUNT INFO
+          <div className="receipt-section-bar" style={{ margin: '4px 0 8px' }}>
+            <span>ACCOUNT INFO</span>
           </div>
-          <ReceiptDivider variant="minor" />
           <div className="py-2 space-y-1">
             <div
               className="receipt-line-item"
@@ -469,14 +371,10 @@ export default async function AccountPage() {
           )}
 
           {/* ── ORDER HISTORY ── */}
-          <ReceiptDivider variant="major" />
-          <div
-            className="text-[0.625rem] uppercase tracking-widest pb-1"
-            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-          >
-            ORDER HISTORY ({allOrders.length})
+          <div className="receipt-section-bar" style={{ margin: '16px 0 8px' }}>
+            <span>ORDER HISTORY</span>
+            <span className="receipt-section-bar-count">QTY {allOrders.length}</span>
           </div>
-          <ReceiptDivider variant="minor" />
 
           {allOrders.length === 0 ? (
             <div
@@ -527,43 +425,13 @@ export default async function AccountPage() {
             </div>
           )}
 
-          {/* Receipt tear */}
-          <div className="receipt-tear" />
-
-          <div
-            className="py-1 space-y-0.5 text-center"
-            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-          >
-            <div className="text-[0.625rem] uppercase tracking-widest">
-              {allOrders.length} {allOrders.length === 1 ? 'ORDER' : 'ORDERS'} ON FILE
-            </div>
-            <div className="text-[0.5rem] uppercase tracking-widest">HANDMADE WITH CARE · ALL SALES FINAL</div>
-          </div>
-
-          <ReceiptDivider variant="major" />
-          <Barcode seed={user.id} className="mx-auto mt-2" />
-
-          <div className="py-3 flex gap-4 flex-wrap items-center">
-            <Link href="/browse">
-              <button
-                className="font-mono text-[0.875rem] uppercase hover:opacity-70"
-                style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}
-              >
-                {'< BROWSE MORE >'}
-              </button>
+          <div className="py-3 flex justify-center">
+            <Link href="/browse" className="receipt-view-item-link">
+              ← BROWSE MORE
             </Link>
           </div>
 
-          <ReceiptDivider variant="major" />
-          <div
-            className="text-[0.45rem] text-center uppercase tracking-widest pb-2"
-            style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
-          >
-            © TOR&apos;S BORED POTTERY CO. · BROOKLYN, NY
-          </div>
-        </div>
-        <div className="receipt-edge-bottom" />
-      </div>
-    </div>
+      <ReceiptFooterChrome barcodeSeed={user.id} />
+    </ReceiptPage>
   );
 }
