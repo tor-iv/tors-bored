@@ -36,7 +36,10 @@ jobs:
             git pull origin main
 
             cd /opt/fieldhouse
-            docker compose build tors
+            # Build BOTH images: tors-migrate is a separate builder-stage image,
+            # and `compose run` does not rebuild — skipping it runs migrations
+            # and seeds from a stale checkout (bit us 2026-09-01).
+            docker compose build tors tors-migrate
             # Migration failure aborts (set -e) before the new image goes live.
             docker compose run --rm tors-migrate
             # --force-recreate: plain `up -d` can keep a stale container (see
