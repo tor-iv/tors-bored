@@ -14,7 +14,6 @@ import { rateLimit } from "@/lib/rate-limit";
 // session cookie, this covers the CSRF hardening the plan called for. Login is
 // additionally rate-limited per IP.
 
-const ADMIN_EMAIL = (process.env.ADMIN_EMAIL ?? "vcox484@gmail.com").toLowerCase();
 
 const credsSchema = z.object({
   email: z.string().email().max(254),
@@ -63,7 +62,10 @@ export async function signupAction(input: {
       email,
       password_hash: hashPassword(parsed.data.password),
       display_name: parsed.data.displayName ?? null,
-      is_admin: email === ADMIN_EMAIL,
+      // Signup NEVER grants admin — emails are unverified, so keying admin off
+      // the email would let whoever registers it first on a fresh DB escalate.
+      // The admin account is created exclusively by the seed's ensureAdmin().
+      is_admin: false,
     })
     .returning({ id: profiles.id, email: profiles.email, isAdmin: profiles.is_admin, displayName: profiles.display_name });
 
