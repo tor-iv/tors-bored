@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PotteryWizard, WizardData } from '@/components/commissions';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,8 +13,18 @@ import { scaleIn, fadeUp } from '@/lib/animation-variants';
 
 // ─── Form number derived from today's date (stable for a session) ─────────────
 
-const formNo = `WO-${Date.now().toString(36).toUpperCase().slice(-6)}`;
-const today = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
+// Form number + date are minted on the client after mount — Date.now() at
+// module scope renders differently on server vs client (hydration mismatch).
+function useFormStamp() {
+  const [stamp, setStamp] = useState({ formNo: 'WO-......', today: '--/--/--' });
+  useEffect(() => {
+    setStamp({
+      formNo: `WO-${Date.now().toString(36).toUpperCase().slice(-6)}`,
+      today: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }),
+    });
+  }, []);
+  return stamp;
+}
 
 // ─── Submission to /api/commissions ──────────────────────────────────────────
 
@@ -71,11 +81,14 @@ function LoadingSlip() {
 function SuccessSlip({
   data,
   onReset,
+  orderNo,
+  today,
 }: {
   data: WizardData;
   onReset: () => void;
+  orderNo: string;
+  today: string;
 }) {
-  const orderNo = formNo;
   return (
     <ReceiptPage>
       <ReceiptChrome />
@@ -221,6 +234,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function CommissionsPage() {
+  const { formNo, today } = useFormStamp();
   const { user, userProfile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -255,7 +269,7 @@ export default function CommissionsPage() {
   if (isSubmitting) return <LoadingSlip />;
 
   if (isSubmitted && submittedData) {
-    return <SuccessSlip data={submittedData} onReset={handleReset} />;
+    return <SuccessSlip data={submittedData} onReset={handleReset} orderNo={formNo} today={today} />;
   }
 
   return (
