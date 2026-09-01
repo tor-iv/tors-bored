@@ -39,5 +39,7 @@ jobs:
             docker compose build tors
             # Migration failure aborts (set -e) before the new image goes live.
             docker compose run --rm tors-migrate
-            docker compose up -d tors
+            # --force-recreate: plain `up -d` can keep a stale container (see
+            # tors-brain/infra/fieldhouse.md footguns).
+            docker compose up -d --force-recreate tors
             docker image prune -f
