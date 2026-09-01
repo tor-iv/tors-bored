@@ -8,7 +8,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/store/auth';
 import { useTheme } from '@/contexts/ThemeContext';
 import AuthModal from '../auth/AuthModal';
-import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
 import Marquee from '@/components/theme/y2k/Marquee';
 
 const navItems = [
@@ -29,87 +28,6 @@ export default function Header() {
     await logoutAction().catch(console.error);
     logout();
   };
-
-  if (theme === 'receipt') {
-    return (
-      <>
-        <header
-          className="sticky top-0 z-40"
-          style={{
-            backgroundColor: 'var(--bg-well)',
-            fontFamily: 'var(--font-display, "IBM Plex Mono", monospace)',
-          }}
-        >
-          <div
-            style={{
-              maxWidth: 560,
-              margin: '0 auto',
-              padding: '0 16px 4px',
-              backgroundColor: 'var(--bg)',
-              boxShadow: '0 8px 20px rgba(0,0,0,0.35)',
-            }}
-          >
-            {/* Store name */}
-            <div
-              className="py-2 text-center text-[1.125rem] font-bold uppercase tracking-wide"
-              style={{ color: 'var(--ink)' }}
-            >
-              TOR&apos;S POTTERY STUDIO
-            </div>
-            <ReceiptDivider variant="major" />
-
-            {/* Nav + auth */}
-            <div className="py-1 flex justify-between items-center flex-wrap gap-2">
-              <nav className="flex gap-4 text-[0.6875rem]">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="hover:underline uppercase"
-                    style={{ color: 'var(--ink)' }}
-                  >
-                    [{item.receiptLabel}]
-                  </Link>
-                ))}
-              </nav>
-              <div className="text-[0.6875rem] flex gap-3">
-                {isAuthenticated ? (
-                  <>
-                    {user?.isAdmin && (
-                      <Link href="/admin" className="hover:underline uppercase" style={{ color: 'var(--ink-muted)' }}>
-                        [ADMIN]
-                      </Link>
-                    )}
-                    <Link href="/account" className="hover:underline uppercase" style={{ color: 'var(--ink-muted)' }}>
-                      [ACCOUNT]
-                    </Link>
-                    <button
-                      onClick={handleSignOut}
-                      className="hover:underline uppercase"
-                      style={{ color: 'var(--ink-muted)' }}
-                    >
-                      [SIGN OUT]
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => setShowAuthModal(true)}
-                    className="hover:underline uppercase"
-                    style={{ color: 'var(--ink)' }}
-                  >
-                    [SIGN IN]
-                  </button>
-                )}
-              </div>
-            </div>
-            <ReceiptDivider variant="minor" />
-          </div>
-        </header>
-
-        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
-      </>
-    );
-  }
 
   // Y2K branch
   if (theme === 'y2k') {

@@ -6,9 +6,10 @@ import { orders, order_items, items } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { formatReceiptTimestamp } from '@/lib/format/receipt-timestamp';
 import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
-import PolaroidPhoto from '@/components/theme/receipt/PolaroidPhoto';
-import Barcode from '@/components/theme/receipt/Barcode';
-import Button from '@/components/ui/Button';
+import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
+import ReceiptChrome from '@/components/theme/receipt/ReceiptChrome';
+import ReceiptFooterChrome from '@/components/theme/receipt/ReceiptFooterChrome';
+import ReceiptPhotoFrame from '@/components/theme/receipt/ReceiptPhotoFrame';
 import PaymentProcessing from './PaymentProcessing';
 
 interface Props {
@@ -75,119 +76,22 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
   const confCode = `CONF-${order.id.slice(0, 8).toUpperCase()}`;
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-well)', minHeight: '100vh', padding: '32px 16px 80px' }}>
+    <ReceiptPage>
+      <ReceiptChrome />
+      <div className="receipt-section-bar" style={{ margin: '18px 0 4px' }}>
+        <span>SALES RECEIPT</span>
+        <span className="receipt-section-bar-count">{confCode}</span>
+      </div>
       <div
-        className="receipt-strip-paper"
-        style={{ maxWidth: 520, margin: '0 auto', position: 'relative' }}
+        className="flex flex-wrap justify-between"
+        style={{ gap: '2px 12px', fontSize: 10, letterSpacing: 1.5, color: 'var(--ink-muted)', padding: '6px 0 10px' }}
       >
-        {/* Top-right stamp: changes based on status */}
-        {order.status !== 'pending' && (
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              top: 62,
-              right: 16,
-              zIndex: 3,
-              fontFamily: 'var(--font-stamp)',
-              color: order.status === 'cancelled' ? 'var(--error)' : '#2e7d32',
-              border: `2.5px solid ${order.status === 'cancelled' ? 'var(--error)' : '#2e7d32'}`,
-              borderRadius: 3,
-              padding: '3px 10px 2px',
-              fontSize: '0.95rem',
-              fontWeight: 700,
-              letterSpacing: '0.14em',
-              lineHeight: 1.1,
-              textAlign: 'center',
-              mixBlendMode: 'multiply',
-              pointerEvents: 'none',
-              opacity: 0.85,
-            }}
-          >
-            {order.status === 'cancelled' ? 'VOID' : 'PAID'}
-            <div style={{ fontSize: '0.4rem', letterSpacing: '0.22em', marginTop: 2 }}>
-              {order.status === 'cancelled' ? '● ORDER CANCELLED ●' : '● PAYMENT RECEIVED ●'}
-            </div>
-          </div>
-        )}
-
-        {/* Top-left circular date stamp */}
-        <div
-          aria-hidden
-          className="receipt-date-stamp"
-          style={{
-            position: 'absolute',
-            top: 58,
-            left: 14,
-            zIndex: 3,
-            pointerEvents: 'none',
-            opacity: 0.52,
-            transform: 'rotate(8deg)',
-          }}
-        >
-          <div style={{ fontSize: '0.38rem', letterSpacing: '0.1em', lineHeight: 1.4 }}>
-            <div>RECEIVED</div>
-            <div style={{ fontSize: '0.52rem', letterSpacing: '0.06em', fontWeight: 'bold' }}>
-              {dateStr}
-            </div>
-            <div>STUDIO</div>
-          </div>
-        </div>
-
-        <div className="receipt-edge-top" />
-        <div className="receipt-strip-content py-6">
-
-          {/* ── HEADER BLOCK ── */}
-          <div className="text-center pb-3" style={{ lineHeight: 1.45 }}>
-            <div
-              className="text-[0.625rem] uppercase tracking-[0.3em]"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              TOR&apos;S BORED POTTERY CO.
-            </div>
-            <div
-              className="text-[0.5rem] uppercase tracking-widest"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              ★ EST. BROOKLYN, NY ★
-            </div>
-            <div
-              className="text-[0.5rem] uppercase tracking-widest mt-0.5"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              CASHIER: TOR &nbsp;·&nbsp; REG #04 &nbsp;·&nbsp; MEMBER: ✓
-            </div>
-
-            <ReceiptDivider variant="decorative" />
-
-            <div
-              className="receipt-stamp text-[1.15rem] uppercase tracking-wide py-1"
-              style={{ fontFamily: 'var(--font-stamp)', color: 'var(--ink)' }}
-            >
-              ★ SALES RECEIPT ★
-            </div>
-            <div
-              className="text-[0.5rem] uppercase tracking-[0.2em]"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              ★★★ HANDMADE POTTERY ★★★
-            </div>
-
-            <ReceiptDivider variant="decorative" />
-
-            <div
-              className="text-[0.6875rem] mt-1"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              {confCode}
-            </div>
-            <div
-              className="text-[0.6875rem]"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-            >
-              DATE: {dateStr}
-            </div>
-          </div>
+        <span>DATE: {dateStr}</span>
+        <span>
+          STATUS:{' '}
+          {order.status === 'pending' ? 'PROCESSING' : order.status === 'cancelled' ? 'VOID' : 'PAID'}
+        </span>
+      </div>
 
           {/* ── STATUS BRANCHES ── */}
 
@@ -201,21 +105,9 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
             <>
               <ReceiptDivider variant="major" />
               <div className="py-4 text-center space-y-3" style={{ fontFamily: 'var(--font-display)' }}>
-                {/* Big VOID stamp */}
                 <div
-                  style={{
-                    display: 'inline-block',
-                    fontFamily: 'var(--font-stamp)',
-                    color: 'var(--error)',
-                    border: '3px solid var(--error)',
-                    borderRadius: 3,
-                    padding: '6px 20px 5px',
-                    fontSize: '1.8rem',
-                    letterSpacing: '0.16em',
-                    transform: 'rotate(-3deg)',
-                    mixBlendMode: 'multiply',
-                    opacity: 0.85,
-                  }}
+                  className="receipt-stamp-badge receipt-stamp-badge--red"
+                  style={{ fontSize: 18, transform: 'rotate(-3deg)' }}
                 >
                   PAYMENT FAILED
                 </div>
@@ -226,18 +118,8 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
               <ReceiptDivider variant="major" />
               {orderItemsMapped[0]?.item?.sku && (
                 <div className="py-3 flex justify-center">
-                  <Link href={`/checkout?sku=${orderItemsMapped[0].item.sku}`}>
-                    <button
-                      className="receipt-stamp uppercase tracking-widest px-8 py-2.5 text-[0.9rem] border border-current"
-                      style={{
-                        fontFamily: 'var(--font-stamp)',
-                        color: 'var(--ink)',
-                        transform: 'rotate(-0.5deg)',
-                        boxShadow: '3px 3px 0 var(--ink)',
-                      }}
-                    >
-                      [ TRY AGAIN ]
-                    </button>
+                  <Link href={`/checkout?sku=${orderItemsMapped[0].item.sku}`} className="receipt-action-btn">
+                    TRY AGAIN
                   </Link>
                 </div>
               )}
@@ -247,28 +129,19 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
             <>
               {/* ── SUCCESS RECEIPT ── */}
 
-              {/* Big PAID rubber stamp */}
-              <div className="flex justify-center py-2">
+              {/* PAID stamp */}
+              <div className="flex justify-center py-3">
                 <div
+                  className="receipt-stamp-badge"
                   style={{
-                    display: 'inline-block',
-                    fontFamily: 'var(--font-stamp)',
-                    color: '#2e7d32',
-                    border: '4px solid #2e7d32',
-                    borderRadius: 4,
-                    padding: '8px 28px 6px',
-                    fontSize: '2.8rem',
-                    letterSpacing: '0.18em',
+                    fontSize: 28,
+                    color: 'var(--success)',
+                    borderColor: 'var(--success)',
                     transform: 'rotate(-3deg)',
-                    mixBlendMode: 'multiply',
-                    opacity: 0.82,
-                    lineHeight: 1,
+                    padding: '6px 22px',
                   }}
                 >
                   PAID
-                  <div style={{ fontSize: '0.5rem', letterSpacing: '0.26em', textAlign: 'center', marginTop: 2 }}>
-                    ● THANK YOU ●
-                  </div>
                 </div>
               </div>
 
@@ -280,16 +153,16 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
                 if (visibleItems.length === 0) return null;
                 return (
                   <div className="py-4">
-                    <div className="receipt-polaroid-stack">
+                    <div className="flex flex-col items-center" style={{ gap: 16 }}>
                       {visibleItems.map((oi) => {
                         const it = oi.item!;
                         return (
-                          <PolaroidPhoto
+                          <ReceiptPhotoFrame
                             key={oi.id}
                             src={it.images![0]}
                             alt={it.title ?? ''}
-                            sku={it.sku ?? undefined}
-                            caption={it.title ?? undefined}
+                            title={it.title ?? ''}
+                            size="lg"
                           />
                         );
                       })}
@@ -318,14 +191,9 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
               </div>
 
               {/* Items */}
-              <ReceiptDivider variant="major" />
-              <div
-                className="text-[0.625rem] uppercase tracking-widest pb-1"
-                style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-              >
-                ITEMS PURCHASED
+              <div className="receipt-section-bar" style={{ margin: '10px 0 8px' }}>
+                <span>ITEMS PURCHASED</span>
               </div>
-              <ReceiptDivider variant="minor" />
               <div className="py-2 space-y-1" style={{ fontFamily: 'var(--font-display)' }}>
                 {orderItemsMapped.map((oi) => {
                   const it = oi.item;
@@ -405,14 +273,9 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
               {/* Shipping address */}
               {order.shipping_name && (
                 <>
-                  <ReceiptDivider variant="major" />
-                  <div
-                    className="text-[0.625rem] uppercase tracking-widest pb-1"
-                    style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
-                  >
-                    SOLD TO
+                  <div className="receipt-section-bar" style={{ margin: '10px 0 8px' }}>
+                    <span>SOLD TO</span>
                   </div>
-                  <ReceiptDivider variant="minor" />
                   <div
                     className="py-2 space-y-0.5 text-[0.875rem]"
                     style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}
@@ -440,30 +303,17 @@ export default async function CheckoutConfirmPage({ searchParams }: Props) {
                 <div className="text-[0.5rem] uppercase tracking-widest">HANDMADE WITH CARE — SHIPS IN 5-7 DAYS</div>
               </div>
 
-              <ReceiptDivider variant="major" />
-              <Barcode seed={order.id} className="mx-auto mt-2" />
-
-              <div className="py-3 flex gap-4 flex-wrap items-center">
-                <Link href={`/account/orders/${order.id}`}>
-                  <Button intent="secondary">{'[ VIEW ORDER ]'}</Button>
+              <div className="py-3 flex gap-4 flex-wrap items-center justify-center">
+                <Link href={`/account/orders/${order.id}`} className="receipt-action-btn">
+                  VIEW ORDER
                 </Link>
-                <Link href="/browse">
-                  <Button intent="secondary">{'[ BROWSE MORE ]'}</Button>
+                <Link href="/browse" className="receipt-view-item-link">
+                  BROWSE MORE →
                 </Link>
-              </div>
-              <ReceiptDivider variant="major" />
-
-              <div
-                className="text-[0.45rem] text-center uppercase tracking-widest pb-2"
-                style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
-              >
-                © TOR&apos;S BORED POTTERY CO. · BROOKLYN, NY
               </div>
             </>
           )}
-        </div>
-        <div className="receipt-edge-bottom" />
-      </div>
-    </div>
+      <ReceiptFooterChrome barcodeSeed={order.id} />
+    </ReceiptPage>
   );
 }

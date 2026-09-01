@@ -3,27 +3,36 @@ interface ReceiptDividerProps {
   className?: string;
 }
 
-const PATTERNS = {
-  major:     '================================',
-  minor:     '--------------------------------',
-  decorative:'* * * * * * * * * * * * * * * *',
-} as const;
+// Real CSS rules instead of repeated glyph strings — crisp at every width,
+// no overflow clipping, and the tear variant matches the mockup's ✂-plus-dash
+// cut-here row.
+const BORDER_STYLES: Record<'major' | 'minor' | 'decorative', React.CSSProperties> = {
+  major:      { borderTop: '1px dashed var(--border)' },
+  minor:      { borderTop: '1px dotted var(--border)' },
+  decorative: { borderTop: '2px dashed var(--border)' },
+};
 
 export default function ReceiptDivider({ variant = 'minor', className = '' }: ReceiptDividerProps) {
   if (variant === 'tear') {
-    return <div className={`receipt-tear ${className}`} role="separator" aria-hidden />;
+    return (
+      <div
+        role="separator"
+        aria-hidden
+        className={`flex items-center gap-2 ${className}`}
+        style={{ color: 'var(--border)', fontSize: 11 }}
+      >
+        <span>✂</span>
+        <span className="flex-1" style={{ borderBottom: '2px dashed var(--border)' }} />
+      </div>
+    );
   }
-
-  const pattern = PATTERNS[variant];
 
   return (
     <div
       role="separator"
       aria-hidden
-      className={`divider-${variant} overflow-hidden whitespace-nowrap text-[0.75rem] leading-relaxed select-none ${className}`}
-      style={{ color: 'var(--ink-muted)' }}
-    >
-      {pattern.repeat(10)}
-    </div>
+      className={`my-2 ${className}`}
+      style={BORDER_STYLES[variant]}
+    />
   );
 }

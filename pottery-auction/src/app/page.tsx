@@ -1,15 +1,27 @@
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { db } from '@/db';
 import { items, auctions } from '@/db/schema';
-import { eq, isNull, isNotNull } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import HomeClient from './HomeClient';
 import Y2KHome from '@/components/theme/y2k/Y2KHome';
 import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
-import ReceiptHeader from '@/components/theme/receipt/ReceiptHeader';
-import ReceiptFooter from '@/components/theme/receipt/ReceiptFooter';
-import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
-import ReceiptBrowseLayout from '@/components/theme/receipt/ReceiptBrowseLayout';
-import PolaroidPhoto from '@/components/theme/receipt/PolaroidPhoto';
+import ReceiptChrome from '@/components/theme/receipt/ReceiptChrome';
+import ReceiptFooterChrome from '@/components/theme/receipt/ReceiptFooterChrome';
+import ReceiptPhotoFrame from '@/components/theme/receipt/ReceiptPhotoFrame';
+
+function endsIn(endDate?: string): string {
+  if (!endDate) return '—';
+  const ms = new Date(endDate).getTime() - Date.now();
+  if (ms <= 0) return 'ENDED';
+  const h = Math.floor(ms / 3_600_000);
+  const m = Math.floor((ms % 3_600_000) / 60_000);
+  return `${h}H ${m}M`;
+}
+
+function money(n?: number | null): string {
+  return `$${(n ?? 0).toFixed(2)}`;
+}
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -115,92 +127,185 @@ export default async function Home() {
         id: r.i.id,
         sku: r.i.sku ?? 'OBJ-????',
         title: r.i.title,
-        listingType: 'auction' as const,
+        images: r.i.images,
         currentBid: r.i.current_bid ?? undefined,
         startingBid: r.i.starting_bid ?? undefined,
         endDate: endDateRaw ? endDateRaw.toISOString() : undefined,
-        soldAt: r.i.sold_at ? r.i.sold_at.toISOString() : null,
         techniques: r.i.techniques,
       };
     });
 
   const shopItems = shopRows
-    .filter((r) => !r.sold_at)
+    .filter((r) => !r.sold_at && r.id !== featuredItem?.id)
     .map((r) => ({
       id: r.id,
       sku: r.sku ?? 'OBJ-????',
       title: r.title,
-      listingType: 'buy_now' as const,
+      images: r.images,
       buyNowPrice: r.buy_now_price ?? undefined,
-      soldAt: r.sold_at ? r.sold_at.toISOString() : null,
-      reservedUntil: r.reserved_until ? r.reserved_until.toISOString() : null,
       techniques: r.techniques,
     }));
 
+  const featuredPrice = featuredItem
+    ? featuredItem.listing_type === 'buy_now'
+      ? featuredItem.buy_now_price
+      : (featuredItem.current_bid ?? featuredItem.starting_bid)
+    : null;
+  const featuredHref = featuredItem
+    ? featuredItem.listing_type === 'buy_now'
+      ? `/checkout?sku=${featuredItem.sku}`
+      : `/piece/${featuredItem.sku}`
+    : '/';
+  const showingCount = auctionItems.length + shopItems.length + (featuredItem ? 1 : 0);
+  const tags = (t: string[]) => t.map((s) => s.toUpperCase()).join(' · ');
+
   return (
     <ReceiptPage>
-      <ReceiptHeader subtitle="BROOKLYN, NY" />
+      <ReceiptChrome />
 
       {/* Featured piece */}
       {featuredItem && (
-        <div className="py-4">
-          <div className="text-[0.875rem] font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--ink)' }}>
-            FEATURED PIECE
+        <>
+          <div className="receipt-section-bar" style={{ margin: '18px 0 14px' }}>
+            <span>FEATURED PIECE</span>
+            <span className="receipt-section-bar-count">№ 001</span>
           </div>
-          {featuredItem.images?.[0] ? (
-            <PolaroidPhoto
-              src={featuredItem.images[0]}
-              alt={featuredItem.title}
-              sku={featuredItem.sku ?? undefined}
-              caption={featuredItem.title}
-            />
-          ) : (
-            <div
-              className="border border-[var(--border)] p-8 text-center text-[0.875rem] uppercase"
-              style={{ color: 'var(--ink-muted)', backgroundColor: 'var(--bg-well)' }}
-            >
-              [{featuredItem.sku}] — {featuredItem.title.toUpperCase()}
+          <ReceiptPhotoFrame
+            src={featuredItem.images?.[0]}
+            alt={featuredItem.title}
+            title={featuredItem.title}
+            size="lg"
+            stamp={{ label: 'AUTHENTIC', rotate: 4 }}
+          />
+          <div className="receipt-line-item" style={{ marginTop: 12, gap: 8 }}>
+            <div>
+              <div style={{ fontSize: 17, fontWeight: 600 }}>{featuredItem.title}</div>
+              <div style={{ fontSize: 10, letterSpacing: 1.5, color: 'var(--ink-muted)', marginTop: 2 }}>
+                {featuredItem.sku} · {tags(featuredItem.techniques ?? [])}
+              </div>
             </div>
-          )}
-        </div>
+            <span className="leader" />
+            <div style={{ fontFamily: 'var(--font-thermal)', fontSize: 34, lineHeight: 1 }}>
+              {money(featuredPrice)}
+            </div>
+          </div>
+          <div className="flex justify-end" style={{ marginTop: 8 }}>
+            <Link href={featuredHref} className="receipt-action-btn">
+              {featuredItem.listing_type === 'buy_now' ? 'BUY NOW' : 'VIEW LOT'}
+            </Link>
+          </div>
+        </>
       )}
 
       {/* Active auctions */}
       {auctionItems.length > 0 && (
         <>
-          <ReceiptDivider variant="major" />
-          <div className="py-2 text-[0.875rem] font-bold uppercase" style={{ color: 'var(--ink)' }}>
-            ACTIVE AUCTIONS ({auctionItems.length})
+          <div className="receipt-section-bar" style={{ margin: '26px 0 4px' }}>
+            <span>ACTIVE AUCTIONS</span>
+            <span className="receipt-section-bar-count">QTY {auctionItems.length}</span>
           </div>
-          <ReceiptBrowseLayout items={auctionItems} totalCount={auctionItems.length} />
+          <div
+            className="flex justify-between"
+            style={{ fontSize: 10, letterSpacing: 1, color: 'var(--ink-muted)', padding: '6px 0 2px' }}
+          >
+            <span>FILTER: [ALL]</span>
+            <span>SORT: [ENDING SOON]</span>
+          </div>
+          {auctionItems.map((item) => (
+            <div
+              key={item.id}
+              className="grid"
+              style={{
+                gridTemplateColumns: '86px 1fr',
+                gap: 14,
+                padding: '14px 0',
+                borderBottom: '1px dashed var(--border)',
+              }}
+            >
+              <ReceiptPhotoFrame src={item.images?.[0]} alt={item.title} title={item.title} size="sm" />
+              <div className="flex min-w-0 flex-col" style={{ gap: 3 }}>
+                <div className="receipt-line-item" style={{ gap: 6 }}>
+                  <span style={{ fontSize: 15, fontWeight: 600 }}>{item.title}</span>
+                  <span className="leader" />
+                  <span style={{ fontFamily: 'var(--font-thermal)', fontSize: 26, lineHeight: 1 }}>
+                    {money(item.currentBid ?? item.startingBid)}
+                  </span>
+                </div>
+                <div style={{ fontSize: 10, letterSpacing: 1.5, color: 'var(--ink-muted)' }}>
+                  {item.sku} · {tags(item.techniques ?? [])}
+                </div>
+                <div className="flex items-baseline justify-between" style={{ marginTop: 'auto' }}>
+                  <span style={{ fontFamily: 'var(--font-thermal)', fontSize: 19, color: 'var(--error)' }}>
+                    ENDS {endsIn(item.endDate)}
+                  </span>
+                  <Link href={`/piece/${item.sku}`} className="receipt-view-item-link">
+                    VIEW ITEM →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
         </>
       )}
 
       {/* Buy now */}
       {shopItems.length > 0 && (
         <>
-          <ReceiptDivider variant="major" />
-          <div className="py-2 text-[0.875rem] font-bold uppercase" style={{ color: 'var(--ink)' }}>
-            AVAILABLE BUY-NOW ({shopItems.length})
+          <div className="receipt-section-bar" style={{ margin: '26px 0 4px' }}>
+            <span>AVAILABLE BUY-NOW</span>
+            <span className="receipt-section-bar-count">QTY {shopItems.length}</span>
           </div>
-          <ReceiptBrowseLayout items={shopItems} totalCount={shopItems.length} />
+          {shopItems.map((item) => (
+            <div
+              key={item.id}
+              className="grid"
+              style={{
+                gridTemplateColumns: '86px 1fr',
+                gap: 14,
+                padding: '14px 0',
+                borderBottom: '1px dashed var(--border)',
+              }}
+            >
+              <ReceiptPhotoFrame src={item.images?.[0]} alt={item.title} title={item.title} size="sm" />
+              <div className="flex min-w-0 flex-col" style={{ gap: 3 }}>
+                <div className="receipt-line-item" style={{ gap: 6 }}>
+                  <span style={{ fontSize: 15, fontWeight: 600 }}>{item.title}</span>
+                  <span className="leader" />
+                  <span style={{ fontFamily: 'var(--font-thermal)', fontSize: 26, lineHeight: 1 }}>
+                    {money(item.buyNowPrice)}
+                  </span>
+                </div>
+                <div style={{ fontSize: 10, letterSpacing: 1.5, color: 'var(--ink-muted)' }}>
+                  {item.sku} · {tags(item.techniques ?? [])}
+                </div>
+                <div className="flex items-baseline justify-between" style={{ marginTop: 'auto' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: 'var(--accent)' }}>
+                    BUY NOW
+                  </span>
+                  <Link href={`/piece/${item.sku}`} className="receipt-view-item-link">
+                    VIEW ITEM →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
         </>
       )}
 
-      {auctionItems.length === 0 && shopItems.length === 0 && !featuredItem && (
-        <>
-          <ReceiptDivider variant="major" />
-          <div className="py-4 text-center text-[0.875rem] uppercase" style={{ color: 'var(--ink-muted)' }}>
-            NO ITEMS CURRENTLY AVAILABLE
-          </div>
-          <div className="py-2 text-center text-[0.6875rem]" style={{ color: 'var(--ink-muted)' }}>
-            Check back soon. New pieces added monthly.
-          </div>
-          <ReceiptDivider variant="major" />
-        </>
+      {showingCount > 0 ? (
+        <div
+          className="text-center"
+          style={{ fontSize: 10, letterSpacing: 2, color: 'var(--ink-muted)', padding: '12px 0 0' }}
+        >
+          SHOWING: {showingCount} ITEM{showingCount === 1 ? '' : 'S'}
+        </div>
+      ) : (
+        <div className="py-4 text-center" style={{ fontSize: 12, color: 'var(--ink-muted)' }}>
+          NO ITEMS CURRENTLY AVAILABLE — CHECK BACK SOON
+        </div>
       )}
 
-      <ReceiptFooter />
+      <ReceiptFooterChrome barcodeSeed="TORS-BORED-HOME" />
     </ReceiptPage>
   );
 }

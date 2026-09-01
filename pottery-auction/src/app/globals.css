@@ -79,22 +79,22 @@
 }
 
 [data-theme="receipt"] {
-  --bg:              #ede9e0;
-  --bg-well:         #302d28;
-  --ink:             #1b1511;
-  --ink-muted:       #4d4438;
-  --accent:          #1b1511;
-  --accent-hover:    #1a1208;
-  --accent-light:    #d4cfbc;
-  --border:          #a99f8d;
-  --error:           #b0392c;
+  --bg:              #f7f3ea;
+  --bg-well:         #292420;
+  --ink:             #2a2620;
+  --ink-muted:       #8b8377;
+  --accent:          #2b56a7;
+  --accent-hover:    #1d3d7d;
+  --accent-light:    #dce6f4;
+  --border:          #b9b0a0;
+  --error:           #c23b2e;
   --success:         #4a6b3a;
-  --paper-highlight: #ece8e0;
-  --stamp-blue:      #335a7a;
+  --paper-highlight: #efe9dd;
+  --stamp-blue:      #2b56a7;
   --font-display:    var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
   --font-body:       var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
   --font-stamp:      var(--font-typewriter);
-  --font-thermal:    'VT323', 'Courier New', monospace;
+  --font-thermal:    var(--font-vt323), 'VT323', 'Courier New', monospace;
   --font-caption:    var(--font-handwriting);
 }
 
@@ -412,8 +412,6 @@
 [data-theme="receipt"] body {
   font-family: var(--font-body);
   line-height: 1.6;
-  /* Expose thermal font var on body so child elements can resolve it */
-  --font-thermal: var(--font-vt323, 'VT323'), 'VT323', 'Courier New', monospace;
 }
 
 /* Receipt: monospace headings */
@@ -485,9 +483,22 @@ html {
    RECEIPT THEME — SPECIFIC STYLES
    ================================================ */
 
-/* Body: darker "desk" bg so the paper strip floats on it */
+/* Body: dark "desk" with a soft top glow + faint diagonal grain */
 [data-theme="receipt"] body {
   background-color: var(--bg-well);
+  background-image: radial-gradient(1100px 700px at 50% -10%, #38312a, var(--bg-well) 65%);
+  background-attachment: fixed;
+}
+[data-theme="receipt"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.012) 0 2px, transparent 2px 5px),
+    repeating-linear-gradient(25deg, rgba(0,0,0,.05) 0 1px, transparent 1px 4px);
 }
 
 /* Type scale — 3 sizes only */
@@ -562,94 +573,60 @@ html {
   color: var(--ink);
 }
 
-/* The paper strip — a REAL photographed paper surface (not CSS-faked grain) */
+/* The paper strip — flat cream stock; the silhouette (sawtooth edges) carries
+   the "torn receipt" read, so the drop-shadows are silhouette-aware. */
 .receipt-strip-paper {
-  max-width: 480px;
+  max-width: min(480px, 100%);
   margin: 0 auto;
-  background-color: var(--bg);
-  /* Real lightened paper photo, tiled vertically so a long receipt stays
-     legible; a warm gradient is multiplied over it for aged depth. */
-  background-image:
-    linear-gradient(to bottom, rgba(240,236,228,0.28) 0%, rgba(219,213,200,0.34) 100%),
-    url('/textures/paper-soft.webp');
-  background-size: 100% auto, 520px auto;
-  background-repeat: no-repeat, repeat-y;
-  background-position: center top, center top;
-  background-blend-mode: multiply, normal;
   position: relative;
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.30),
-    0 12px 28px rgba(0, 0, 0, 0.45),
-    0 30px 60px rgba(0, 0, 0, 0.35),
-    inset 0 0 60px rgba(90, 60, 20, 0.16),
-    inset 0 0 120px rgba(60, 35, 8, 0.07);
-  transform: rotate(-0.3deg);
+  filter:
+    drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 18px 34px rgba(0, 0, 0, 0.4));
+  animation: printIn 0.55s ease-out both;
 }
 
-/* Real crease/shadow depth — the higher-contrast photo multiplied on top,
-   subtle so text stays readable. Replaces the fake feTurbulence noise. */
-.receipt-strip-paper::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('/textures/paper.webp');
-  background-size: 520px auto;
-  background-repeat: repeat-y;
-  background-position: center top;
-  opacity: 0.06;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  z-index: 0;
+/* Paper entrance — receipt "prints" up out of the fold */
+@keyframes printIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
 }
 
-/* Fold-line shadow — barely-visible crease across the middle */
-.receipt-strip-paper::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(60,30,5,0.06) 20%, rgba(60,30,5,0.06) 80%, transparent);
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Content sits above the paper texture. A faint light halo behind the ink keeps
-   text crisp over creases without flattening the real-paper look. */
+/* Content on the paper surface */
 .receipt-strip-content {
   position: relative;
   z-index: 1;
-  padding: 0 20px;
-  /* Thermal print sits a touch heavier than a 400 mono — denser "ink" without
-     flattening the explicit 600/700 headings. */
-  font-weight: 500;
-  text-shadow:
-    0 0 2px rgba(247, 240, 222, 1),
-    0 0 5px rgba(247, 240, 222, 0.85),
-    0.5px 0.4px 0 rgba(25, 15, 5, 0.18);
+  background: var(--bg);
+  padding: 10px 26px 26px;
+}
+/* Faint horizontal print-line grain, in place of the old paper photo */
+.receipt-strip-content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  background-image: repeating-linear-gradient(0deg, rgba(60,45,25,.02) 0 2px, transparent 2px 5px);
+  mix-blend-mode: multiply;
 }
 
-/* Perforated punch edge — top */
+/* Sawtooth torn edge — top */
 .receipt-edge-top {
-  height: 12px;
-  background: radial-gradient(circle at 50% 0%, var(--bg-well) 6px, transparent 6px);
-  background-size: 16px 12px;
+  height: 11px;
+  background-image:
+    linear-gradient(135deg, var(--bg) 50%, transparent 50%),
+    linear-gradient(225deg, var(--bg) 50%, transparent 50%);
+  background-size: 13px 11px;
   background-repeat: repeat-x;
-  background-position: center top;
-  position: relative;
-  z-index: 2;
 }
 
-/* Perforated punch edge — bottom */
+/* Sawtooth torn edge — bottom */
 .receipt-edge-bottom {
-  height: 12px;
-  background: radial-gradient(circle at 50% 100%, var(--bg-well) 6px, transparent 6px);
-  background-size: 16px 12px;
+  height: 11px;
+  background-image:
+    linear-gradient(45deg, var(--bg) 50%, transparent 50%),
+    linear-gradient(315deg, var(--bg) 50%, transparent 50%);
+  background-size: 13px 11px;
   background-repeat: repeat-x;
-  background-position: center bottom;
-  position: relative;
-  z-index: 2;
 }
 
 /* Form inputs */
@@ -689,16 +666,31 @@ html {
   display: block;
   width: 100%;
 }
-.receipt-polaroid-frame {
+/* Halftone "receipt print" photo frame — the photo reads as printed on the
+   receipt: grayscale + contrast pulled up, a 4px dot screen multiplied over it.
+   The filter lives in CSS so stored images stay full-color. */
+.receipt-photo-frame {
   position: relative;
-  padding: 12px 12px 40px 12px;
-  background: var(--paper-highlight, #ece8e0);
-  box-shadow: 2px 4px 8px rgba(0,0,0,0.22), 0 12px 24px rgba(0,0,0,0.14), inset 0 0 20px rgba(80,50,10,0.06);
+  border: 1px solid var(--ink);
+  padding: 3px;
+  background: var(--paper-highlight);
 }
-.receipt-polaroid-frame img {
+.receipt-photo-frame img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  /* contain, not cover — most pieces are portrait; cover would crop them */
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.12) brightness(1.04);
+}
+.receipt-photo-frame::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(42,38,32,.16) 1px, transparent 1px);
+  background-size: 4px 4px;
+  mix-blend-mode: multiply;
 }
 .receipt-polaroid-caption {
   font-family: var(--font-caption);
@@ -714,11 +706,11 @@ html {
 }
 .receipt-polaroid-sku {
   font-family: var(--font-display, 'IBM Plex Mono', monospace);
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.625rem;
-  color: var(--ink-muted, #4a4a4a);
+  color: var(--ink-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 1.5px;
 }
 
 /* Polaroid stack — one per item */
@@ -748,7 +740,7 @@ html {
 }
 .receipt-line-item .leader {
   flex: 1;
-  border-bottom: 1px dotted var(--ink-muted);
+  border-bottom: 2px dotted var(--border);
   height: 0.6em;
   min-width: 0.5rem;
   margin-bottom: 0.15em;
@@ -763,30 +755,6 @@ html {
     -0.2px 0.1px 0 rgba(0, 0, 0, 0.06);
 }
 
-/* Circular date stamp — faded blue ink */
-.receipt-date-stamp {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  border: 2px solid var(--stamp-blue, #335a7a);
-  color: var(--stamp-blue, #335a7a);
-  font-family: var(--font-stamp);
-  font-size: 0.45rem;
-  letter-spacing: 0.12em;
-  text-align: center;
-  opacity: 0.55;
-  transform: rotate(8deg);
-  text-shadow:
-    0 0 0.6px currentColor,
-    0.3px 0.2px 0 rgba(0, 0, 0, 0.10);
-  line-height: 1.3;
-  padding: 6px;
-}
-
 /* Barcode component */
 .receipt-barcode {
   display: flex;
@@ -796,8 +764,8 @@ html {
   width: fit-content;
 }
 .receipt-barcode-bars {
-  width: 120px;
-  height: 40px;
+  width: 210px;
+  height: 44px;
 }
 .receipt-barcode-label {
   font-family: var(--font-display);
@@ -806,6 +774,174 @@ html {
   color: var(--ink-muted);
   margin-top: 2px;
   text-align: center;
+}
+
+/* ── Printed nav (lives INSIDE the paper, first thing on the receipt) ─────── */
+.receipt-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0 10px;
+  border-bottom: 1px solid var(--ink);
+}
+.receipt-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+.receipt-nav-link {
+  cursor: pointer;
+  color: var(--ink);
+  border-bottom: 2px solid transparent;
+  padding-bottom: 1px;
+  text-transform: uppercase;
+}
+.receipt-nav-link:hover {
+  color: var(--accent);
+}
+.receipt-nav-link--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.receipt-nav-link--muted {
+  color: var(--ink-muted);
+}
+.receipt-nav-signin {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-transform: uppercase;
+  background: transparent;
+}
+.receipt-nav-signin:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* ── Masthead ─────────────────────────────────────────────────────────────── */
+.receipt-masthead {
+  text-align: center;
+  padding: 26px 0 6px;
+}
+.receipt-masthead-title {
+  font-family: var(--font-stamp), serif;
+  font-size: 31px;
+  line-height: 1.15;
+  letter-spacing: 1px;
+}
+.receipt-masthead-subtitle {
+  font-size: 10px;
+  letter-spacing: 3.5px;
+  color: var(--ink-muted);
+  margin-top: 8px;
+}
+
+/* ── Date / cashier row ───────────────────────────────────────────────────── */
+.receipt-date-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  padding: 12px 0 14px;
+  border-bottom: 1px dashed var(--border);
+}
+.receipt-blink-cursor {
+  animation: blink 1.1s step-end infinite;
+}
+.receipt-cashier {
+  font-family: var(--font-caption), cursive;
+  color: var(--accent);
+  font-size: 14px;
+  display: inline-block;
+  transform: rotate(-3deg);
+}
+
+/* ── Solid dark section bar (FEATURED PIECE / ACTIVE AUCTIONS / …) ────────── */
+.receipt-section-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  padding: 6px 12px;
+  text-transform: uppercase;
+}
+.receipt-section-bar-count {
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: var(--border);
+}
+
+/* ── Rubber-stamp badge (AUTHENTIC / BIDDING OPEN / KEEP YOUR RECEIPT) ────── */
+.receipt-stamp-badge {
+  font-family: var(--font-stamp), serif;
+  font-size: 12px;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 3px;
+  padding: 2px 10px;
+  letter-spacing: 1px;
+  display: inline-block;
+  background: var(--bg);
+  opacity: 0.9;
+}
+.receipt-stamp-badge--red {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+/* ── Filled action buttons ────────────────────────────────────────────────── */
+.receipt-action-btn {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--bg);
+  background: var(--accent);
+  padding: 7px 16px;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  text-transform: uppercase;
+  font-family: inherit;
+}
+.receipt-action-btn:hover {
+  background: var(--accent-hover);
+}
+.receipt-action-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Small blue underlined link (VIEW ITEM →) ─────────────────────────────── */
+.receipt-view-item-link {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  cursor: pointer;
+  padding-bottom: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .receipt-strip-paper { animation: none; }
+  .receipt-blink-cursor { animation: none; opacity: 1; }
+  .dot-matrix-cursor { animation: none; opacity: 1; }
 }
 
 /* ================================================

@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import ThemeToggle from '@/components/ui/ThemeToggle';
-import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
 import VisitorCounter from '@/components/theme/y2k/VisitorCounter';
 
 const footerLinks = [
@@ -18,28 +17,10 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   if (theme === 'receipt') {
+    // Footer content lives on the paper (ReceiptFooterChrome); only the theme
+    // toggle sits outside so y2k stays reachable from every page.
     return (
-      <footer
-        style={{
-          backgroundColor: 'var(--bg-well)',
-          fontFamily: 'var(--font-display, "IBM Plex Mono", monospace)',
-        }}
-      >
-        <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 16px 80px' }}>
-          <ReceiptDivider variant="decorative" />
-          <nav className="flex flex-wrap gap-4 py-2 text-[0.6875rem]" style={{ color: 'var(--ink-muted)' }}>
-            {footerLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="hover:underline uppercase"
-                style={{ color: 'var(--ink-muted)' }}
-              >
-                [{link.label.toUpperCase()}]
-              </Link>
-            ))}
-          </nav>
-        </div>
+      <footer>
         <ThemeToggle />
       </footer>
     );

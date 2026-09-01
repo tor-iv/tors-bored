@@ -207,35 +207,15 @@ function CheckoutForm({ orderId }: { orderId: string }) {
 
       <ReceiptDivider variant="major" />
 
-      {/* Stamped PAY NOW button */}
+      {/* PAY NOW button */}
       <div className="flex justify-center py-2">
         <button
           type="submit"
           disabled={!stripe || !elements || isSubmitting}
-          className="receipt-stamp uppercase tracking-widest px-8 py-2.5 text-[0.9rem] border border-current"
-          style={{
-            fontFamily: 'var(--font-stamp)',
-            color: isSubmitting ? 'var(--ink-muted)' : 'var(--ink)',
-            transform: 'rotate(-0.5deg)',
-            boxShadow: isSubmitting ? '1px 1px 0 var(--ink-muted)' : '3px 3px 0 var(--ink)',
-            transition: 'box-shadow 0.1s, transform 0.1s',
-            cursor: isSubmitting ? 'wait' : 'pointer',
-            opacity: (!stripe || !elements || isSubmitting) ? 0.6 : 1,
-          }}
-          onMouseEnter={(e) => {
-            if (!isSubmitting) {
-              e.currentTarget.style.boxShadow = '1px 1px 0 var(--ink)';
-              e.currentTarget.style.transform = 'rotate(-0.5deg) translate(2px, 2px)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isSubmitting) {
-              e.currentTarget.style.boxShadow = '3px 3px 0 var(--ink)';
-              e.currentTarget.style.transform = 'rotate(-0.5deg)';
-            }
-          }}
+          className="receipt-action-btn"
+          style={{ cursor: isSubmitting ? 'wait' : undefined }}
         >
-          {isSubmitting ? '[ PROCESSING... ]' : '[ PAY NOW ]'}
+          {isSubmitting ? 'PROCESSING...' : 'PAY NOW'}
         </button>
       </div>
       <div
