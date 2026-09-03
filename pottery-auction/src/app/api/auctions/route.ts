@@ -1,53 +1,45 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { eq, desc } from "drizzle-orm";
+import { db } from "@/db";
+import { auctions } from "@/db/schema";
+import { getCurrentUser } from "@/lib/auth";
 
 /**
  * GET /api/auctions
- * List all auctions with optional filtering
+ * List all auctions with optional filtering.
  *
  * Query params:
  * - status: Filter by auction status (upcoming/active/ended)
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
+    const status = searchParams.get("status");
 
-    let query = supabase
-      .from('auctions')
-      .select('*')
-      .order('start_date', { ascending: false });
+    const rows =
+      status && ["upcoming", "active", "ended"].includes(status)
+        ? await db
+            .select()
+            .from(auctions)
+            .where(
+              eq(
+                auctions.status,
+                status as "upcoming" | "active" | "closing" | "ended",
+              ),
+            )
+            .orderBy(desc(auctions.start_date))
+        : await db.select().from(auctions).orderBy(desc(auctions.start_date));
 
-    // Filter by status if provided
-    if (status && ['upcoming', 'active', 'ended'].includes(status)) {
-      query = query.eq('status', status as 'upcoming' | 'active' | 'ended');
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Error fetching auctions:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch auctions', details: error.message },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ auctions: data });
+    return NextResponse.json({ auctions: rows });
   } catch (error) {
-    console.error('Unexpected error in GET /api/auctions:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in GET /api/auctions:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
 /**
  * POST /api/auctions
- * Create a new auction (admin only)
+ * Create a new auction (admin only).
  *
  * Body:
  * - title: string (required)
@@ -59,100 +51,71 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const user = await getCurrentUser();
 
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized - please login' },
-        { status: 401 }
+        { error: "Unauthorized - please login" },
+        { status: 401 },
       );
     }
 
-    // Check if user is admin
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile?.is_admin) {
+    if (!user.isAdmin) {
       return NextResponse.json(
-        { error: 'Forbidden - admin access required' },
-        { status: 403 }
+        { error: "Forbidden - admin access required" },
+        { status: 403 },
       );
     }
 
-    // Parse request body
     const body = await request.json();
     const { title, description, start_date, end_date, status, featured_image } = body;
 
-    // Validate required fields
     if (!title || !start_date || !end_date || !status) {
       return NextResponse.json(
-        { error: 'Missing required fields: title, start_date, end_date, status' },
-        { status: 400 }
+        { error: "Missing required fields: title, start_date, end_date, status" },
+        { status: 400 },
       );
     }
 
-    // Validate status
-    if (!['upcoming', 'active', 'ended'].includes(status)) {
+    if (!["upcoming", "active", "ended"].includes(status)) {
       return NextResponse.json(
-        { error: 'Invalid status. Must be: upcoming, active, or ended' },
-        { status: 400 }
+        { error: "Invalid status. Must be: upcoming, active, or ended" },
+        { status: 400 },
       );
     }
 
-    // Validate dates
     const startDate = new Date(start_date);
     const endDate = new Date(end_date);
 
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return NextResponse.json(
-        { error: 'Invalid date format. Use ISO 8601 format' },
-        { status: 400 }
+        { error: "Invalid date format. Use ISO 8601 format" },
+        { status: 400 },
       );
     }
 
     if (endDate <= startDate) {
       return NextResponse.json(
-        { error: 'End date must be after start date' },
-        { status: 400 }
+        { error: "End date must be after start date" },
+        { status: 400 },
       );
     }
 
-    // Use admin client to bypass RLS for insert
-    const adminClient = createAdminClient();
-
-    const { data, error } = await adminClient
-      .from('auctions')
-      .insert({
+    const [auction] = await db
+      .insert(auctions)
+      .values({
         title,
         description: description || null,
-        start_date,
-        end_date,
+        start_date: startDate,
+        end_date: endDate,
         status,
         featured_image: featured_image || null,
       })
-      .select()
-      .single();
+      .returning();
 
-    if (error) {
-      console.error('Error creating auction:', error);
-      return NextResponse.json(
-        { error: 'Failed to create auction', details: error.message },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ auction: data }, { status: 201 });
+    return NextResponse.json({ auction }, { status: 201 });
   } catch (error) {
-    console.error('Unexpected error in POST /api/auctions:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in POST /api/auctions:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

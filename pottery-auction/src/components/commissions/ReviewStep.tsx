@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { User, Mail, Check } from 'lucide-react';
+import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
 import type { WizardData } from './PotteryWizard';
 
 interface ReviewStepProps {
@@ -10,202 +10,181 @@ interface ReviewStepProps {
 }
 
 const shapeNames: Record<string, string> = {
-  bowl: 'Bowl',
-  vase: 'Vase',
-  mug: 'Mug',
-  plate: 'Plate',
-  planter: 'Planter',
-  sculpture: 'Sculpture',
+  bowl: 'BOWL',
+  vase: 'VASE',
+  mug: 'MUG',
+  plate: 'PLATE',
+  planter: 'PLANTER',
+  sculpture: 'SCULPTURE',
 };
 
 const clayNames: Record<string, string> = {
-  stoneware: 'Stoneware',
-  porcelain: 'Porcelain',
-  earthenware: 'Earthenware',
-  raku: 'Raku',
+  stoneware: 'STONEWARE',
+  porcelain: 'PORCELAIN',
+  earthenware: 'EARTHENWARE',
+  raku: 'RAKU',
 };
 
 const glazeNames: Record<string, string> = {
-  matte: 'Matte',
-  glossy: 'Glossy',
-  satin: 'Satin',
-  textured: 'Textured',
-  crystalline: 'Crystalline',
-  raw: 'Unglazed',
+  matte: 'MATTE',
+  glossy: 'GLOSSY',
+  satin: 'SATIN',
+  textured: 'TEXTURED',
+  crystalline: 'CRYSTALLINE',
+  raw: 'UNGLAZED',
 };
+
+function SpecRow({ label, value, muted }: { label: string; value: React.ReactNode; muted?: boolean }) {
+  return (
+    <div
+      className="receipt-line-item text-[0.75rem]"
+      style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+    >
+      <span className="uppercase whitespace-nowrap">{label}</span>
+      <span className="leader" />
+      <span
+        style={{
+          fontFamily: muted ? 'var(--font-display)' : 'var(--font-stamp)',
+          color: muted ? 'var(--ink-muted)' : 'var(--ink)',
+          fontSize: muted ? '0.6875rem' : '0.875rem',
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
 
 export default function ReviewStep({ data, onDataChange }: ReviewStepProps) {
   return (
     <div>
-      <p className="text-center mb-6" style={{ color: 'var(--theme-text-muted)' }}>
-        Review your choices and add your contact info
-      </p>
-
-      {/* Choices Summary */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {/* Shape */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-center p-4 rounded-lg"
-          style={{ backgroundColor: 'var(--theme-primary-light)' }}
-        >
-          <div className="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center" style={{ backgroundColor: 'var(--theme-primary)' }}>
-            <Check size={16} className="text-white" />
+      {/* ── ORDER SPEC REVIEW ── */}
+      <div
+        className="text-[0.625rem] uppercase tracking-widest mb-1"
+        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+      >
+        SECTION E1 &nbsp;·&nbsp; ORDER SPECIFICATIONS
+      </div>
+      <ReceiptDivider variant="minor" />
+      <div className="space-y-1 py-2">
+        <SpecRow
+          label="SHAPE"
+          value={data.shape ? shapeNames[data.shape] ?? data.shape.toUpperCase() : '—'}
+        />
+        <SpecRow
+          label="CLAY BODY"
+          value={data.clay ? clayNames[data.clay] ?? data.clay.toUpperCase() : '—'}
+        />
+        <SpecRow
+          label="GLAZE"
+          value={data.glaze ? glazeNames[data.glaze] ?? data.glaze.toUpperCase() : '—'}
+        />
+        <SpecRow
+          label="SKETCH"
+          value={data.drawing ? 'ATTACHED' : 'NONE'}
+          muted={!data.drawing}
+        />
+        {data.description && (
+          <div className="pt-1">
+            <div
+              className="text-[0.5625rem] uppercase tracking-wider mb-0.5"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+            >
+              CLIENT NOTES:
+            </div>
+            <div
+              className="text-[0.6875rem] leading-snug"
+              style={{
+                fontFamily: 'var(--font-display)',
+                color: 'var(--ink)',
+                borderLeft: '1px solid var(--ink-muted)',
+                paddingLeft: 8,
+                opacity: 0.85,
+              }}
+            >
+              {data.description.length > 180
+                ? `${data.description.slice(0, 180)}…`
+                : data.description}
+            </div>
           </div>
-          <p className="text-xs mb-1" style={{ color: 'var(--theme-text-muted)' }}>Shape</p>
-          <p
-            className="font-semibold"
-            style={{
-              color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive',
-              fontSize: '1.2rem'
-            }}
-          >
-            {data.shape ? shapeNames[data.shape] : '—'}
-          </p>
-        </motion.div>
-
-        {/* Clay */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-center p-4 rounded-lg"
-          style={{ backgroundColor: 'var(--theme-primary-light)' }}
-        >
-          <div className="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center" style={{ backgroundColor: 'var(--theme-primary)' }}>
-            <Check size={16} className="text-white" />
-          </div>
-          <p className="text-xs mb-1" style={{ color: 'var(--theme-text-muted)' }}>Clay</p>
-          <p
-            className="font-semibold"
-            style={{
-              color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive',
-              fontSize: '1.2rem'
-            }}
-          >
-            {data.clay ? clayNames[data.clay] : '—'}
-          </p>
-        </motion.div>
-
-        {/* Glaze */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-center p-4 rounded-lg"
-          style={{ backgroundColor: 'var(--theme-primary-light)' }}
-        >
-          <div className="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center" style={{ backgroundColor: 'var(--theme-primary)' }}>
-            <Check size={16} className="text-white" />
-          </div>
-          <p className="text-xs mb-1" style={{ color: 'var(--theme-text-muted)' }}>Glaze</p>
-          <p
-            className="font-semibold"
-            style={{
-              color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive',
-              fontSize: '1.2rem'
-            }}
-          >
-            {data.glaze ? glazeNames[data.glaze] : '—'}
-          </p>
-        </motion.div>
+        )}
       </div>
 
-      {/* Description preview */}
-      {data.description && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mb-6 p-4 rounded-lg border"
-          style={{ borderColor: 'rgba(0,0,0,0.1)' }}
-        >
-          <p className="text-xs mb-2" style={{ color: 'var(--theme-text-muted)' }}>Your description:</p>
-          <p className="text-sm" style={{ color: 'var(--theme-text)' }}>
-            {data.description.length > 150
-              ? `${data.description.substring(0, 150)}...`
-              : data.description
-            }
-          </p>
-        </motion.div>
-      )}
+      <ReceiptDivider variant="major" />
 
-      {/* Drawing preview */}
-      {data.drawing && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mb-6"
-        >
-          <p className="text-xs mb-2" style={{ color: 'var(--theme-text-muted)' }}>Your sketch:</p>
-          <div className="w-32 h-32 rounded-lg overflow-hidden border" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
-            <img src={data.drawing} alt="Your sketch" className="w-full h-full object-contain bg-white" />
-          </div>
-        </motion.div>
-      )}
-
-      {/* Contact Form */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="space-y-4"
+      {/* ── CONTACT FIELDS ── */}
+      <div
+        className="text-[0.625rem] uppercase tracking-widest mb-1"
+        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
       >
-        <h3
-          className="font-medium mb-4"
-          style={{
-            color: 'var(--theme-text)',
-            fontFamily: 'var(--font-caveat), cursive',
-            fontSize: '1.3rem'
-          }}
-        >
-          Where should I send updates?
-        </h3>
+        SECTION E2 &nbsp;·&nbsp; CONTACT INFORMATION
+      </div>
+      <ReceiptDivider variant="minor" />
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <User size={16} style={{ color: 'var(--theme-primary)' }} />
-              <label className="text-sm font-medium" style={{ color: 'var(--theme-text)' }}>
-                Your Name
-              </label>
-            </div>
+      <div className="py-3 space-y-3">
+        {/* Name */}
+        <div>
+          <div
+            className="receipt-line-item text-[0.6875rem] mb-1"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            <span className="uppercase whitespace-nowrap">CLIENT NAME</span>
+            <span className="leader" />
+            <span className="text-[0.5rem] uppercase" style={{ color: 'var(--error)' }}>REQUIRED</span>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.05 }}
+          >
             <input
               type="text"
               value={data.name}
               onChange={(e) => onDataChange('name', e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border-2 focus:outline-none focus:border-[var(--theme-primary)] transition-colors"
-              style={{ borderColor: 'rgba(0,0,0,0.1)' }}
-              placeholder="Your name"
+              className="receipt-input w-full"
+              style={{ fontFamily: 'var(--font-display)', fontSize: '0.8125rem' }}
+              placeholder="YOUR NAME"
+              autoComplete="name"
             />
-          </div>
+          </motion.div>
+        </div>
 
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Mail size={16} style={{ color: 'var(--theme-primary)' }} />
-              <label className="text-sm font-medium" style={{ color: 'var(--theme-text)' }}>
-                Email Address
-              </label>
-            </div>
+        {/* Email */}
+        <div>
+          <div
+            className="receipt-line-item text-[0.6875rem] mb-1"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            <span className="uppercase whitespace-nowrap">EMAIL ADDRESS</span>
+            <span className="leader" />
+            <span className="text-[0.5rem] uppercase" style={{ color: 'var(--error)' }}>REQUIRED</span>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+          >
             <input
               type="email"
               value={data.email}
               onChange={(e) => onDataChange('email', e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border-2 focus:outline-none focus:border-[var(--theme-primary)] transition-colors"
-              style={{ borderColor: 'rgba(0,0,0,0.1)' }}
-              placeholder="your@email.com"
+              className="receipt-input w-full"
+              style={{ fontFamily: 'var(--font-display)', fontSize: '0.8125rem' }}
+              placeholder="YOUR@EMAIL.COM"
+              autoComplete="email"
             />
-          </div>
+          </motion.div>
         </div>
+      </div>
 
-        <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>
-          I&apos;ll review your idea and get back to you within 3-5 business days to discuss the details!
-        </p>
-      </motion.div>
+      <ReceiptDivider variant="minor" />
+
+      <div
+        className="text-[0.5rem] uppercase tracking-wider mt-1"
+        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+      >
+        * TOR WILL RESPOND WITHIN 3–5 BUSINESS DAYS WITH A QUOTE *
+      </div>
     </div>
   );
 }

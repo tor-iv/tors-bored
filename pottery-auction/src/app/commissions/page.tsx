@@ -1,248 +1,313 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PotteryWizard, WizardData } from '@/components/commissions';
 import { useAuth } from '@/hooks/useAuth';
-import { HandsOnClay, ClayBlob, FloatingDecoration } from '@/components/decorations';
-import PotteryLoader from '@/components/ui/PotteryLoader';
+import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
+import ReceiptPage from '@/components/theme/receipt/ReceiptPage';
+import ReceiptChrome from '@/components/theme/receipt/ReceiptChrome';
+import ReceiptFooterChrome from '@/components/theme/receipt/ReceiptFooterChrome';
+import Barcode from '@/components/theme/receipt/Barcode';
+import { scaleIn, fadeUp } from '@/lib/animation-variants';
+
+// ─── Form number derived from today's date (stable for a session) ─────────────
+
+// Form number + date are minted on the client after mount — Date.now() at
+// module scope renders differently on server vs client (hydration mismatch).
+function useFormStamp() {
+  const [stamp, setStamp] = useState({ formNo: 'WO-......', today: '--/--/--' });
+  useEffect(() => {
+    setStamp({
+      formNo: `WO-${Date.now().toString(36).toUpperCase().slice(-6)}`,
+      today: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }),
+    });
+  }, []);
+  return stamp;
+}
+
+// ─── Submission to /api/commissions ──────────────────────────────────────────
+
+async function submitCommission(data: WizardData): Promise<void> {
+  // Build a rich description that includes shape/clay/glaze selections
+  const description = [
+    data.shape    ? `SHAPE: ${data.shape.toUpperCase()}` : null,
+    data.clay     ? `CLAY: ${data.clay.toUpperCase()}` : null,
+    data.glaze    ? `GLAZE: ${data.glaze.toUpperCase()}` : null,
+    data.description ? `NOTES: ${data.description}` : null,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  const body: Record<string, unknown> = {
+    email: data.email,
+    name: data.name,
+    description,
+    // drawing is optional; only include if present (data URL)
+    ...(data.drawing ? { images: [data.drawing] } : {}),
+  };
+
+  const res = await fetch('/api/commissions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Failed to submit' }));
+    throw new Error((err.error as string) ?? 'Failed to submit commission');
+  }
+}
+
+// ─── Loading slip ─────────────────────────────────────────────────────────────
+
+function LoadingSlip() {
+  return (
+    <ReceiptPage>
+      <ReceiptChrome />
+      <div className="py-10 text-center">
+        <div className="uppercase tracking-widest" style={{ fontSize: 12, color: 'var(--ink-muted)' }}>
+          <span className="receipt-loader-dots">PRINTING WORK ORDER</span>
+          <span className="dot-matrix-cursor">_</span>
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 8 }}>PLEASE STAND BY...</div>
+      </div>
+    </ReceiptPage>
+  );
+}
+
+// ─── Success slip ─────────────────────────────────────────────────────────────
+
+function SuccessSlip({
+  data,
+  onReset,
+  orderNo,
+  today,
+}: {
+  data: WizardData;
+  onReset: () => void;
+  orderNo: string;
+  today: string;
+}) {
+  return (
+    <ReceiptPage>
+      <ReceiptChrome />
+      <div className="receipt-section-bar" style={{ margin: '18px 0 4px' }}>
+        <span>✓ WORK ORDER RECEIVED</span>
+        <span className="receipt-section-bar-count">{orderNo}</span>
+      </div>
+      <div
+        className="flex flex-wrap justify-between"
+        style={{ gap: '2px 12px', fontSize: 10, letterSpacing: 1.5, color: 'var(--ink-muted)', padding: '6px 0 10px' }}
+      >
+        <span>CLIENT: {data.name.toUpperCase()}</span>
+        <span>DATE: {today} · STATUS: SUBMITTED</span>
+      </div>
+
+          {/* Order summary */}
+          <div className="receipt-section-bar" style={{ margin: '4px 0 8px' }}>
+            <span>ORDER SUMMARY</span>
+          </div>
+          <div className="space-y-1.5 py-2">
+            {data.shape && (
+              <div
+                className="receipt-line-item text-[0.75rem]"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+              >
+                <span className="uppercase whitespace-nowrap">SHAPE</span>
+                <span className="leader" />
+                <span style={{ color: 'var(--ink)', fontFamily: 'var(--font-stamp)' }}>
+                  {data.shape.toUpperCase()}
+                </span>
+              </div>
+            )}
+            {data.clay && (
+              <div
+                className="receipt-line-item text-[0.75rem]"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+              >
+                <span className="uppercase whitespace-nowrap">CLAY BODY</span>
+                <span className="leader" />
+                <span style={{ color: 'var(--ink)', fontFamily: 'var(--font-stamp)' }}>
+                  {data.clay.toUpperCase()}
+                </span>
+              </div>
+            )}
+            {data.glaze && (
+              <div
+                className="receipt-line-item text-[0.75rem]"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+              >
+                <span className="uppercase whitespace-nowrap">GLAZE FINISH</span>
+                <span className="leader" />
+                <span style={{ color: 'var(--ink)', fontFamily: 'var(--font-stamp)' }}>
+                  {data.glaze.toUpperCase()}
+                </span>
+              </div>
+            )}
+            {data.drawing && (
+              <div
+                className="receipt-line-item text-[0.75rem]"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+              >
+                <span className="uppercase whitespace-nowrap">SKETCH</span>
+                <span className="leader" />
+                <span style={{ color: 'var(--ink)' }}>ATTACHED</span>
+              </div>
+            )}
+            <div
+              className="receipt-line-item text-[0.75rem]"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+            >
+              <span className="uppercase whitespace-nowrap">CONTACT</span>
+              <span className="leader" />
+              <span style={{ color: 'var(--ink)' }}>{data.email}</span>
+            </div>
+          </div>
+
+          <ReceiptDivider variant="major" />
+
+          {/* What happens next */}
+          <div className="receipt-section-bar" style={{ margin: '14px 0 8px' }}>
+            <span>NEXT STEPS</span>
+          </div>
+          <div className="space-y-1.5 py-2">
+            {[
+              'TOR REVIEWS YOUR ORDER',
+              'EMAIL REPLY W/ QUESTIONS / QUOTE',
+              'TIMELINE + PRICING CONFIRMED',
+              'STUDIO BEGINS YOUR PIECE',
+            ].map((step, i) => (
+              <div
+                key={i}
+                className="receipt-line-item text-[0.6875rem]"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+              >
+                <span className="whitespace-nowrap">STEP {i + 1}</span>
+                <span className="leader" />
+                <span style={{ color: 'var(--ink)' }}>{step}</span>
+              </div>
+            ))}
+          </div>
+          <div
+            className="text-[0.6875rem] uppercase mt-1"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            * RESPONSE WITHIN 3–5 BUSINESS DAYS *
+          </div>
+
+          <ReceiptDivider variant="major" />
+
+          <div className="py-3 flex justify-center">
+            <button onClick={onReset} className="receipt-action-btn">
+              SUBMIT ANOTHER ORDER
+            </button>
+          </div>
+
+      <ReceiptFooterChrome barcodeSeed={orderNo} />
+    </ReceiptPage>
+  );
+}
+
+// ─── Error banner ─────────────────────────────────────────────────────────────
+
+function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      className="py-2 px-3 mb-4 text-[0.75rem] uppercase flex items-center gap-2"
+      style={{
+        fontFamily: 'var(--font-display)',
+        color: 'var(--error)',
+        border: '1px solid var(--error)',
+        backgroundColor: 'rgba(176,57,44,0.05)',
+      }}
+    >
+      <span className="flex-1">⚠ {message}</span>
+      <button onClick={onDismiss} style={{ color: 'var(--error)' }} aria-label="Dismiss">✕</button>
+    </motion.div>
+  );
+}
+
+// ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function CommissionsPage() {
+  const { formNo, today } = useFormStamp();
   const { user, userProfile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<WizardData | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleWizardComplete = async (data: WizardData) => {
     setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
-      // TODO: Submit to API
-      console.log('Commission data:', data);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
+      await submitCommission(data);
       setSubmittedData(data);
       setIsSubmitted(true);
     } catch (error) {
-      console.error('Error submitting commission:', error);
+      const msg =
+        error instanceof Error
+          ? error.message.toUpperCase()
+          : 'FAILED TO SUBMIT — PLEASE TRY AGAIN';
+      setSubmitError(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Loading state
-  if (isSubmitting) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F1EC' }}>
-        <PotteryLoader size="lg" showMessage={true} />
-      </div>
-    );
-  }
+  const handleReset = () => {
+    setIsSubmitted(false);
+    setSubmittedData(null);
+    setSubmitError(null);
+  };
 
-  // Success state
+  if (isSubmitting) return <LoadingSlip />;
+
   if (isSubmitted && submittedData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#F5F1EC' }}>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-lg w-full text-center"
-        >
-          {/* Success animation */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-            className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ backgroundColor: 'var(--theme-primary)' }}
-          >
-            <Sparkles size={40} className="text-white" />
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-4xl font-bold mb-4"
-            style={{
-              color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive'
-            }}
-          >
-            Your Dream Pot is On Its Way!
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mb-8"
-            style={{ color: 'var(--theme-text-muted)' }}
-          >
-            Thank you for sharing your vision! I&apos;ll review your{' '}
-            <span className="font-medium" style={{ color: 'var(--theme-text)' }}>
-              {submittedData.shape}
-            </span>{' '}
-            made with{' '}
-            <span className="font-medium" style={{ color: 'var(--theme-text)' }}>
-              {submittedData.clay}
-            </span>{' '}
-            and{' '}
-            <span className="font-medium" style={{ color: 'var(--theme-text)' }}>
-              {submittedData.glaze}
-            </span>{' '}
-            glaze, and get back to you within 3-5 business days.
-          </motion.p>
-
-          {/* Summary card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="rounded-xl p-6 mb-8"
-            style={{
-              background: 'white',
-              border: '1px solid rgba(224, 120, 86, 0.2)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
-            }}
-          >
-            <h3
-              className="font-semibold mb-4"
-              style={{
-                color: 'var(--theme-text)',
-                fontFamily: 'var(--font-caveat), cursive',
-                fontSize: '1.3rem'
-              }}
-            >
-              What happens next?
-            </h3>
-            <div className="text-left space-y-3">
-              {[
-                "I'll review your pottery idea and assess feasibility",
-                "You'll receive an email with my thoughts and any questions",
-                "We'll discuss pricing, timeline, and any adjustments",
-                "Once agreed, I'll start bringing your vision to life!"
-              ].map((step, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style={{
-                      backgroundColor: 'var(--theme-primary-light)',
-                      color: 'var(--theme-text)',
-                      fontFamily: 'var(--font-caveat), cursive',
-                      fontSize: '0.9rem'
-                    }}
-                  >
-                    {i + 1}
-                  </div>
-                  <p className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>
-                    {step}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <button
-              onClick={() => {
-                setIsSubmitted(false);
-                setSubmittedData(null);
-              }}
-              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105"
-              style={{
-                backgroundColor: 'var(--theme-primary)',
-                color: 'var(--theme-text-on-primary)',
-                boxShadow: '0 4px 0 var(--theme-primary-dark)'
-              }}
-            >
-              Submit Another Idea
-            </button>
-            <Link
-              href="/gallery"
-              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 border-2"
-              style={{
-                borderColor: 'var(--theme-primary)',
-                color: 'var(--theme-text)'
-              }}
-            >
-              Browse Gallery
-            </Link>
-          </motion.div>
-        </motion.div>
-      </div>
-    );
+    return <SuccessSlip data={submittedData} onReset={handleReset} orderNo={formNo} today={today} />;
   }
 
-  // Main wizard view
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#F5F1EC' }}>
-      {/* Background decorations */}
-      <FloatingDecoration className="absolute top-20 right-10 opacity-20 hidden lg:block" delay={0}>
-        <ClayBlob className="w-48 h-48" color="var(--theme-primary)" />
-      </FloatingDecoration>
-      <FloatingDecoration className="absolute bottom-40 left-10 opacity-15 hidden lg:block" delay={2}>
-        <ClayBlob className="w-32 h-32" color="var(--theme-accent)" />
-      </FloatingDecoration>
-
-      {/* Header */}
-      <div className="relative py-12 sm:py-16" style={{ backgroundColor: 'var(--theme-primary-light)' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Back link */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm mb-6 hover:opacity-70 transition-opacity"
-            style={{ color: 'var(--theme-text-muted)' }}
-          >
-            <ArrowLeft size={16} />
-            Back to Home
-          </Link>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            {/* Hands on clay illustration */}
-            <HandsOnClay
-              className="w-20 h-20 mx-auto mb-4"
-              color="var(--theme-text)"
-            />
-
-            <h1
-              className="text-4xl sm:text-5xl font-bold mb-4"
-              style={{
-                color: 'var(--theme-text)',
-                fontFamily: 'var(--font-caveat), cursive'
-              }}
-            >
-              Design Your Dream Pot
-            </h1>
-            <p
-              className="text-lg max-w-2xl mx-auto"
-              style={{ color: 'var(--theme-text-muted)' }}
-            >
-              Walk through a few quick steps to tell me about your perfect pottery piece.
-              I&apos;ll review your idea and we&apos;ll bring it to life together!
-            </p>
-          </motion.div>
-        </div>
+    <ReceiptPage>
+      <ReceiptChrome />
+      <div className="receipt-section-bar" style={{ margin: '18px 0 4px' }}>
+        <span>COMMISSION WORK ORDER</span>
+        <span className="receipt-section-bar-count">{formNo}</span>
+      </div>
+      <div
+        className="flex flex-wrap justify-between"
+        style={{ gap: '2px 12px', fontSize: 10, letterSpacing: 1.5, color: 'var(--ink-muted)', padding: '6px 0 10px' }}
+      >
+        <span>
+          {user
+            ? `CLIENT: ${(userProfile?.displayName ?? user.email ?? 'MEMBER').toUpperCase().slice(0, 20)}`
+            : 'CLIENT: GUEST'}
+        </span>
+        <span>QUOTE IN 3–5 BUS. DAYS</span>
       </div>
 
-      {/* Wizard */}
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <PotteryWizard
-          onComplete={handleWizardComplete}
-          initialName={userProfile?.displayName || ''}
-          initialEmail={user?.email || ''}
-        />
-      </div>
-    </div>
+          {/* ── ERROR BANNER ── */}
+          <AnimatePresence>
+            {submitError && (
+              <ErrorBanner message={submitError} onDismiss={() => setSubmitError(null)} />
+            )}
+          </AnimatePresence>
+
+          {/* ── WIZARD ── */}
+          <PotteryWizard
+            onComplete={handleWizardComplete}
+            initialName={userProfile?.displayName ?? ''}
+            initialEmail={user?.email ?? ''}
+          />
+
+          <ReceiptDivider variant="major" />
+
+      <ReceiptFooterChrome barcodeSeed={formNo} />
+    </ReceiptPage>
   );
 }

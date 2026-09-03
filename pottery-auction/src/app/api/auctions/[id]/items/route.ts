@@ -1,56 +1,38 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from "next/server";
+import { eq, desc } from "drizzle-orm";
+import { db } from "@/db";
+import { auctions, items } from "@/db/schema";
 
 type Params = Promise<{ id: string }>;
 
 /**
  * GET /api/auctions/[id]/items
- * Get all items in a specific auction
+ * Get all items in a specific auction.
  */
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Params }
+  _request: NextRequest,
+  { params }: { params: Params },
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
 
     // First verify the auction exists
-    const { data: auction, error: auctionError } = await supabase
-      .from('auctions')
-      .select('id, title, status')
-      .eq('id', id)
-      .single();
+    const [auction] = await db
+      .select({ id: auctions.id, title: auctions.title, status: auctions.status })
+      .from(auctions)
+      .where(eq(auctions.id, id))
+      .limit(1);
 
-    if (auctionError) {
-      if (auctionError.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Auction not found' },
-          { status: 404 }
-        );
-      }
-
-      console.error('Error fetching auction:', auctionError);
-      return NextResponse.json(
-        { error: 'Failed to fetch auction', details: auctionError.message },
-        { status: 500 }
-      );
+    if (!auction) {
+      return NextResponse.json({ error: "Auction not found" }, { status: 404 });
     }
 
     // Fetch all items in this auction
-    const { data: items, error: itemsError } = await supabase
-      .from('items')
-      .select('*')
-      .eq('auction_id', id)
-      .order('created_at', { ascending: false });
-
-    if (itemsError) {
-      console.error('Error fetching items:', itemsError);
-      return NextResponse.json(
-        { error: 'Failed to fetch items', details: itemsError.message },
-        { status: 500 }
-      );
-    }
+    const rows = await db
+      .select()
+      .from(items)
+      .where(eq(items.auction_id, id))
+      .orderBy(desc(items.created_at));
 
     return NextResponse.json({
       auction: {
@@ -58,14 +40,11 @@ export async function GET(
         title: auction.title,
         status: auction.status,
       },
-      items: items || [],
-      count: items?.length || 0,
+      items: rows,
+      count: rows.length,
     });
   } catch (error) {
-    console.error('Unexpected error in GET /api/auctions/[id]/items:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in GET /api/auctions/[id]/items:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { and, desc, eq, sql } from "drizzle-orm";
+import { db } from "@/db";
+import { auctions, items } from "@/db/schema";
+import { getCurrentUser } from "@/lib/auth";
 
 /**
  * GET /api/items
@@ -9,48 +11,38 @@ import { createAdminClient } from '@/lib/supabase/admin';
  * Query params:
  * - auction_id: Filter by auction ID
  * - featured: Filter by featured status (true/false)
+ *
+ * Migrated from Supabase to Drizzle/Postgres.
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
     const { searchParams } = new URL(request.url);
-    const auctionId = searchParams.get('auction_id');
-    const featured = searchParams.get('featured');
+    const auctionId = searchParams.get("auction_id");
+    const featured = searchParams.get("featured");
 
-    let query = supabase
-      .from('items')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    // Filter by auction_id if provided
+    const conditions = [];
     if (auctionId) {
-      query = query.eq('auction_id', auctionId);
+      conditions.push(eq(items.auction_id, auctionId));
+    }
+    if (featured === "true") {
+      conditions.push(eq(items.featured, true));
+    } else if (featured === "false") {
+      conditions.push(eq(items.featured, false));
     }
 
-    // Filter by featured status if provided
-    if (featured === 'true') {
-      query = query.eq('featured', true);
-    } else if (featured === 'false') {
-      query = query.eq('featured', false);
-    }
+    const rows =
+      conditions.length > 0
+        ? await db
+            .select()
+            .from(items)
+            .where(and(...conditions))
+            .orderBy(desc(items.created_at))
+        : await db.select().from(items).orderBy(desc(items.created_at));
 
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Error fetching items:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch items', details: error.message },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ items: data });
+    return NextResponse.json({ items: rows });
   } catch (error) {
-    console.error('Unexpected error in GET /api/items:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in GET /api/items:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -68,36 +60,24 @@ export async function GET(request: NextRequest) {
  * - techniques: string[] (optional, defaults to [])
  * - weight: number (optional)
  * - featured: boolean (optional, defaults to false)
+ * - listing_type: "auction" | "buy_now" (optional, defaults to "auction")
+ * - buy_now_price: number (optional)
+ * - reserve_price: number (optional)
+ * - sku: string (optional — if omitted and type_code provided, generate_sku() is called)
+ * - type_code: string (optional — passed to generate_sku() when sku is not supplied)
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const user = await getCurrentUser();
 
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized - please login' },
-        { status: 401 }
-      );
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized - please login" }, { status: 401 });
     }
 
-    // Check if user is admin
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile?.is_admin) {
-      return NextResponse.json(
-        { error: 'Forbidden - admin access required' },
-        { status: 403 }
-      );
+    if (!user.isAdmin) {
+      return NextResponse.json({ error: "Forbidden - admin access required" }, { status: 403 });
     }
 
-    // Parse request body
     const body = await request.json();
     const {
       title,
@@ -108,82 +88,71 @@ export async function POST(request: NextRequest) {
       dimensions,
       techniques,
       weight,
-      featured
+      featured,
+      listing_type,
+      buy_now_price,
+      reserve_price,
+      sku,
+      type_code,
     } = body;
 
     // Validate required fields
     if (!title) {
-      return NextResponse.json(
-        { error: 'Missing required field: title' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required field: title" }, { status: 400 });
     }
 
     if (starting_bid === undefined || starting_bid === null) {
-      return NextResponse.json(
-        { error: 'Missing required field: starting_bid' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required field: starting_bid" }, { status: 400 });
     }
 
-    // Validate starting_bid is a positive number
-    if (typeof starting_bid !== 'number' || starting_bid < 0) {
-      return NextResponse.json(
-        { error: 'starting_bid must be a positive number' },
-        { status: 400 }
-      );
+    if (typeof starting_bid !== "number" || starting_bid < 0) {
+      return NextResponse.json({ error: "starting_bid must be a positive number" }, { status: 400 });
     }
 
     // If auction_id provided, verify it exists
     if (auction_id) {
-      const { data: auction, error: auctionError } = await supabase
-        .from('auctions')
-        .select('id')
-        .eq('id', auction_id)
-        .single();
+      const [auction] = await db
+        .select({ id: auctions.id })
+        .from(auctions)
+        .where(eq(auctions.id, auction_id))
+        .limit(1);
 
-      if (auctionError || !auction) {
-        return NextResponse.json(
-          { error: 'Invalid auction_id - auction not found' },
-          { status: 400 }
-        );
+      if (!auction) {
+        return NextResponse.json({ error: "Invalid auction_id - auction not found" }, { status: 400 });
       }
     }
 
-    // Use admin client to bypass RLS for insert
-    const adminClient = createAdminClient();
-
-    const { data, error } = await adminClient
-      .from('items')
-      .insert({
-        title,
-        description: description || null,
-        auction_id: auction_id || null,
-        images: images || [],
-        starting_bid,
-        current_bid: starting_bid, // Initialize current_bid to starting_bid
-        dimensions: dimensions || null,
-        techniques: techniques || [],
-        weight: weight || null,
-        featured: featured || false,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating item:', error);
-      return NextResponse.json(
-        { error: 'Failed to create item', details: error.message },
-        { status: 500 }
-      );
+    // Resolve SKU: use provided value, or call generate_sku() if type_code given
+    let resolvedSku: string | null = sku ?? null;
+    if (!resolvedSku && type_code) {
+      const rows = await db.execute(sql`SELECT generate_sku(${type_code}) AS generate_sku`);
+      const first = rows[0] as Record<string, unknown> | undefined;
+      resolvedSku = (first?.generate_sku as string) ?? null;
     }
 
-    return NextResponse.json({ item: data }, { status: 201 });
+    const [row] = await db
+      .insert(items)
+      .values({
+        title,
+        description: description ?? null,
+        auction_id: auction_id ?? null,
+        images: images ?? [],
+        starting_bid,
+        current_bid: starting_bid,
+        dimensions: dimensions ?? null,
+        techniques: techniques ?? [],
+        weight: weight ?? null,
+        featured: featured ?? false,
+        listing_type: listing_type ?? "auction",
+        buy_now_price: buy_now_price ?? null,
+        reserve_price: reserve_price ?? null,
+        sku: resolvedSku,
+      })
+      .returning();
+
+    return NextResponse.json({ item: row }, { status: 201 });
   } catch (error) {
-    console.error('Unexpected error in POST /api/items:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in POST /api/items:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

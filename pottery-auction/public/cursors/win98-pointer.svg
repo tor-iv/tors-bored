@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- pointing hand cursor: index finger extended upward -->
+  <!-- finger -->
+  <rect x="13" y="2" width="6" height="14" rx="3" fill="white" stroke="black" stroke-width="1.2"/>
+  <!-- palm -->
+  <rect x="8" y="13" width="16" height="12" rx="3" fill="white" stroke="black" stroke-width="1.2"/>
+  <!-- other fingers (folded) -->
+  <rect x="8" y="11" width="4" height="8" rx="2" fill="white" stroke="black" stroke-width="1"/>
+  <rect x="20" y="11" width="4" height="8" rx="2" fill="white" stroke="black" stroke-width="1"/>
+  <rect x="8" y="22" width="4" height="6" rx="2" fill="white" stroke="black" stroke-width="1"/>
+  <!-- knuckle lines -->
+  <line x1="9" y1="16" x2="11" y2="16" stroke="black" stroke-width="0.8"/>
+  <line x1="21" y1="16" x2="23" y2="16" stroke="black" stroke-width="0.8"/>
+</svg>

@@ -1,71 +1,60 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { commissions } from "@/db/schema";
+import { getCurrentUser } from "@/lib/auth";
 
 type Params = Promise<{ id: string }>;
 
 /**
  * GET /api/commissions/[id]
- * Get a single commission by ID
- * - Users can view their own commissions
- * - Admins can view any commission
+ * Get a single commission by ID.
+ * - Users can view their own commissions.
+ * - Admins can view any commission.
+ *
+ * Migrated from Supabase to Drizzle/Postgres. RLS is gone — ownership is
+ * enforced explicitly: non-admins who request another user's commission get 404.
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Params }
+  { params }: { params: Params },
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
+    const user = await getCurrentUser();
 
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized - please login' },
-        { status: 401 }
+        { error: "Unauthorized - please login" },
+        { status: 401 },
       );
     }
 
-    // Fetch the commission
-    const { data, error } = await supabase
-      .from('commissions')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const [commission] = await db
+      .select()
+      .from(commissions)
+      .where(eq(commissions.id, id))
+      .limit(1);
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Commission not found' },
-          { status: 404 }
-        );
-      }
-
-      console.error('Error fetching commission:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch commission', details: error.message },
-        { status: 500 }
-      );
+    if (!commission) {
+      return NextResponse.json({ error: "Commission not found" }, { status: 404 });
     }
 
-    // RLS will handle permission checks automatically
-    // If user doesn't have access, data will be null
+    // RLS-backstop: non-admins may only view their own commissions.
+    if (!user.isAdmin && commission.user_id !== user.id) {
+      return NextResponse.json({ error: "Commission not found" }, { status: 404 });
+    }
 
-    return NextResponse.json({ commission: data });
+    return NextResponse.json({ commission });
   } catch (error) {
-    console.error('Unexpected error in GET /api/commissions/[id]:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in GET /api/commissions/[id]:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
 /**
  * PATCH /api/commissions/[id]
- * Update a commission (admin only)
+ * Update a commission (admin only).
  *
  * Body (all fields optional):
  * - status: 'submitted' | 'reviewing' | 'accepted' | 'declined' | 'in_progress' | 'completed'
@@ -75,49 +64,43 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Params }
+  { params }: { params: Params },
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
+    const user = await getCurrentUser();
 
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized - please login' },
-        { status: 401 }
+        { error: "Unauthorized - please login" },
+        { status: 401 },
       );
     }
 
-    // Check if user is admin
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile?.is_admin) {
+    if (!user.isAdmin) {
       return NextResponse.json(
-        { error: 'Forbidden - admin access required' },
-        { status: 403 }
+        { error: "Forbidden - admin access required" },
+        { status: 403 },
       );
     }
 
-    // Parse request body
     const body = await request.json();
     const { status, admin_notes, budget, timeline } = body;
 
-    // Build update object with only provided fields
-    const updates: Record<string, unknown> = {};
+    const updates: Partial<{
+      status: "submitted" | "reviewing" | "accepted" | "declined" | "in_progress" | "completed";
+      admin_notes: string;
+      budget: number | null;
+      timeline: string | null;
+      updated_at: Date;
+    }> = {};
 
     if (status !== undefined) {
-      const validStatuses = ['submitted', 'reviewing', 'accepted', 'declined', 'in_progress', 'completed'];
+      const validStatuses = ["submitted", "reviewing", "accepted", "declined", "in_progress", "completed"];
       if (!validStatuses.includes(status)) {
         return NextResponse.json(
-          { error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` },
-          { status: 400 }
+          { error: `Invalid status. Must be one of: ${validStatuses.join(", ")}` },
+          { status: 400 },
         );
       }
       updates.status = status;
@@ -128,10 +111,10 @@ export async function PATCH(
     }
 
     if (budget !== undefined) {
-      if (budget !== null && (typeof budget !== 'number' || budget < 0)) {
+      if (budget !== null && (typeof budget !== "number" || budget < 0)) {
         return NextResponse.json(
-          { error: 'Budget must be a positive number or null' },
-          { status: 400 }
+          { error: "Budget must be a positive number or null" },
+          { status: 400 },
         );
       }
       updates.budget = budget;
@@ -142,46 +125,27 @@ export async function PATCH(
     }
 
     if (Object.keys(updates).length === 0) {
-      return NextResponse.json(
-        { error: 'No fields to update' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
     }
 
-    // Use admin client to bypass RLS for update
-    const adminClient = createAdminClient();
+    updates.updated_at = new Date();
 
-    const { data, error } = await adminClient
-      .from('commissions')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
+    const [commission] = await db
+      .update(commissions)
+      .set(updates)
+      .where(eq(commissions.id, id))
+      .returning();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Commission not found' },
-          { status: 404 }
-        );
-      }
-
-      console.error('Error updating commission:', error);
-      return NextResponse.json(
-        { error: 'Failed to update commission', details: error.message },
-        { status: 500 }
-      );
+    if (!commission) {
+      return NextResponse.json({ error: "Commission not found" }, { status: 404 });
     }
 
     return NextResponse.json({
-      commission: data,
-      message: 'Commission updated successfully',
+      commission,
+      message: "Commission updated successfully",
     });
   } catch (error) {
-    console.error('Unexpected error in PATCH /api/commissions/[id]:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in PATCH /api/commissions/[id]:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -322,3 +322,52 @@ export async function updateCommission(id: string, data: Partial<{
 
   return res.json();
 }
+
+// ============================================
+// CHECKOUT
+// ============================================
+
+export async function createPaymentIntent(sku: string): Promise<{
+  clientSecret: string;
+  orderId: string;
+  amounts: { subtotalCents: number; shippingCents: number; taxCents: number; totalCents: number };
+}> {
+  const res = await fetch('/api/checkout/payment-intent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sku }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: 'Failed to create payment intent' }));
+    throw new Error(error.error || 'Failed to create payment intent');
+  }
+
+  return res.json();
+}
+
+// ============================================
+// ORDERS
+// ============================================
+
+export async function fetchUserOrders() {
+  const res = await fetch('/api/orders');
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: 'Failed to fetch orders' }));
+    throw new Error(error.error || 'Failed to fetch orders');
+  }
+
+  return res.json();
+}
+
+export async function fetchOrder(id: string) {
+  const res = await fetch(`/api/orders/${id}`);
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: 'Failed to fetch order' }));
+    throw new Error(error.error || 'Failed to fetch order');
+  }
+
+  return res.json();
+}

@@ -1,8 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import DrawingCanvas from '@/components/ui/DrawingCanvas';
-import { Pencil, MessageSquare } from 'lucide-react';
+import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
 
 interface SketchStepProps {
   drawing: string | null;
@@ -15,116 +14,135 @@ export default function SketchStep({
   drawing,
   description,
   onDrawingChange,
-  onDescriptionChange
+  onDescriptionChange,
 }: SketchStepProps) {
   return (
     <div>
-      <p className="text-center mb-6" style={{ color: 'var(--theme-text-muted)' }}>
-        Add details to help bring your vision to life (both optional)
-      </p>
-
-      {/* Description Section */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
-          <MessageSquare size={18} style={{ color: 'var(--theme-primary)' }} />
-          <label
-            className="font-medium"
-            style={{
-              color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive',
-              fontSize: '1.2rem'
-            }}
-          >
-            Describe Your Vision
-          </label>
-        </div>
-        <textarea
-          value={description}
-          onChange={(e) => onDescriptionChange(e.target.value)}
-          rows={4}
-          className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:border-[var(--theme-primary)] transition-colors resize-none"
-          style={{
-            borderColor: 'rgba(0,0,0,0.1)',
-            backgroundColor: 'white'
-          }}
-          placeholder="Tell me about your dream piece! Size preferences, special features, intended use, color ideas, decorative patterns, handles, feet, anything that helps me understand your vision..."
-        />
-        <p className="text-xs mt-2" style={{ color: 'var(--theme-text-muted)' }}>
-          The more details you share, the better I can bring your idea to life
-        </p>
-      </div>
-
-      {/* Drawing Section */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <Pencil size={18} style={{ color: 'var(--theme-primary)' }} />
-          <label
-            className="font-medium"
-            style={{
-              color: 'var(--theme-text)',
-              fontFamily: 'var(--font-caveat), cursive',
-              fontSize: '1.2rem'
-            }}
-          >
-            Sketch Your Idea
-          </label>
-          <span
-            className="text-xs px-2 py-0.5 rounded-full"
-            style={{
-              backgroundColor: 'var(--theme-primary-light)',
-              color: 'var(--theme-text-muted)'
-            }}
-          >
-            Optional
-          </span>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl overflow-hidden"
-          style={{
-            border: '2px solid rgba(224, 120, 86, 0.2)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-          }}
+      {/* ── DESCRIPTION FIELD ── */}
+      <div className="mb-4">
+        <div
+          className="text-[0.625rem] uppercase tracking-widest mb-1"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
         >
-          <DrawingCanvas
-            onSave={onDrawingChange}
-            placeholder="Draw your pottery idea - shapes, handles, decorations, patterns..."
+          SECTION D1 &nbsp;·&nbsp; DESCRIBE YOUR VISION
+        </div>
+        <ReceiptDivider variant="minor" />
+
+        <div className="py-2">
+          <div
+            className="receipt-line-item text-[0.75rem] mb-2"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            <span className="uppercase whitespace-nowrap">NOTES</span>
+            <span className="leader" />
+            <span className="text-[0.5rem] uppercase" style={{ color: 'var(--ink-muted)' }}>OPTIONAL</span>
+          </div>
+          <textarea
+            value={description}
+            onChange={(e) => onDescriptionChange(e.target.value)}
+            rows={4}
+            className="receipt-input w-full resize-none"
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '0.75rem',
+              lineHeight: 1.6,
+            }}
+            placeholder="SIZE PREFERENCES, SPECIAL FEATURES, COLOR IDEAS, SURFACE DECORATIONS, INTENDED USE..."
           />
-        </motion.div>
-
-        <p className="text-xs mt-2 text-center" style={{ color: 'var(--theme-text-muted)' }}>
-          Even simple sketches help! Don&apos;t worry about being artistic - I just want to understand your idea
-        </p>
+          <div
+            className="text-[0.5rem] uppercase tracking-wider mt-1"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            * MORE DETAIL = BETTER RESULT *
+          </div>
+        </div>
       </div>
 
-      {/* Helpful tips */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="mt-8 p-4 rounded-lg"
-        style={{ backgroundColor: 'var(--theme-primary-light)' }}
-      >
-        <h4
-          className="font-medium mb-2"
-          style={{
-            color: 'var(--theme-text)',
-            fontFamily: 'var(--font-caveat), cursive',
-            fontSize: '1.1rem'
-          }}
+      {/* ── SKETCH AREA ── */}
+      <div>
+        <div
+          className="text-[0.625rem] uppercase tracking-widest mb-1"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
         >
-          Ideas for what to include:
-        </h4>
-        <ul className="text-sm space-y-1" style={{ color: 'var(--theme-text-muted)' }}>
-          <li>• Approximate size (height, width, or compared to common objects)</li>
-          <li>• Special features (handles, lid, spout, feet)</li>
-          <li>• Color preferences or color combinations</li>
-          <li>• Surface decorations (patterns, textures, carvings)</li>
-          <li>• Intended use (display, daily use, gift)</li>
-        </ul>
-      </motion.div>
+          SECTION D2 &nbsp;·&nbsp; ATTACH SKETCH
+        </div>
+        <ReceiptDivider variant="minor" />
+
+        <div className="py-2">
+          <div
+            className="receipt-line-item text-[0.75rem] mb-2"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            <span className="uppercase whitespace-nowrap">SKETCH</span>
+            <span className="leader" />
+            <span className="text-[0.5rem] uppercase" style={{ color: 'var(--ink-muted)' }}>OPTIONAL</span>
+          </div>
+
+          {/* Drawing canvas framed as "ATTACH SKETCH ↓" box */}
+          <div
+            style={{
+              border: '1px dashed var(--ink-muted)',
+              padding: '2px',
+              position: 'relative',
+            }}
+          >
+            <div
+              className="text-[0.5rem] uppercase tracking-widest text-center py-1"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)', borderBottom: '1px dashed var(--ink-muted)' }}
+            >
+              ATTACH SKETCH ↓
+            </div>
+            <DrawingCanvas
+              onSave={onDrawingChange}
+              placeholder="DRAW YOUR POTTERY IDEA — SHAPES, HANDLES, DECORATIONS, PATTERNS..."
+            />
+            {drawing && (
+              <div
+                className="text-[0.5rem] uppercase tracking-wider text-center py-1"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)', borderTop: '1px dashed var(--ink-muted)' }}
+              >
+                ✓ SKETCH SAVED
+              </div>
+            )}
+          </div>
+
+          <div
+            className="text-[0.5rem] uppercase tracking-wider mt-2"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            * EVEN SIMPLE SKETCHES HELP — ART SKILL NOT REQUIRED *
+          </div>
+        </div>
+      </div>
+
+      <ReceiptDivider variant="minor" />
+
+      {/* Helpful tips as line items */}
+      <div className="mt-2">
+        <div
+          className="text-[0.5625rem] uppercase tracking-widest mb-1"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+        >
+          HELPFUL DETAILS TO INCLUDE:
+        </div>
+        {[
+          'APPROXIMATE SIZE (HEIGHT / WIDTH)',
+          'SPECIAL FEATURES (HANDLES, LID, SPOUT, FEET)',
+          'COLOR PREFERENCES OR COMBINATIONS',
+          'SURFACE DECORATIONS (PATTERNS, TEXTURES)',
+          'INTENDED USE (DISPLAY, DAILY USE, GIFT)',
+        ].map((tip, i) => (
+          <div
+            key={i}
+            className="receipt-line-item text-[0.5625rem] py-0.5"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+          >
+            <span>{String(i + 1).padStart(2, '0')}.</span>
+            <span className="leader" />
+            <span>{tip}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

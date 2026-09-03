@@ -35,7 +35,7 @@ export default function ItemCard({
           className="object-cover"
         />
         {piece.featured && (
-          <div className="absolute top-3 left-3 bg-[var(--theme-primary)] text-white px-2 py-1 rounded-full text-xs font-medium">
+          <div className="absolute top-3 left-3 bg-[var(--accent)] text-white px-2 py-1 rounded-full text-xs font-medium">
             Featured
           </div>
         )}
@@ -52,7 +52,7 @@ export default function ItemCard({
         
         <div className="flex items-center gap-4 mb-4 text-sm text-medium-dark/60">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-[var(--theme-primary)] rounded-full" />
+            <span className="w-2 h-2 bg-[var(--accent)] rounded-full" />
             {piece.dimensions.height}"H x {piece.dimensions.width}"W
           </span>
           <span>
@@ -63,7 +63,7 @@ export default function ItemCard({
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-sm text-medium-dark/60">Current Bid</p>
-            <p className="text-2xl font-bold text-[var(--theme-text-muted)] flex items-center">
+            <p className="text-2xl font-bold text-[var(--ink-muted)] flex items-center">
               <DollarSign size={20} />
               {piece.currentBid}
             </p>

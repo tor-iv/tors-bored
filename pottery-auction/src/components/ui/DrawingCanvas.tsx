@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import { useColorToggle } from '@/contexts/ColorToggleContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface DrawingCanvasProps {
   onSave?: (imageData: string) => void;
@@ -14,14 +14,16 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
   const [currentColor, setCurrentColor] = useState('#166534'); // green-800 (default theme text)
   const [brushSize, setBrushSize] = useState(3);
   const [history, setHistory] = useState<string[]>([]);
-  const { themeHex } = useColorToggle();
+  const { theme } = useTheme();
+  const accentByTheme = { y2k: '#000080', receipt: '#1a1a1a' };
+  const themeAccent = accentByTheme[theme];
 
-  // Pastel drawing colors
+  // Drawing colors
   const colors = [
-    { name: 'Blue', value: '#1e40af' },    // blue-800 (readable on white)
-    { name: 'Green', value: '#166534' },   // green-800 (default theme)
-    { name: 'Purple', value: '#5b21b6' },  // violet-800
-    { name: 'Theme', value: themeHex },    // current theme color
+    { name: 'Blue', value: '#1e40af' },
+    { name: 'Green', value: '#166534' },
+    { name: 'Purple', value: '#5b21b6' },
+    { name: 'Accent', value: themeAccent },
   ];
 
   useEffect(() => {
@@ -176,7 +178,7 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
 
   return (
     <div className="space-y-4">
-      <p className={`text-sm italic text-[var(--theme-text)]`}>
+      <p className={`text-sm italic text-[var(--ink)]`}>
         {placeholder}
       </p>
       
@@ -218,7 +220,7 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
 
         {/* Brush size */}
         <div className="flex items-center space-x-2">
-          <span className={`text-xs text-[var(--theme-text)]`}>Brush Size</span>
+          <span className={`text-xs text-[var(--ink)]`}>Brush Size</span>
           <input
             type="range"
             min="1"
@@ -235,14 +237,14 @@ export default function DrawingCanvas({ onSave, placeholder = "Draw your idea" }
             type="button"
             onClick={undo}
             disabled={history.length <= 1}
-            className={`text-xs hover:opacity-70 transition-opacity disabled:opacity-30 text-[var(--theme-text)]`}
+            className={`text-xs hover:opacity-70 transition-opacity disabled:opacity-30 text-[var(--ink)]`}
           >
             Undo
           </button>
           <button
             type="button"
             onClick={clearCanvas}
-            className={`text-xs hover:opacity-70 transition-opacity text-[var(--theme-text)]`}
+            className={`text-xs hover:opacity-70 transition-opacity text-[var(--ink)]`}
           >
             Clear
           </button>

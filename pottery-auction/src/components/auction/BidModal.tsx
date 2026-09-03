@@ -1,160 +1,271 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, DollarSign, TrendingUp } from 'lucide-react';
-import { Item } from '@/types';
-import Button from '../ui/Button';
+import { modalOverlay, modalContent } from '@/lib/animation-variants';
+import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
+
+// Raw API item shape (snake_case from DB)
+export interface RawItem {
+  id: string;
+  auction_id: string;
+  title: string;
+  description: string;
+  images: string[];
+  starting_bid: number | null;
+  current_bid: number | null;
+  highest_bidder: string | null;
+  sku: string | null;
+  listing_type: string;
+  techniques?: string[];
+  featured?: boolean;
+}
 
 interface BidModalProps {
   isOpen: boolean;
   onClose: () => void;
-  piece: Item | null;
+  item: RawItem | null;
   onSubmitBid: (amount: number) => Promise<void>;
+  bidError?: string | null;
+  /** Pre-fill from the bid slip's inline amount input. */
+  prefillAmount?: number | null;
 }
 
-export default function BidModal({ isOpen, onClose, piece, onSubmitBid }: BidModalProps) {
+export default function BidModal({ isOpen, onClose, item, onSubmitBid, bidError, prefillAmount }: BidModalProps) {
   const [bidAmount, setBidAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  if (!piece) return null;
+  // Reset state when item changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setBidAmount(prefillAmount != null ? String(prefillAmount) : '');
+      setError('');
+    }
+  }, [isOpen, item?.id, prefillAmount]);
 
-  const minBid = piece.currentBid + 5;
+  // Propagate external bid errors (e.g. 400 with minimum_bid)
+  useEffect(() => {
+    if (bidError) setError(bidError);
+  }, [bidError]);
+
+  if (!item) return null;
+
+  const currentBid = item.current_bid ?? item.starting_bid ?? 0;
+  const minBid = item.current_bid ? item.current_bid + 5 : (item.starting_bid ?? 1);
   const suggestedBids = [minBid, minBid + 10, minBid + 25, minBid + 50];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const amount = parseFloat(bidAmount);
-    
-    if (amount < minBid) {
-      setError(`Minimum bid is $${minBid}`);
+    if (isNaN(amount) || amount < minBid) {
+      setError(`MINIMUM BID IS $${minBid.toFixed(2)}`);
       return;
     }
-    
     setIsLoading(true);
     setError('');
-    
     try {
       await onSubmitBid(amount);
-      onClose();
-      setBidAmount('');
-    } catch (error: any) {
-      setError(error.message || 'Failed to place bid');
+      // onClose is called by parent on success
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message.toUpperCase() : 'FAILED TO PLACE BID');
     } finally {
       setIsLoading(false);
     }
-  };
+  }
+
+  const txCode = `BID-${item.sku ?? item.id.slice(0, 8).toUpperCase()}`;
+  const now = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50"
+            variants={modalOverlay}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="fixed inset-0 z-50"
+            style={{ backgroundColor: 'rgba(26,26,26,0.65)' }}
             onClick={onClose}
           />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
-              <button
-                onClick={onClose}
-                className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
-              >
-                <X size={20} />
-              </button>
-              
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-medium-dark mb-2">
-                  Place Your Bid
-                </h2>
-                <h3 className="text-lg text-medium-dark/80">
-                  {piece.title}
-                </h3>
-              </div>
-              
-              <div className="mb-6 p-4 bg-medium-cream rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-medium-dark/70">Current Bid:</span>
-                  <span className="text-xl font-bold text-[var(--theme-text-muted)] flex items-center">
-                    <DollarSign size={18} />
-                    {piece.currentBid}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-medium-dark/70">Minimum Bid:</span>
-                  <span className="font-semibold text-medium-dark flex items-center">
-                    <DollarSign size={16} />
-                    {minBid}
-                  </span>
-                </div>
-              </div>
-              
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-medium-dark mb-2">
-                    Your Bid Amount
-                  </label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                    <input
-                      type="number"
-                      value={bidAmount}
-                      onChange={(e) => setBidAmount(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-ring)]"
-                      placeholder={minBid.toString()}
-                      min={minBid}
-                      step="1"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-medium-dark/70 mb-3 flex items-center gap-1">
-                    <TrendingUp size={14} />
-                    Quick bid amounts:
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {suggestedBids.map((amount) => (
-                      <button
-                        key={amount}
-                        type="button"
-                        onClick={() => setBidAmount(amount.toString())}
-                        className="p-2 border border-[var(--theme-border)] text-[var(--theme-text-muted)] rounded-lg hover:bg-[var(--theme-primary)] hover:text-white transition-colors"
-                      >
-                        ${amount}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                {error && (
-                  <p className="text-theme-error text-sm">{error}</p>
-                )}
-                
-                <div className="pt-4 border-t">
-                  <p className="text-xs text-medium-dark/60 mb-4">
-                    By placing a bid, you agree to our terms and authorize payment if you win.
-                  </p>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    isLoading={isLoading}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              variants={modalContent}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              className="receipt-modal w-full max-w-sm"
+              style={{ transform: 'rotate(-0.3deg)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="receipt-strip-content py-4 space-y-3">
+                {/* Ticket header */}
+                <div className="text-center space-y-1">
+                  <div
+                    className="text-[0.625rem] uppercase tracking-widest"
+                    style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
                   >
-                    Place Bid
-                  </Button>
+                    TOR&apos;S BORED POTTERY CO.
+                  </div>
+                  <div
+                    className="receipt-stamp text-[1.125rem] font-bold uppercase tracking-wide"
+                    style={{ fontFamily: 'var(--font-stamp)', color: 'var(--ink)' }}
+                  >
+                    BID SLIP
+                  </div>
+                  <div
+                    className="text-[0.6875rem] uppercase"
+                    style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
+                  >
+                    {txCode} &nbsp;·&nbsp; {now}
+                  </div>
                 </div>
-              </form>
-            </div>
-          </motion.div>
+
+                <ReceiptDivider variant="decorative" />
+
+                {/* Item info */}
+                <div className="space-y-1">
+                  <div
+                    className="text-[0.75rem] uppercase font-bold"
+                    style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}
+                  >
+                    LOT: {item.title.toUpperCase()}
+                  </div>
+                  {item.sku && (
+                    <div className="receipt-polaroid-sku">SKU: {item.sku}</div>
+                  )}
+                </div>
+
+                <ReceiptDivider variant="minor" />
+
+                {/* Current bid info */}
+                <div className="space-y-1">
+                  <div className="receipt-line-item text-[0.75rem]" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}>
+                    <span className="uppercase">CURRENT BID</span>
+                    <span className="leader" />
+                    <span className="receipt-price font-bold" style={{ color: 'var(--ink)' }}>
+                      ${currentBid.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="receipt-line-item text-[0.75rem]" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}>
+                    <span className="uppercase">MINIMUM BID</span>
+                    <span className="leader" />
+                    <span className="receipt-price font-bold" style={{ color: 'var(--accent)' }}>
+                      ${minBid.toFixed(2)}
+                    </span>
+                  </div>
+                  {item.highest_bidder && (
+                    <div className="receipt-line-item text-[0.75rem]" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}>
+                      <span className="uppercase">HIGH BIDDER</span>
+                      <span className="leader" />
+                      <span style={{ color: 'var(--ink)' }}>{item.highest_bidder.slice(0, 12).toUpperCase()}</span>
+                    </div>
+                  )}
+                </div>
+
+                <ReceiptDivider variant="major" />
+
+                {/* Bid form */}
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <div>
+                    <label
+                      className="block text-[0.6875rem] uppercase tracking-wider mb-1"
+                      style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+                    >
+                      YOUR BID AMOUNT
+                    </label>
+                    <div className="flex items-center gap-1">
+                      <span
+                        className="text-[0.875rem] font-bold"
+                        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+                      >
+                        $
+                      </span>
+                      <input
+                        type="number"
+                        value={bidAmount}
+                        onChange={(e) => { setBidAmount(e.target.value); setError(''); }}
+                        className="receipt-input receipt-price flex-1"
+                        placeholder={minBid.toFixed(2)}
+                        min={minBid}
+                        step="0.01"
+                        required
+                        style={{ fontSize: '1rem', fontWeight: '700' }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Quick bid suggestions */}
+                  <div>
+                    <div
+                      className="text-[0.6875rem] uppercase mb-2"
+                      style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+                    >
+                      QUICK AMOUNTS:
+                    </div>
+                    <div className="grid grid-cols-4 gap-1">
+                      {suggestedBids.map((amount) => (
+                        <button
+                          key={amount}
+                          type="button"
+                          onClick={() => setBidAmount(amount.toFixed(2))}
+                          className="text-[0.625rem] py-1 border border-current uppercase hover:bg-[var(--ink)] hover:text-[var(--bg)] transition-colors"
+                          style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+                        >
+                          ${amount}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div
+                      className="text-[0.75rem] uppercase py-1"
+                      style={{ color: 'var(--error)', fontFamily: 'var(--font-display)' }}
+                    >
+                      {error}
+                    </div>
+                  )}
+
+                  <ReceiptDivider variant="minor" />
+
+                  <div
+                    className="text-[0.5rem] uppercase leading-relaxed"
+                    style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
+                  >
+                    BY PLACING A BID, YOU AUTHORIZE PAYMENT IF YOU WIN.
+                    ALL SALES ARE FINAL. NO REFUNDS.
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="receipt-stamp w-full py-3 text-[0.875rem] uppercase tracking-widest border border-current"
+                    style={{
+                      fontFamily: 'var(--font-stamp)',
+                      color: isLoading ? 'var(--ink-muted)' : 'var(--ink)',
+                      transform: 'rotate(-0.5deg)',
+                      boxShadow: isLoading ? 'none' : '3px 3px 0 var(--ink)',
+                      cursor: isLoading ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {isLoading ? '[ SUBMITTING... ]' : '[ PLACE BID ]'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="w-full text-center text-[0.625rem] uppercase"
+                    style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
+                  >
+                    CANCEL / CLOSE
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>

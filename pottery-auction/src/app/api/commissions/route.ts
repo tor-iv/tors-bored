@@ -1,81 +1,72 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { desc, eq } from "drizzle-orm";
+import { db } from "@/db";
+import { commissions } from "@/db/schema";
+import { getCurrentUser } from "@/lib/auth";
 
 /**
  * GET /api/commissions
- * List commissions
- * - Regular users: See only their own commissions
- * - Admins: See all commissions with optional status filter
+ * List commissions.
+ * - Regular users: see only their own commissions.
+ * - Admins: see all commissions with optional ?status= filter.
  *
- * Query params (admin only):
- * - status: Filter by status (submitted/reviewing/accepted/declined/in_progress/completed)
+ * Migrated from Supabase to Drizzle/Postgres. RLS is gone — ownership filter is
+ * applied explicitly here for non-admins.
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
-
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    const user = await getCurrentUser();
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized - please login' },
-        { status: 401 }
+        { error: "Unauthorized - please login" },
+        { status: 401 },
       );
     }
 
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
+    let rows;
 
-    const isAdmin = profile?.is_admin || false;
-
-    let query = supabase
-      .from('commissions')
-      .select('*')
-      .order('submitted_at', { ascending: false });
-
-    if (isAdmin) {
-      // Admins can filter by status
+    if (user.isAdmin) {
       const { searchParams } = new URL(request.url);
-      const status = searchParams.get('status');
+      const status = searchParams.get("status");
 
-      const validStatuses = ['submitted', 'reviewing', 'accepted', 'declined', 'in_progress', 'completed'];
+      const validStatuses = ["submitted", "reviewing", "accepted", "declined", "in_progress", "completed"];
+
       if (status && validStatuses.includes(status)) {
-        query = query.eq('status', status as 'submitted' | 'reviewing' | 'accepted' | 'declined' | 'in_progress' | 'completed');
+        rows = await db
+          .select()
+          .from(commissions)
+          .where(
+            eq(
+              commissions.status,
+              status as "submitted" | "reviewing" | "accepted" | "declined" | "in_progress" | "completed",
+            ),
+          )
+          .orderBy(desc(commissions.submitted_at));
+      } else {
+        rows = await db
+          .select()
+          .from(commissions)
+          .orderBy(desc(commissions.submitted_at));
       }
     } else {
-      // Regular users only see their own commissions
-      query = query.eq('user_id', user.id);
+      // RLS-backstop: non-admins explicitly filtered to their own commissions.
+      rows = await db
+        .select()
+        .from(commissions)
+        .where(eq(commissions.user_id, user.id))
+        .orderBy(desc(commissions.submitted_at));
     }
 
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Error fetching commissions:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch commissions', details: error.message },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ commissions: data });
+    return NextResponse.json({ commissions: rows });
   } catch (error) {
-    console.error('Unexpected error in GET /api/commissions:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in GET /api/commissions:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
 /**
  * POST /api/commissions
- * Submit a new commission request (authenticated users only)
+ * Submit a new commission request (authenticated users only).
  *
  * Body:
  * - email: string (required)
@@ -85,91 +76,62 @@ export async function GET(request: NextRequest) {
  * - budget: number (optional)
  * - timeline: string (optional)
  *
- * Note: status will default to 'submitted'
+ * Note: status defaults to 'submitted'; user_id is set from the session.
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
-
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    const user = await getCurrentUser();
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized - please login to submit a commission' },
-        { status: 401 }
+        { error: "Unauthorized - please login to submit a commission" },
+        { status: 401 },
       );
     }
 
-    // Parse request body
     const body = await request.json();
     const { email, name, description, images, budget, timeline } = body;
 
-    // Validate required fields
     if (!email || !name || !description) {
       return NextResponse.json(
-        { error: 'Missing required fields: email, name, description' },
-        { status: 400 }
+        { error: "Missing required fields: email, name, description" },
+        { status: 400 },
       );
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
     }
 
-    // Validate budget if provided
     if (budget !== undefined && budget !== null) {
-      if (typeof budget !== 'number' || budget < 0) {
+      if (typeof budget !== "number" || budget < 0) {
         return NextResponse.json(
-          { error: 'Budget must be a positive number' },
-          { status: 400 }
+          { error: "Budget must be a positive number" },
+          { status: 400 },
         );
       }
     }
 
-    // Use admin client to bypass RLS for insert
-    const adminClient = createAdminClient();
-
-    const { data, error } = await adminClient
-      .from('commissions')
-      .insert({
+    const [commission] = await db
+      .insert(commissions)
+      .values({
         user_id: user.id,
         email,
         name,
         description,
         images: images || [],
-        budget: budget || null,
-        timeline: timeline || null,
-        status: 'submitted',
+        budget: budget ?? null,
+        timeline: timeline ?? null,
+        status: "submitted",
       })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating commission:', error);
-      return NextResponse.json(
-        { error: 'Failed to create commission', details: error.message },
-        { status: 500 }
-      );
-    }
+      .returning();
 
     return NextResponse.json(
-      {
-        commission: data,
-        message: 'Commission request submitted successfully',
-      },
-      { status: 201 }
+      { commission, message: "Commission request submitted successfully" },
+      { status: 201 },
     );
   } catch (error) {
-    console.error('Unexpected error in POST /api/commissions:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Unexpected error in POST /api/commissions:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

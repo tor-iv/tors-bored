@@ -1,195 +1,103 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { PotteryWheelDoodle } from '@/components/decorations';
+import { useTheme } from '@/contexts/ThemeContext';
+import ThemeToggle from '@/components/ui/ThemeToggle';
+import VisitorCounter from '@/components/theme/y2k/VisitorCounter';
 
-// Rotating pottery quotes/facts
-const potteryQuotes = [
-  "Every wobble tells a story.",
-  "Perfectly imperfect, every time.",
-  "Made with clay and caffeine.",
-  "Life's too short for boring pottery.",
-  "Handmade means hand-loved.",
-  "From mud to masterpiece.",
-  "Embrace the wobble.",
+const footerLinks = [
+  { href: '/',            label: 'Home'              },
+  { href: '/browse',      label: 'Browse'            },
+  { href: '/shop',        label: 'Shop'              },
+  { href: '/commissions', label: 'Commission a Piece'},
 ];
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
-  const [quote, setQuote] = useState(potteryQuotes[0]);
-  const [quoteIndex, setQuoteIndex] = useState(0);
+  const { theme } = useTheme();
+  const year = new Date().getFullYear();
 
-  // Rotate through quotes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setQuoteIndex((prev) => (prev + 1) % potteryQuotes.length);
-    }, 5000);
+  if (theme === 'receipt') {
+    // Footer content lives on the paper (ReceiptFooterChrome); only the theme
+    // toggle sits outside so y2k stays reachable from every page.
+    return (
+      <footer>
+        <ThemeToggle />
+      </footer>
+    );
+  }
 
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    setQuote(potteryQuotes[quoteIndex]);
-  }, [quoteIndex]);
-
-  return (
-    <footer className="relative overflow-hidden clay-dots">
-      {/* Background with theme color */}
-      <div
-        className="absolute inset-0"
-        style={{ backgroundColor: 'var(--theme-primary)' }}
-      />
-
-      {/* Floating decorative blob */}
-      <motion.div
-        className="absolute -right-20 -top-20 w-64 h-64 rounded-full opacity-10"
-        style={{ backgroundColor: 'var(--theme-primary-dark)' }}
-        animate={{
-          scale: [1, 1.1, 1],
-          rotate: [0, 10, 0]
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Brand section with pottery wheel */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="md:col-span-2"
-          >
-            <div className="flex items-center space-x-3 mb-4">
-              <PotteryWheelDoodle
-                className="w-10 h-10"
-                color="var(--theme-text-on-primary)"
-                animate={true}
-              />
-              <span
-                className="text-2xl font-bold"
-                style={{
-                  color: 'var(--theme-text-on-primary)',
-                  fontFamily: 'var(--font-caveat), cursive'
-                }}
-              >
-                Tor&apos;s Bored Pottery
-              </span>
+  // Y2K branch
+  if (theme === 'y2k') {
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    return (
+      <footer style={{ background: 'var(--bg)', borderTop: '2px solid var(--border)', padding: '16px', fontFamily: 'Tahoma, sans-serif', fontSize: 11, color: 'var(--ink)' }}>
+        <div style={{ maxWidth: 800, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+            <div>
+              <div style={{ fontFamily: '"Comic Sans MS", cursive', fontSize: 14, fontWeight: 'bold', marginBottom: 4 }}>Tor&apos;s Bored Pottery</div>
+              <div>Brooklyn, NY · Handmade Ceramics</div>
+              <div style={{ marginTop: 4, color: 'var(--ink-muted)' }}>Page last updated: {today}</div>
+              <div style={{ marginTop: 2, color: 'var(--ink-muted)', fontSize: 10 }}>Best viewed in Internet Explorer 5.5 at 1024×768</div>
             </div>
-            <p
-              className="mb-4 max-w-md"
-              style={{ color: 'var(--theme-text-on-primary)', opacity: 0.9 }}
+            <VisitorCounter />
+          </div>
+          <nav style={{ marginTop: 12, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            {footerLinks.map((link) => (
+              <Link key={link.href} href={link.href} style={{ color: 'var(--link)', fontSize: 11 }}>{link.label}</Link>
+            ))}
+          </nav>
+        </div>
+        <ThemeToggle />
+      </footer>
+    );
+  }
+
+  // Generic stub — functional with CSS tokens
+  return (
+    <footer
+      className="py-12 mt-auto"
+      style={{ backgroundColor: 'var(--bg-well)', borderTop: '1px solid var(--border)' }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
+            <div
+              className="text-xl font-bold mb-3"
+              style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}
             >
-              Handcrafted ceramics released monthly. Every piece is thrown on the wheel,
-              glazed by hand, and fired with love (and occasionally mild anxiety about kiln temperatures).
+              Tor&apos;s Bored Pottery
+            </div>
+            <p className="text-sm max-w-sm" style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}>
+              Handcrafted ceramics released monthly. Every piece is thrown on the wheel, glazed by hand, and fired with care.
             </p>
+          </div>
 
-            {/* Rotating quote */}
-            <motion.p
-              key={quote}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              className="text-sm italic"
-              style={{
-                color: 'var(--theme-text-on-primary)',
-                opacity: 0.7,
-                fontFamily: 'var(--font-caveat), cursive',
-                fontSize: '1.1rem'
-              }}
-            >
-              &ldquo;{quote}&rdquo;
-            </motion.p>
-          </motion.div>
-
-          {/* Quick Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <h3
-              className="text-lg font-semibold mb-4"
-              style={{
-                color: 'var(--theme-text-on-primary)',
-                fontFamily: 'var(--font-caveat), cursive',
-                fontSize: '1.4rem'
-              }}
-            >
+          <nav className="space-y-2">
+            <div className="text-sm font-semibold mb-2 uppercase" style={{ color: 'var(--ink)' }}>
               Explore
-            </h3>
-            <nav className="space-y-2">
-              {[
-                { href: '/', label: 'Home' },
-                { href: '/auctions', label: 'Auctions' },
-                { href: '/gallery', label: 'Gallery' },
-                { href: '/commissions', label: 'Commission a Piece' },
-              ].map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block transition-all duration-200 hover-wobbly"
-                  style={{
-                    color: 'var(--theme-text-on-primary)',
-                    opacity: 0.85
-                  }}
-                >
-                  <motion.span
-                    whileHover={{ x: 4 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="inline-block"
-                  >
-                    {link.label}
-                  </motion.span>
-                </Link>
-              ))}
-            </nav>
-          </motion.div>
+            </div>
+            {footerLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="block text-sm hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
 
-        {/* Bottom bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="border-t mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
-          style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
+        <div
+          className="mt-8 pt-8 border-t text-sm flex flex-col sm:flex-row justify-between gap-4"
+          style={{ borderColor: 'var(--border)', color: 'var(--ink-muted)' }}
         >
-          <p
-            className="text-sm"
-            style={{ color: 'var(--theme-text-on-primary)', opacity: 0.6 }}
-          >
-            © {currentYear} Tor&apos;s Bored Pottery. All rights reserved.
-          </p>
-
-          <p
-            className="text-sm flex items-center gap-2"
-            style={{ color: 'var(--theme-text-on-primary)', opacity: 0.6 }}
-          >
-            Made with
-            <motion.span
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              🏺
-            </motion.span>
-            +
-            <motion.span
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              ☕
-            </motion.span>
-            in the studio
-          </p>
-        </motion.div>
+          <span>© {year} Tor&apos;s Bored Pottery. All rights reserved.</span>
+          <span>Handmade with care in Brooklyn.</span>
+        </div>
       </div>
+      <ThemeToggle />
     </footer>
   );
 }

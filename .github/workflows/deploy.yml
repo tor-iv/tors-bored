@@ -1,0 +1,48 @@
+# Deploy to the shared Hetzner box on push to main.
+#
+# The app is colocated on the fieldhouse box: source lives in /opt/tors-bored,
+# but the compose project is /opt/fieldhouse/docker-compose.yml (services
+# tors / tors-migrate / tors-postgres). Every command is scoped by service
+# name — a bare `up -d --build` would rebuild all colocated apps.
+#
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   HETZNER_IP           — public IPv4 of the server
+#   SSH_PRIVATE_KEY      — private key whose public half is in the server's authorized_keys
+#   SSH_HOST_FINGERPRINT — SHA256 host key fingerprint (must be the ECDSA one)
+
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.HETZNER_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          fingerprint: ${{ secrets.SSH_HOST_FINGERPRINT }}
+          # Cold Bun/Next builds on the cpx21 can exceed the 10m default.
+          command_timeout: 30m
+          script: |
+            set -e
+            cd /opt/tors-bored
+            git pull origin main
+
+            cd /opt/fieldhouse
+            # Build BOTH images: tors-migrate is a separate builder-stage image,
+            # and `compose run` does not rebuild — skipping it runs migrations
+            # and seeds from a stale checkout (bit us 2026-09-01).
+            docker compose build tors tors-migrate
+            # Migration failure aborts (set -e) before the new image goes live.
+            docker compose run --rm tors-migrate
+            # --force-recreate: plain `up -d` can keep a stale container (see
+            # tors-brain/infra/fieldhouse.md footguns).
+            docker compose up -d --force-recreate tors
+            docker image prune -f

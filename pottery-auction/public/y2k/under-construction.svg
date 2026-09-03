@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="40" viewBox="0 0 200 40" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <style>
+      @keyframes stripe-anim {
+        from { transform: translateX(0); }
+        to { transform: translateX(40px); }
+      }
+      .stripe-group { animation: stripe-anim 1s linear infinite; }
+    </style>
+    <pattern id="construction" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="#ffcc00"/>
+      <polygon points="0,0 20,0 0,20" fill="#1a1a1a"/>
+      <polygon points="20,0 40,0 40,20 20,40 0,40 0,20" fill="#ffcc00"/>
+      <polygon points="40,20 40,40 20,40" fill="#1a1a1a"/>
+    </pattern>
+  </defs>
+  <g class="stripe-group">
+    <rect x="-40" y="0" width="280" height="40" fill="url(#construction)"/>
+  </g>
+  <text x="100" y="26" text-anchor="middle" font-family="Tahoma, sans-serif" font-size="13" font-weight="bold" fill="#000" stroke="#ffcc00" stroke-width="3" paint-order="stroke">🚧 UNDER CONSTRUCTION 🚧</text>
+</svg>

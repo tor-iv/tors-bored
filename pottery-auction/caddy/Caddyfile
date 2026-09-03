@@ -1,0 +1,13 @@
+tors-bored.com {
+	encode gzip
+	respond /healthz "ok" 200
+	reverse_proxy app:3000
+}
+
+www.tors-bored.com {
+	redir https://tors-bored.com{uri} permanent
+}
+
+http://tors-bored.com {
+	redir https://tors-bored.com{uri} permanent
+}

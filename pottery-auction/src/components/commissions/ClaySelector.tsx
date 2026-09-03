@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import ReceiptDivider from '@/components/theme/receipt/ReceiptDivider';
 
 interface ClaySelectorProps {
   selected: string | null;
@@ -10,137 +11,136 @@ interface ClaySelectorProps {
 const clayTypes = [
   {
     id: 'stoneware',
-    name: 'Stoneware',
-    description: 'Durable, versatile, perfect for everyday use',
-    characteristics: ['Food safe', 'Oven safe', 'Earthy tones'],
-    color: '#8B7355',
-    texture: 'Slightly rough, rustic feel',
+    name: 'STONEWARE',
+    props: 'FOOD SAFE · OVEN SAFE · EARTHY TONES',
+    note: 'DURABLE, VERSATILE, EVERYDAY USE',
+    swatch: '#8B7355',
   },
   {
     id: 'porcelain',
-    name: 'Porcelain',
-    description: 'Elegant, refined, translucent when thin',
-    characteristics: ['Delicate', 'Smooth finish', 'Pure white'],
-    color: '#F5F5F0',
-    texture: 'Smooth and silky',
+    name: 'PORCELAIN',
+    props: 'DELICATE · SMOOTH FINISH · WHITE',
+    note: 'ELEGANT, REFINED, TRANSLUCENT',
+    swatch: '#E8E5DC',
   },
   {
     id: 'earthenware',
-    name: 'Earthenware',
-    description: 'Warm, traditional, beautiful with colorful glazes',
-    characteristics: ['Terracotta tones', 'Porous', 'Decorative'],
-    color: '#C96846',
-    texture: 'Warm and organic',
+    name: 'EARTHENWARE',
+    props: 'TERRACOTTA TONES · POROUS · DECORATIVE',
+    note: 'WARM, TRADITIONAL, COLORFUL GLAZES',
+    swatch: '#C96846',
   },
   {
     id: 'raku',
-    name: 'Raku',
-    description: 'Dramatic, unpredictable, each piece unique',
-    characteristics: ['Metallic effects', 'Crackle glaze', 'Decorative only'],
-    color: '#2F2F2F',
-    texture: 'Varied, often metallic',
+    name: 'RAKU',
+    props: 'METALLIC FX · CRACKLE GLAZE · DECO ONLY',
+    note: 'DRAMATIC, UNPREDICTABLE, UNIQUE',
+    swatch: '#2F2F2F',
   },
 ];
 
 export default function ClaySelector({ selected, onSelect }: ClaySelectorProps) {
   return (
     <div>
-      <p className="text-center mb-6" style={{ color: 'var(--theme-text-muted)' }}>
-        Each clay body has unique properties that affect the final piece
-      </p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {clayTypes.map((clay) => (
-          <motion.button
-            key={clay.id}
-            onClick={() => onSelect(clay.id)}
-            className={`
-              relative p-5 rounded-xl border-2 text-left transition-all duration-200
-              ${selected === clay.id
-                ? 'border-[var(--theme-primary)] bg-[var(--theme-primary-light)]'
-                : 'border-gray-200 hover:border-[var(--theme-primary)] hover:bg-gray-50'
-              }
-            `}
-            whileHover={{ scale: 1.01, y: -2 }}
-            whileTap={{ scale: 0.99 }}
-          >
-            {/* Selection indicator */}
-            {selected === clay.id && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'var(--theme-primary)' }}
-              >
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              </motion.div>
-            )}
-
-            <div className="flex gap-4">
-              {/* Clay color swatch */}
-              <div
-                className="w-16 h-16 rounded-lg flex-shrink-0 relative overflow-hidden"
-                style={{
-                  backgroundColor: clay.color,
-                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
-                }}
-              >
-                {/* Texture overlay */}
-                <div
-                  className="absolute inset-0 opacity-20"
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-                  }}
-                />
-              </div>
-
-              {/* Clay info */}
-              <div className="flex-1">
-                <h3
-                  className="font-semibold mb-1"
-                  style={{
-                    color: 'var(--theme-text)',
-                    fontFamily: 'var(--font-caveat), cursive',
-                    fontSize: '1.3rem'
-                  }}
-                >
-                  {clay.name}
-                </h3>
-                <p className="text-sm mb-2" style={{ color: 'var(--theme-text-muted)' }}>
-                  {clay.description}
-                </p>
-
-                {/* Characteristics tags */}
-                <div className="flex flex-wrap gap-1">
-                  {clay.characteristics.map((char) => (
-                    <span
-                      key={char}
-                      className="text-xs px-2 py-0.5 rounded-full"
-                      style={{
-                        backgroundColor: selected === clay.id
-                          ? 'var(--theme-primary)'
-                          : 'rgba(0,0,0,0.05)',
-                        color: selected === clay.id
-                          ? 'var(--theme-text-on-primary)'
-                          : 'var(--theme-text-muted)'
-                      }}
-                    >
-                      {char}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.button>
-        ))}
+      <div
+        className="text-[0.625rem] uppercase tracking-widest mb-3"
+        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+      >
+        SELECT CLAY BODY · CHECK ONE:
       </div>
 
-      {/* Info note */}
-      <p className="text-center text-xs mt-6" style={{ color: 'var(--theme-text-muted)' }}>
-        Don&apos;t worry - I&apos;ll help you choose the best clay for your specific design during review
-      </p>
+      <div className="space-y-0">
+        {clayTypes.map((clay, i) => {
+          const isSelected = selected === clay.id;
+          return (
+            <div key={clay.id}>
+              <motion.button
+                onClick={() => onSelect(clay.id)}
+                className="w-full text-left"
+                whileTap={{ scale: 0.995 }}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+              >
+                <div
+                  className="py-2 px-1"
+                  style={{
+                    backgroundColor: isSelected ? 'rgba(0,0,0,0.04)' : 'transparent',
+                    transition: 'background-color 0.12s',
+                  }}
+                >
+                  {/* Top row: checkbox + swatch + name */}
+                  <div className="receipt-line-item">
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-thermal)',
+                        fontSize: '1rem',
+                        color: isSelected ? 'var(--ink)' : 'var(--ink-muted)',
+                        minWidth: 36,
+                        display: 'inline-block',
+                      }}
+                    >
+                      {isSelected ? '[X]' : '[ ]'}
+                    </span>
+
+                    {/* Clay swatch */}
+                    <span
+                      aria-hidden
+                      style={{
+                        display: 'inline-block',
+                        width: 14,
+                        height: 14,
+                        backgroundColor: clay.swatch,
+                        border: '1px solid var(--ink-muted)',
+                        marginRight: 8,
+                        flexShrink: 0,
+                        verticalAlign: 'middle',
+                        opacity: isSelected ? 1 : 0.6,
+                      }}
+                    />
+
+                    <span
+                      className="uppercase"
+                      style={{
+                        fontFamily: 'var(--font-stamp)',
+                        fontSize: '0.9rem',
+                        letterSpacing: '0.08em',
+                        color: isSelected ? 'var(--ink)' : 'var(--ink-muted)',
+                        flex: 1,
+                      }}
+                    >
+                      {clay.name}
+                    </span>
+
+                    <span className="leader" />
+
+                    <span
+                      className="text-[0.5625rem] uppercase whitespace-nowrap"
+                      style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-display)' }}
+                    >
+                      {clay.note}
+                    </span>
+                  </div>
+
+                  {/* Properties row */}
+                  <div
+                    className="text-[0.5rem] uppercase tracking-wider ml-9 mt-0.5"
+                    style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)', opacity: isSelected ? 0.75 : 0.45 }}
+                  >
+                    {clay.props}
+                  </div>
+                </div>
+              </motion.button>
+              {i < clayTypes.length - 1 && <ReceiptDivider variant="minor" />}
+            </div>
+          );
+        })}
+      </div>
+
+      <div
+        className="text-[0.5rem] uppercase tracking-widest mt-4"
+        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink-muted)' }}
+      >
+        * TOR WILL CONFIRM BEST CLAY FOR YOUR DESIGN AT REVIEW *
+      </div>
     </div>
   );
 }

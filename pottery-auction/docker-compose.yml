@@ -1,0 +1,79 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        # Inlined into the client bundle at build time (absolute links, Stripe redirects).
+        # Override via the server .env for the real domain.
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://tors-bored.com}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-}
+    restart: unless-stopped
+    expose:
+      - "3000"
+    volumes:
+      - uploads:/app/data/uploads
+    environment:
+      DATABASE_URL: postgres://tors:${POSTGRES_PASSWORD}@postgres:5432/torsbored
+      SESSION_SECRET: ${SESSION_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      CRON_SECRET: ${CRON_SECRET:-}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://tors-bored.com}
+      UPLOAD_DIR: /app/data/uploads
+      # TLS terminates at Caddy — set HTTPS so session cookies are issued secure-only.
+      HTTPS: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  # One-shot migration runner. The standalone runner image is Node (no Bun), so
+  # migrations run from the `builder` stage (Bun + full source + drizzle/). Runs
+  # to completion before `app` starts; exits 0 on success.
+  migrate:
+    build:
+      context: .
+      target: builder
+    command: ["bun", "run", "db:migrate"]
+    restart: "no"
+    environment:
+      DATABASE_URL: postgres://tors:${POSTGRES_PASSWORD}@postgres:5432/torsbored
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tors
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: torsbored
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tors -d torsbored"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Port intentionally not published — Postgres is internal-only.
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  uploads:
+  pgdata:
+  caddy_data:
+  caddy_config:
